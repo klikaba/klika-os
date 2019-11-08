@@ -78,21 +78,23 @@ void* alloc_frame() {
   return (void*)(frame * PAGE_SIZE);
 }
 
-int mi = 0;
-
 void* alloc_frame_temp(uint64_t *phys_out) {
   uint64_t addr = (uint64_t)alloc_frame();
   DEBUG("MMU[frames]: alloc_frame_temp frame ... 0x%X\n\r", addr);
 
   if (addr != 0) {
     *phys_out = addr;
+    for (uint64_t i=0; i<512; i++) {
+      if (pde_krnluser[i].all == 0) {
+        DEBUG("MMU[frames]: alloc new frame %i\n\r", i);
+        pde_krnluser[i].all = addr | 0x83;
 
-    pde[2 + mi].all = addr | 0x83;
-    x86_set_cr3(TO_PHYS_U64(pml4e));      
-    x86_tlb_flush_all();
-    char* ret = ((char*)0xFFFF800000000000 + PAGE_SIZE*2 + PAGE_SIZE*mi);
-    mi++;
-    return ret;
+        x86_set_cr3(TO_PHYS_U64(pml4e));      
+        x86_tlb_flush_all();
+
+        return ((char*)0xFFFFE00000000000 + PAGE_SIZE*i);
+      }
+    }
   }
 
   HALT_AND_CATCH_FIRE("NOT ENOUGH MEMORY TO MAP PROCESS SPACE");

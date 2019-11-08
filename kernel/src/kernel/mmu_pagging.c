@@ -15,15 +15,23 @@ pde_t   pde[512] __attribute__((aligned(4096)));
 pdpe_t  pdpe_user[512] __attribute__((aligned(4096)));
 pde_t   pde_user[512] __attribute__((aligned(4096)));
 
+pdpe_t  pdpe_krnluser[512] __attribute__((aligned(4096)));
+pdpe_t  pde_krnluser[512] __attribute__((aligned(4096)));
+
 static void init_pagging_kernel() {
   // Setup new PAGGING DIRECTORY
   memset(&pml4e, 0, sizeof(pml4e_t) * 512);
   memset(&pdpe, 0, sizeof(pdpe_t) * 512);
   memset(&pde, 0, sizeof(pde_t) * 512);
+  memset(&pdpe_krnluser, 0, sizeof(pdpe_t) * 512);
+  memset(&pde_krnluser, 0, sizeof(pde_t) * 512);
 
   // Kernel space
   pml4e[0x100].all = TO_PHYS_U64(&pdpe) | 3; // KERNEL_VMA: Present + Write
+  pml4e[0x1C0].all = TO_PHYS_U64(&pdpe_krnluser) | 3; // KERNEL_USER TO KRNLVMA: Present + Write
   pdpe[0].all = TO_PHYS_U64(&pde) | 3; 
+  pdpe_krnluser[0].all = TO_PHYS_U64(&pde_krnluser) | 3; 
+
   uint64_t num_pages = TO_PHYS_U64(heap_end) / PAGE_SIZE;
   DEBUG("MMU[pagging]: Krnl space pages needed: %i\n\r", num_pages);
 

@@ -53,9 +53,9 @@ void create_process_user(task_t* task, void* app_data, uint32_t app_size) {
   // setup task MMU
   uint64_t phys_addr;
   uint8_t* task_memory = alloc_frame_temp(&phys_addr);
-  DEBUG("PROC: create_process_user p addr ... 0x%X\n\r", phys_addr);
+  DEBUG("PROC: create_process_user phys_addr: 0x%X virt_addr: 0x%X\n\r", phys_addr, task_memory);
   memcpy(task_memory, app_data, app_size);
-  uint64_t* rsp = (uint64_t*)task_memory;
+  uint64_t* rsp = (uint64_t*)(task_memory + PAGE_SIZE);
   rsp--;
   /*
   +------------+

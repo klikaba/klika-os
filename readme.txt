@@ -4,6 +4,9 @@
 Exploring new concepts of OS design with 64bit processors.
 
 
+
+
+
 # Prerequirments
 * nasm
 * quemu (quemu-system-x86)
@@ -37,7 +40,7 @@ Exploring new concepts of OS design with 64bit processors.
 111111111111 111000000 000000000 000000000 000000000000000000000 FFFFE00000000000 - FFFFE00040000000  TMP PROCESS MAPPING (512 * 2MB)
 
 
-
+111111111111111000000000000000000000000000000000000000000000
 KERNEL_START         FFFF800000000000
                           KERNEL
 KERNEL_END           FFFF800000XXXXXX

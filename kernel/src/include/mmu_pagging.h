@@ -72,6 +72,8 @@ extern pdpe_t  pdpe[512];
 extern pde_t   pde[512];
 extern pdpe_t  pdpe_user[512];
 extern pde_t   pde_user[512];
+extern pdpe_t  pdpe_krnluser[512];
+extern pdpe_t  pde_krnluser[512];
 
 void* alloc_frame_temp(uint64_t *phys_out);
 void init_kernel_pagging();

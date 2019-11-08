@@ -1,0 +1,14 @@
+MMU: Frames 64, 2
+MMU: Frame set bit for 0x0 0 0
+MMU: Frame set bit for 0x200000 0 1
+MMU: Used Mem 2KB
+MMU: Krnl space page needed: 1
+MMU: Heap init : start:0xFFFF800000116100 end:0xFFFF800000200000
+MMU: Heap first block size : 958192
+MMU: Frame set bit for 0x400000 0 2
+MMU: alloc_frame_temp frame ... 0x400000
+MMU: Frame set bit for 0x600000 0 3
+MMU: alloc_frame_temp frame ... 0x600000
+MMU: Frame set bit for 0x800000 0 4
+MMU: alloc_frame_temp frame ... 0x800000
+

@@ -157,7 +157,7 @@ void create_user_process(task_t* task, void* elf_raw_data) {
 
 task_t* next_task() {
 	current_task_index++;
-	current_task_index = current_task_index % 3;
+	current_task_index = current_task_index % 2;
 
 	return &tasks[current_task_index];
 }

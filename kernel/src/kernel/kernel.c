@@ -107,9 +107,9 @@ void kmain(/*unsigned long magic, unsigned long addr*/) {
   init_kernel_keyboard();
   init_kernel_mouse();
 
-  create_user_process(&tasks[0], hello_world);
-  create_user_process(&tasks[1], countdown);
-  create_user_process(&tasks[2], countdown);
+  create_user_process(&tasks[0], countdown);
+  create_user_process(&tasks[1], hello_world);
+  // create_user_process(&tasks[2], countdown);
 
   // Jump into task switcher and start first task - after this - kernel main will not continue
   do_first_task_jump();

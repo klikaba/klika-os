@@ -5,6 +5,12 @@
 
 int __console_id = 0;
 
+void console_clear(console_t *console) {
+	console->color = CONSOLE_BG_FG_COLOR(LIGHTGRAY, BLACK);
+	console->current_index = 0;
+	memset(console->buffer, 0, CONSOLE_80_25_SIZE);	
+}
+
 console_t* console_init(console_t *console) {
 	console_reset(console);
 	return console;
@@ -12,9 +18,7 @@ console_t* console_init(console_t *console) {
 
 console_t* console_reset(console_t *console) {
 	console->id = __console_id++;
-	console->color = CONSOLE_BG_FG_COLOR(LIGHTGRAY, BLACK);
-	console->current_index = 0;
-	memset(console->buffer, 0, CONSOLE_80_25_SIZE);
+	console_clear(console);
 	return console;
 }
 

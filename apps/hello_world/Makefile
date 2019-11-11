@@ -17,7 +17,9 @@ cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 c_source_files := $(wildcard *.c)
 c_object_files := $(patsubst %.c, build/%.o, $(c_source_files))
 
-asm_startup_file := ../lib/startup.asm
+assembly_source_files := $(wildcard ../lib/*.asm)
+assembly_object_files := $(patsubst ../lib/%.asm, build/%.o, $(assembly_source_files))
+
 nasm_flags :=  -felf64 -w-number-overflow
 
 .PHONY: all clean run
@@ -31,12 +33,16 @@ debug: nasm_flags += -g -F dwarf
 debug: cflags += -g
 debug: all
 
-$(name): $(c_object_files) $(linker_script)
-	$(ld) -nostdlib -n -T $(linker_script) -o $(name) $(c_object_files) # build/startup.o
+$(name): $(assembly_object_files) $(c_object_files) $(linker_script)
+	$(ld) -nostdlib -n -T $(linker_script) -o $(name) $(c_object_files) $(assembly_object_files)
 	$(objdump) -D $(name) > build/$(name).dump.asm
 	$(objdump) -x $(name) >> build/$(name).headers.txt
 	xxd -i $(name) > build/$(name)_byte.c
 
+# compile assembly files
+build/%.o: ../lib/%.asm
+	@mkdir -p $(shell dirname $@)
+	$(nasm) $(nasm_flags) $< -o $@
 
 # compile c files
 build/%.o: %.c

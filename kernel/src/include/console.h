@@ -40,6 +40,7 @@ console_t* console_init(console_t *console);
 console_t* console_reset(console_t *console);
 void console_putch(console_t *console, char ch);
 void console_puts(console_t *console, char *string);
+void console_clear(console_t *console);
 
 int cprintf_help(unsigned c, void *ptr);
 void console_printf(console_t *console, const char *fmt, ...);

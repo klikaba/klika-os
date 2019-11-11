@@ -92,7 +92,7 @@ void* alloc_frame_temp(uint64_t *phys_out) {
         x86_set_cr3(TO_PHYS_U64(pml4e));      
         x86_tlb_flush_all();
 
-        return ((char*)0xFFFFE00000000000 + PAGE_SIZE*i);
+        return ((char*)KERNEL_USER_VIEW_START_MEMORY + PAGE_SIZE*i);
       }
     }
   }

@@ -1,65 +1,0 @@
-MMU[pagging] PAGGING: init ...MMU[frames]: Frames 64, 2
-MMU[frames]: Frame set bit for 0x0 0 0
-MMU[frames]: Frame set bit for 0x200000 0 1
-MMU[frames]: Used Mem 2KB
-MMU[pagging]: Krnl space pages needed: 1
-MMU[heap]: Heap init : start:0xFFFF80000011C100 end:0xFFFF800000200000
-MMU[heap]: Heap first block size : 933616
-ISR: init gates ...
-MMU[frames]: Frame set bit for 0x400000 0 2
-MMU[frames]: alloc_frame_temp frame ... 0x400000
-MMU[frames]: alloc new frame 0
-PROC: create_process_user phys_addr: 0x400000 virt_addr: 0xFFFFE00000000000
-***** Preparing ELF PROCESS
-ELF: Header e_type: 2
-ELF: Header e_machine: 62
-ELF: Header e_version: 1
-ELF: Header e_entry: 0
-ELF: Header e_phoff: 64
-ELF: Header e_shoff: 4296
-ELF: Header e_flags: 0
-ELF: Header e_ehsize: 64
-ELF: Header e_phentsize: 56
-ELF: Header e_phnum: 1
-ELF: Header e_shentsize: 64
-ELF: Header e_shnum: 6
-ELF: Header e_shstrndx: 5
-ELF: P Header p_type;: 0x1
-ELF: P Header p_flags: 0x7
-ELF: P Header p_offse: 0x80
-ELF: P Header p_vaddr: 0x0
-ELF: P Header p_paddr: 0x0
-ELF: P Header p_files: 0xED4
-ELF: P Header p_memsz: 0xED4
-ELF: P Header p_align: 0x20
-55 48 89 E5 EB FE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-PROC: Task created : tm0: 0xFFFFE00000000000 (p:0x400000) rsp:0xFFFF800000118770
-MMU[frames]: Frame set bit for 0x600000 0 3
-MMU[frames]: alloc_frame_temp frame ... 0x600000
-MMU[frames]: alloc new frame 1
-PROC: create_process_user phys_addr: 0x600000 virt_addr: 0xFFFFE00000200000
-***** Preparing ELF PROCESS
-ELF: Header e_type: 2
-ELF: Header e_machine: 62
-ELF: Header e_version: 1
-ELF: Header e_entry: 80
-ELF: Header e_phoff: 64
-ELF: Header e_shoff: 760
-ELF: Header e_flags: 0
-ELF: Header e_ehsize: 64
-ELF: Header e_phentsize: 56
-ELF: Header e_phnum: 1
-ELF: Header e_shentsize: 64
-ELF: Header e_shnum: 8
-ELF: Header e_shstrndx: 7
-ELF: P Header p_type;: 0x1
-ELF: P Header p_flags: 0x7
-ELF: P Header p_offse: 0x80
-ELF: P Header p_vaddr: 0x0
-ELF: P Header p_paddr: 0x0
-ELF: P Header p_files: 0x80
-ELF: P Header p_memsz: 0x84
-ELF: P Header p_align: 0x10
-55 48 89 E5 48 B8 70 0 0 0 0 0 0 0 8B 0 48 BA 80 0 0 0 0 0 0 0 89 2 48 B8 70 0 
-PROC: Task created : tm0: 0xFFFFE00000200000 (p:0x600000) rsp:0xFFFF800000118F88
-

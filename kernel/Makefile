@@ -1,7 +1,9 @@
 cc = x86_64-elf-gcc
 ld = x86_64-elf-ld
 as = x86_64-elf-as
+nm = x86_64-elf-nm
 objdump = x86_64-elf-objdump
+objcopy = x86_64-elf-objcopy
 nasm = nasm
 qemu = qemu-system-x86_64
 bochs = bochs
@@ -36,10 +38,12 @@ run: $(iso)
 	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(floppy_image),if=floppy,format=raw -boot order=d -serial stdio
 
 run-bocsh: $(iso)
-	$(bochs) -f ../bochsrc.txt -q
+	$(objcopy) --only-keep-debug $(kernel) $(kernel).sym
+	$(nm) $(kernel).sym | grep " T " | awk '{ print $$1" "$$3 }' > $(kernel).bochs.sym
+	$(bochs) -rc ../bochs.rc -f ../bochs.cfg -q
 
 run-qemu: $(iso)
-	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(floppy_image),if=floppy,format=raw -boot order=d -s -serial stdio
+	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(floppy_image),if=floppy,format=raw -boot order=d -s -S
 
 iso: $(iso)
 

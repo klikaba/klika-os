@@ -2,6 +2,7 @@
 #include <kernel.h>
 #include <x86.h>
 #include <string.h>
+#include <process.h>
 
 #define NB_REGISTERS_PUSHED_BEFORE_CALL 15
 
@@ -50,7 +51,7 @@ void init_kernel_isr()
 {
     memset(interrupt_handlers, 0, 256 * sizeof(isr_t));
 
-    DEBUG("ISR: init gates ...");
+    DEBUG("ISR: init gates ...\n\r");
     set_idt_gate(0, (uint64_t) isr_stub_0);
     set_idt_gate(1, (uint64_t) isr_stub_1);
     set_idt_gate(2, (uint64_t) isr_stub_2);
@@ -118,6 +119,7 @@ void isr_handler(isr_ctx_t *regs)
 
     HALT_AND_CATCH_FIRE(
         "Received interrupt: %d - %s\n"
+        "  process             = %i\n"
         "  error_code          = 0x%X\n"
         "  instruction_pointer = 0x%X\n"
         "  code_segment        = 0x%X\n"
@@ -125,6 +127,7 @@ void isr_handler(isr_ctx_t *regs)
         "  stack_pointer       = 0x%X\n"
         "  stack_segment       = 0x%X",
         int_no, exception_messages[int_no],
+        current_task_index,
         regs->error_code,
         regs->rip,
         regs->cs,

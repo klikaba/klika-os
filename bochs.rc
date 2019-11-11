@@ -1,0 +1,2 @@
+ldsym global "build/kernel-x86_64.bin.bochs.sym"
+show dbg_all

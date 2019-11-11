@@ -47,11 +47,11 @@ irq0_first_jump:
 	mov al, 0x20
 	out 0x20, al
 
-    mov ax, GDT_USER_DATA | 3
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+    ; mov ax, GDT_USER_DATA | 3
+    ; mov ds, ax
+    ; mov es, ax
+    ; mov fs, ax
+    ; mov gs, ax
 
     pop r15
     pop r14

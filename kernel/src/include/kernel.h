@@ -29,7 +29,9 @@ void kprintf(const char *fmt, ...);
 void kprintf_xy(int x, int y, const char *fmt, ...);
 void HALT_AND_CATCH_FIRE(const char *fmt, ...);
 void _kdebug(const char *fmt, ...);
+void _kpanic(const char *fmt, ...);
 
+#define PANIC _kpanic
 #define DEBUG _kdebug
 
 #endif

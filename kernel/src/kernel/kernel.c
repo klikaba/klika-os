@@ -18,6 +18,7 @@
 #include <mmu_pagging.h>
 #include <mmu_heap.h>
 #include <mouse.h>
+#include <assert.h>
 
 #define __UNUSED__ __attribute__((unused))
 
@@ -72,12 +73,25 @@ void _kdebug(const char *fmt, ...) {
   va_end(args);
 }
 
+void _kpanic(const char *fmt, ...) {
+  __krnl_console.color = LIGHTRED;
+  va_list args;
+  va_start(args, fmt);
+  (void)_printf(fmt, args, serial_printf_help, NULL);
+  va_end(args);
+  x86_hlt(); 
+}
+
 void init_kernel_console() {
   __krnl_console.buffer = (char*)0xFFFF8000000B8000;
   console_init(&__krnl_console);
 }
 
-#include <../../../apps/dummy_array.c>
+
+#include <../../../apps/hello_world/build/hello_world_byte.c>
+#include <../../../apps/countdown/build/countdown_byte.c>
+
+// app loader
 
 void kmain(/*unsigned long magic, unsigned long addr*/) {
   init_kernel_serial();
@@ -93,9 +107,9 @@ void kmain(/*unsigned long magic, unsigned long addr*/) {
   init_kernel_keyboard();
   init_kernel_mouse();
 
-  create_process_user(&tasks[0], dummy_app, dummy_app_len);
-  create_process_user(&tasks[1], dummy_app, dummy_app_len);
-  create_process_user(&tasks[2], dummy_app, dummy_app_len);
+  create_user_process(&tasks[0], hello_world);
+  create_user_process(&tasks[1], countdown);
+  create_user_process(&tasks[2], countdown);
 
   // Jump into task switcher and start first task - after this - kernel main will not continue
   do_first_task_jump();

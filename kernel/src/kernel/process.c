@@ -5,11 +5,80 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <mmu_heap.h>
 #include <x86.h>
 #include <elf.h>
 
-task_t tasks[3];
-int current_task_index = 0;
+task_t *task_list_head = NULL;
+task_t *task_list_last = NULL;
+task_t *task_list_current = NULL;
+
+bool task_list_is_empty() {
+  return task_list_head == NULL;
+}
+
+int task_list_length() {
+  int length = 0;
+  task_t *current;
+  for(current = task_list_head; current != NULL; current = current->next){
+    length++;
+  }
+  return length;
+}
+
+task_t* task_list_insert(task_t* new_task) {
+  new_task->next = NULL;
+  new_task->prev = NULL;
+  
+  if(task_list_is_empty()) {
+    //make it the last new_task
+    task_list_last = new_task;
+    task_list_head = new_task;
+    task_list_current = task_list_last;
+  } else {
+    //make new_task a new last new_task
+    task_list_last->next = new_task;     
+    //mark old last node as prev of new new_task
+    new_task->prev = task_list_last;
+  }
+
+  //point last to new last node
+  task_list_last = new_task;
+
+  return new_task;
+}
+
+void task_list_delete(task_t* task) {
+  if(task_list_head == NULL) {
+    return;
+  }
+  if(task == task_list_head) {
+    //change first to point to next link
+    task_list_head = task_list_head->next;
+  } else {
+    //bypass the task link
+    task->prev->next = task->next;
+  }    
+
+  if(task == task_list_last) {
+    //change task_list_last to point to prev link
+    task_list_last = task->prev;
+  } else {
+    task->next->prev = task->prev;
+  }
+}
+
+void task_list_dump() {
+  DEBUG("Task lsit dump:\n\r");
+  for(task_t* current = task_list_head; current != NULL; current = current->next){
+    DEBUG("Task: %i\n\r", current->id);
+  }
+}
+
+task_t* create_task_struct() {
+  task_t* new_task = (task_t*)malloc(sizeof(task_t));
+  return new_task;
+}
 
 bool elf_check_file(Elf64_Ehdr *hdr) {
   if(!hdr) return false;
@@ -108,7 +177,9 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
 }
 
 
-void create_user_process(task_t* task, void* elf_raw_data) {
+void create_user_process(void* elf_raw_data) {
+  task_t* task = create_task_struct();
+
   // setup task MMU
   uint64_t phys_addr;
   uint8_t* task_memory = alloc_frame_temp(&phys_addr);
@@ -153,17 +224,25 @@ void create_user_process(task_t* task, void* elf_raw_data) {
   task->id = rand();
   task->pde.all = phys_addr | 0x87; // Present + Write + CPL3
   DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n\r", task_memory, phys_addr, task->rsp);
+  task_list_insert(task);
 }
 
-task_t* next_task() {
-	current_task_index++;
-	current_task_index = current_task_index % 2;
-
-	return &tasks[current_task_index];
+void kill_process(task_t* task) {
+  DEBUG("KILL PROCES id:%i\n\r", task->id);
+  task_list_delete(task);
+  task_list_current = task_list_head;
 }
 
 task_t* current_task() {
-	return &tasks[current_task_index];
+  return task_list_current;
+}
+
+task_t* next_task() {
+  task_list_current = task_list_current->next;
+  if (task_list_current == NULL) {
+    task_list_current = task_list_head;
+  }
+  return task_list_current;
 }
 
 void __switch_to(task_t* next) {

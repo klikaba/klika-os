@@ -2,6 +2,7 @@
 #define __PROCESS_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <mmu_pagging.h>
 
 #define PROCESS_ATTR_USER_SPACE		0x0000
@@ -29,7 +30,7 @@ typedef struct {
 
 extern tss_t tss64; // from: loader.asm
 
-typedef struct {
+typedef struct task_struct {
   uint64_t rsp;
   uint32_t id;
   uint32_t attribute;
@@ -37,12 +38,23 @@ typedef struct {
   // For now we are supporting only 2MB programs :) 
   // We keep track of one entry in PDE that will be mapped to 0x0000000 (user program space)
   pde_t pde; 
+  struct task_struct* next;
+  struct task_struct* prev;
 }  __attribute__((packed)) task_t;
 
-extern task_t tasks[3];
-extern int current_task_index;
+extern task_t *task_list_head;
+extern task_t *task_list_last;
+extern task_t *task_list_current;
 
-void create_user_process(task_t* task, void* elf_raw_data);
+bool task_list_is_empty();
+int task_list_length();
+task_t* task_list_insert(task_t* new_task);
+void task_list_delete(task_t* task);
+void task_list_dump();
+
+void create_user_process(void* elf_raw_data);
+void kill_process(task_t* task);
+
 task_t* next_task();
 task_t* current_task();
 void __switch_to(task_t* next);

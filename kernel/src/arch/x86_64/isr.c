@@ -3,6 +3,7 @@
 #include <x86.h>
 #include <string.h>
 #include <process.h>
+#include <mmu_heap.h>
 
 #define NB_REGISTERS_PUSHED_BEFORE_CALL 15
 
@@ -117,7 +118,7 @@ void isr_handler(isr_ctx_t *regs)
         return;
     }
 
-    HALT_AND_CATCH_FIRE(
+    DEBUG(
         "Received interrupt: %d - %s\n"
         "  process             = %i\n"
         "  error_code          = 0x%X\n"
@@ -125,9 +126,9 @@ void isr_handler(isr_ctx_t *regs)
         "  code_segment        = 0x%X\n"
         "  cpu_flags           = 0x%X\n"
         "  stack_pointer       = 0x%X\n"
-        "  stack_segment       = 0x%X",
+        "  stack_segment       = 0x%X\n\r",
         int_no, exception_messages[int_no],
-        current_task_index,
+        task_list_current->id,
         regs->error_code,
         regs->rip,
         regs->cs,
@@ -135,7 +136,10 @@ void isr_handler(isr_ctx_t *regs)
         regs->rsp,
         regs->ss
     );
-    while(1) {}
+    DEBUG("KILLING PROCESS %i!!!!\n\r", task_list_current->id);
+    kill_process(task_list_current);
+    debug_heap_dump();
+    do_first_task_jump();
 }
 
 void register_interrupt_handler(uint64_t id, isr_t handler) {

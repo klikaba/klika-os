@@ -1,18 +1,16 @@
 #include <klika_os.h>
 
-int num = 0xdead;
-int sum;
-char *name = "zaharije pasalic";
+char* name = "Hello world";
 
-int increment() {
-	sum = num;
-	return num++;
+void puts(char* text) {
+	int x = 5;
+	while (*text) {
+		syscall(0, x++, 5, *text++);
+	}
 }
 
 int main() {
-	while(1) {
-		increment();
-		syscall(0, 5, 5, sum);
-	}
+	puts(name);
+	while(1) {}
 	return 0;
 }

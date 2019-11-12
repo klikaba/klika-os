@@ -12,6 +12,7 @@ extern __switch_to
 global isr_stub_32
 global irq0_first_jump
 
+
 isr_stub_32:
     cli
     push rax

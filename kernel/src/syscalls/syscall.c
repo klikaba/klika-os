@@ -3,7 +3,6 @@
 
 typedef long (*sys_call_ptr_t)(isr_ctx_t *regs);
 
-// X Macros for system calls
 #define __SYSCALL(nr, sym) extern long sym(isr_ctx_t *regs);
 #include <syscalls.h>
 #undef __SYSCALL

@@ -91,8 +91,6 @@ void init_kernel_console() {
 #include <../../../apps/hello_world/build/hello_world_byte.c>
 #include <../../../apps/countdown/build/countdown_byte.c>
 
-// app loader
-
 void kmain(/*unsigned long magic, unsigned long addr*/) {
   init_kernel_serial();
   init_kernel_console();
@@ -100,20 +98,15 @@ void kmain(/*unsigned long magic, unsigned long addr*/) {
   init_kernel_pagging();
   // ******* malloc can be used after this point
 
-  current_task_index = 0;
   init_kernel_pic();
   init_kernel_isr();
   init_kernel_timer();
   init_kernel_keyboard();
   init_kernel_mouse();
 
-  create_user_process(&tasks[0], countdown);
-  create_user_process(&tasks[1], hello_world);
-  // create_user_process(&tasks[2], countdown);
+  create_user_process(countdown);
+  create_user_process(hello_world);
 
-  // Jump into task switcher and start first task - after this - kernel main will not continue
   do_first_task_jump();
-
-  // asm volatile("int $19");
   while(1) { }
 }

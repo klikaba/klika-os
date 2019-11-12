@@ -32,7 +32,7 @@ floppy_image = ../floppy.img
 all: $(kernel)
 
 clean:
-	@rm -r build
+	@rm -rfv build
 
 run: $(iso)
 	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(floppy_image),if=floppy,format=raw -boot order=d -serial stdio

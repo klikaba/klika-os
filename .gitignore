@@ -1,3 +1,4 @@
+.DS_Store
 build
 kernel/bochslog.log
 kernel/bochs-serial.txt

@@ -78,11 +78,20 @@ void *memcpy(void *dest, void *src, register uint64_t len) {
 
 size_t strlen(const char *str) {
 	size_t s;
-	for(s=0; *str!='\0'; str++) {
-    	s++;
+	for(s=0; *str != '\0'; str++) {
+    s++;
 	}
 	return s;
 }
+
+char* strcpy(char *dest, const char *src) {
+  char *temp = dest;
+  while(*dest++ = *src++);
+  return temp;
+}
+
+
+
 
 typedef struct { unsigned char dummy [32]; } DT;
 

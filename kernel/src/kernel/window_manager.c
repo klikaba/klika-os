@@ -109,7 +109,7 @@ int window_find_xy(int x, int y) {
 	return -1;
 }
 
-window_t* window_create(int x, int y, int width, int height) {
+window_t* window_create(int x, int y, int width, int height, char* title) {
 	window_t* new_win = (window_t*)malloc(sizeof(window_t));
 	new_win->x = x;
 	new_win->y = y;
@@ -117,6 +117,7 @@ window_t* window_create(int x, int y, int width, int height) {
 	new_win->width = width;
 	new_win->height = height;
 	new_win->handle = __window_handle++;
+	strncpy(new_win->title, title, 127);
 	for(int i=0; i<MAX_WINDOW_COUNT; i++) {
 		if (window_list[i] == NULL) {
 			window_list[i] = new_win;
@@ -142,7 +143,7 @@ void window_draw(window_t *win, bool is_top) {
 	gfx_fillrect(&buffer_video_info, x1 + 1, y1 + 1, x2 - 1, y1 + WINDOW_BAR_HEIGHT, top_frame_color);
 
 	// Frame label
-	gfx_puts(&buffer_video_info, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, "Window title");
+	gfx_puts(&buffer_video_info, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
 }
 
 void window_draw_all() {

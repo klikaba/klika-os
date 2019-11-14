@@ -184,7 +184,7 @@ void create_user_process(void* elf_raw_data) {
   uint64_t phys_addr;
   uint8_t* task_memory = alloc_frame_temp(&phys_addr);
   DEBUG("PROC: create_process_user phys_addr: 0x%X virt_addr: 0x%X\n\r", phys_addr, task_memory);
-
+  task->kernel_mem_addr = (uint64_t)task_memory;
   uint64_t entry_point = load_elf(elf_raw_data, task_memory);
   
   uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STASK_SIZE - 8);
@@ -225,6 +225,10 @@ void create_user_process(void* elf_raw_data) {
   task->pde.all = phys_addr | 0x87; // Present + Write + CPL3
   DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n\r", task_memory, phys_addr, task->rsp);
   task_list_insert(task);
+}
+
+void* to_kernel_space(task_t* task, uint64_t user_address) {
+  return (void*)(task->kernel_mem_addr + user_address);
 }
 
 void kill_process(task_t* task) {

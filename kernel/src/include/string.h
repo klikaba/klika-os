@@ -12,5 +12,7 @@ void *memcpy(void *dest, void *src, register uint64_t len);
 void fast_memcpy(unsigned char* dst, unsigned char* src, size_t s);
 
 size_t strlen(const char *str);
+char* strcpy(char *dest, const char *src);
+char* strncpy(char* dest, const char* src, size_t num);
 
 #endif

@@ -12,13 +12,14 @@ typedef struct window_struct {
 	int z;
 	int width;
 	int height;
+	char title[128];
 } window_t;
 
 #define MAX_WINDOW_COUNT 64
 
 extern window_t* window_list[MAX_WINDOW_COUNT];
 
-window_t* window_create(int x, int y, int width, int height);
+window_t* window_create(int x, int y, int width, int height, char* title);
 void init_kernel_window_manager();
 void window_manager_redraw();
 

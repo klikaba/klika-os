@@ -84,6 +84,20 @@ size_t strlen(const char *str) {
 	return s;
 }
 
+char* strncpy(char* dest, const char* src, size_t num) {
+	char* ptr = dest;
+	if (dest == NULL)
+		return NULL;
+	while (*src && num--) {
+		*dest = *src;
+		dest++;
+		src++;
+	}
+	*dest = '\0';
+
+	return ptr;
+}
+
 typedef struct { unsigned char dummy [32]; } DT;
 
 void fast_memcpy(unsigned char* dst, unsigned char* src, size_t s) {

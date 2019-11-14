@@ -38,6 +38,8 @@ typedef struct task_struct {
   // For now we are supporting only 2MB programs :) 
   // We keep track of one entry in PDE that will be mapped to 0x0000000 (user program space)
   pde_t pde; 
+  // Kernel address that points to user space
+  uint64_t kernel_mem_addr;
   // Win manager reference if any
   uint32_t win_handle;
   struct task_struct* next;
@@ -53,6 +55,8 @@ int task_list_length();
 task_t* task_list_insert(task_t* new_task);
 void task_list_delete(task_t* task);
 void task_list_dump();
+
+void* to_kernel_space(task_t* task, uint64_t user_address);
 
 void create_user_process(void* elf_raw_data);
 void kill_process(task_t* task);

@@ -279,7 +279,6 @@ void window_add_message(message_t msg) {
 		return;
 	}
 	win->message_queue[win->message_queue_index++] = msg;
-	DEBUG("WIN: Add Message %i\n\r", msg.message);
 	if (win->message_queue_index >= MAX_MESSAGE_QUEUE_LENGTH) {
 		win->message_queue_index = 0;
 	}
@@ -291,7 +290,6 @@ bool window_pop_message(message_t* msg_out, window_t* win) {
 		peek = MAX_MESSAGE_QUEUE_LENGTH-1;
 	}
 	if (win->message_queue[peek].message != 0) {
-		DEBUG("WIN: peek %i (%i)\n\r", peek, win->message_queue[peek].message);
 		*msg_out = win->message_queue[peek];
 
 		win->message_queue[peek].message = 0;

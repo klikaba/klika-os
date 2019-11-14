@@ -12,9 +12,10 @@ c_include := '../include'
 cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 		  -ffreestanding -mno-red-zone -mno-mmx -mno-sse -mno-sse2 \
 	      -I $(c_include) -nostartfiles -nodefaultlibs -fno-exceptions \
-	      -Wall -Wextra -Werror -c -mcmodel=large
+	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-parentheses -Wno-implicit-fallthrough \
+	      -fdata-sections -ffunction-sections
 
-c_source_files := $(wildcard *.c)
+c_source_files := $(wildcard *.c) $(wildcard ../lib/*.c) 
 c_object_files := $(patsubst %.c, build/%.o, $(c_source_files))
 
 assembly_source_files := $(wildcard ../lib/*.asm)
@@ -34,7 +35,7 @@ debug: cflags += -g
 debug: all
 
 $(name): $(assembly_object_files) $(c_object_files) $(linker_script)
-	$(ld) -nostdlib -n -T $(linker_script) -o $(name) $(c_object_files) $(assembly_object_files)
+	$(ld) -nostdlib -n -T $(linker_script) -o $(name) $(c_object_files) $(assembly_object_files) --gc-sections
 	$(objdump) -D $(name) > build/$(name).dump.asm
 	$(objdump) -x $(name) >> build/$(name).headers.txt
 	xxd -i $(name) > build/$(name)_byte.c

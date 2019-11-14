@@ -1,4 +1,4 @@
-apps = hello_world simple_win
+apps = simple_win
 
 all: $(apps)
 

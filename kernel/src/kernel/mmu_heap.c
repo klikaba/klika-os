@@ -54,20 +54,15 @@ void sbrk(uint32_t size) {
 }
 
 mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
-  DEBUG("MMU[heap]: split prev: 1\n\r");
   uint32_t old_size = mb->size;
   mblock_t *old_next = mb->next;
   uint8_t *ptr = (uint8_t*)mb;
-  DEBUG("MMU[heap]: split prev: 2\n\r");
 
   mb->free = false;
   mb->size = size;
 
-  DEBUG("MMU[heap]: split prev: 3\n\r");
   mblock_t *next_mb = (mblock_t*)(ptr + sizeof(mblock_t) + mb->size);
   mb->next = next_mb;
-  DEBUG("MMU[heap]: split prev: 4\n\r");
-  DEBUG("MMU[heap]: split prev: %X\n\r", next_mb);
   next_mb->magic = MBLOCK_MAGIC;
   next_mb->size = old_size - size - sizeof(mblock_t);
   next_mb->next = old_next;

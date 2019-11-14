@@ -20,6 +20,7 @@
 #define MOUSE_SCROLLWHEEL 1
 #define MOUSE_BUTTONS 2
 
+
 typedef enum {
 	LEFT_CLICK   = 0x01,
 	RIGHT_CLICK  = 0x02,
@@ -29,20 +30,11 @@ typedef enum {
 	MOUSE_SCROLL_DOWN = 0x20,
 } mouse_click_t;
 
-typedef struct {
-	uint32_t magic;
-	int32_t x_difference;
-	int32_t y_difference;
-	mouse_click_t buttons;
-} mouse_device_packet_t;
-
 extern int32_t mouse_x;
 extern int32_t mouse_y;
 extern int32_t mouse_x_difference;
 extern int32_t mouse_y_difference;
 extern mouse_click_t mouse_buttons;
-
-#define MOUSE_MAGIC 0xFEED1234
 
 void init_kernel_mouse(void);
 

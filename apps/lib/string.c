@@ -4,7 +4,7 @@
 
 
 // inline function to swap two numbers
-inline void swap(char *x, char *y) {
+void swap(char *x, char *y) {
 	char t = *x; *x = *y; *y = t;
 }
 
@@ -14,8 +14,9 @@ int abs(int n) {
 
 // function to reverse buffer[i..j]
 char* reverse(char *buffer, int i, int j) {
-	while (i < j)
+	while (i < j) {
 		swap(&buffer[i++], &buffer[j--]);
+	}
 
 	return buffer;
 }
@@ -58,7 +59,42 @@ char* itoa(int value, char* buffer, int base) {
 	return reverse(buffer, 0, i - 1);
 }
 
+int atoi(char* string) {
+  int result = 0;
+  unsigned int digit;
+  int sign;
 
+  while (isspace(*string)) {
+    string += 1;
+  }
+
+  /*
+   * Check for a sign.
+   */
+
+  if (*string == '-') {
+      sign = 1;
+      string += 1;
+  } else {
+      sign = 0;
+      if (*string == '+') {
+          string += 1;
+      }
+  }
+
+  for ( ; ; string += 1) {
+      digit = *string - '0';
+      if (digit > 9) {
+          break;
+      }
+      result = (10*result) + digit;
+  }
+
+  if (sign) {
+      return -result;
+  }
+  return result;
+}
 void *memset(void* dest, register int value, register uint64_t len) {
 	register unsigned char *ptr = (unsigned char*)dest;
 	while(len-- > 0) {
@@ -86,37 +122,14 @@ size_t strlen(const char *str) {
 
 char* strcpy(char *dest, const char *src) {
   char *temp = dest;
-  while(*dest++ = *src++);
+  while(*dest = *src++);
   return temp;
 }
 
+int isspace(char c) {
+  return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
+}
 
-
-
-typedef struct { unsigned char dummy [32]; } DT;
-
-void fast_memcpy(unsigned char* dst, unsigned char* src, size_t s) {
-	unsigned char* sa = src+s;
-	DT *d1 = (DT*)dst - 1;
-	DT *s1 = (DT*)src - 1;
-	size_t si = s / sizeof(DT);
-
-	si = (si + 7) / 8;
-	switch(si % 8) 
-	{
-	 case 0: do { *++d1 = *++s1;
-	 case 7:      *++d1 = *++s1;
-	 case 6:      *++d1 = *++s1;
-	 case 5:      *++d1 = *++s1;
-	 case 4:      *++d1 = *++s1;
-	 case 3:      *++d1 = *++s1;
-	 case 2:      *++d1 = *++s1;
-	 case 1:      *++d1 = *++s1;
-           } while(--si > 0);
-	}
-	dst = (unsigned char*)d1;
-	src = (unsigned char*)s1;
-	while(src < sa) {
-	  *++dst = *++src;
-	}
+int isprint(char c) {
+  return ((c >= ' ' && c <= '~') ? 1 : 0);
 }

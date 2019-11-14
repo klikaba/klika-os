@@ -2,7 +2,7 @@ OUTPUT_FORMAT(elf64-x86-64)
 
 USER_VMA = 0x0000000000000000;
 
-ENTRY(main)
+ENTRY(start)
 SECTIONS
 {
     . = USER_VMA;
@@ -38,5 +38,5 @@ SECTIONS
       /* Exception handling section - we do not need it*/
       *(.eh_frame)
     }
-    __user_app_end = .;
+    __user_app_end = ALIGN(8);
 }

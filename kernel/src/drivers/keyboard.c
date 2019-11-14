@@ -1,3 +1,4 @@
+#include <window_manager.h>
 #include <keyboard.h>
 #include <isr.h>
 #include <x86.h>
@@ -24,7 +25,11 @@ static void keyboard_callback(isr_ctx_t *ctx __attribute__((unused))) {
     packet <<= 8;
     packet |= code;
   }
-  kprintf_xy(20, 0, "P:%d P:%c", packet >> 8, packet & 0xFF );
+
+  message_t msg;
+  msg.message = MESSAGE_KEY;
+  msg.key = code;
+  window_add_message(msg);
 
   pic_acknowledge(PIC_IRQ1);
 }

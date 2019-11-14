@@ -99,7 +99,7 @@ int window_find_xy(int x, int y) {
 		return -1;
 	}
 	for (int i=__window_count-1; i>=0; i--) {
-		if (window_list[i] == NULL) {
+		if (window_list[i] == NULL) { // is this IF needed? 
 			break;
 		}
 		if (window_point_inside(window_list[i], x, y)) {
@@ -107,6 +107,19 @@ int window_find_xy(int x, int y) {
 		}
 	}
 	return -1;
+}
+
+window_t* window_find(uint32_t handle) {
+	if (__window_count == 0) {
+		return NULL;
+	}
+	// Biggest chance that searched handle belongs to topmost window
+	for (int i=__window_count-1; i>=0; i--) {
+		if (window_list[i]->handle == handle) {
+			return window_list[i];
+		}
+	}
+	return NULL;
 }
 
 window_t* window_create(int x, int y, int width, int height, char* title) {
@@ -117,7 +130,9 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	new_win->width = width;
 	new_win->height = height;
 	new_win->handle = __window_handle++;
-	strncpy(new_win->title, title, 127);
+	new_win->message_queue_index = 0;
+	memset(new_win->message_queue, 0, sizeof(message_t)*MAX_MESSAGE_QUEUE_LENGTH);
+	strncpy(new_win->title, title, MAX_WINDOW_NAME_LENGTH-1);
 	for(int i=0; i<MAX_WINDOW_COUNT; i++) {
 		if (window_list[i] == NULL) {
 			window_list[i] = new_win;
@@ -248,6 +263,45 @@ void window_manager_redraw() {
   window_draw_all();
   window_draw_mouse();
   present_video_buffer();
+}
+
+window_t* window_find_top() {
+	if (__window_count == 0) {
+		return NULL;
+	}
+	return window_list[__window_count-1];
+}
+
+
+void window_add_message(message_t msg) {
+	window_t* win = window_find_top();
+	if (win == NULL) {
+		return;
+	}
+	win->message_queue[win->message_queue_index++] = msg;
+	DEBUG("WIN: Add Message %i\n\r", msg.message);
+	if (win->message_queue_index >= MAX_MESSAGE_QUEUE_LENGTH) {
+		win->message_queue_index = 0;
+	}
+}
+
+bool window_pop_message(message_t* msg_out, window_t* win) {
+	int peek = win->message_queue_index - 1;
+	if (peek < 0) {
+		peek = MAX_MESSAGE_QUEUE_LENGTH-1;
+	}
+	if (win->message_queue[peek].message != 0) {
+		DEBUG("WIN: peek %i (%i)\n\r", peek, win->message_queue[peek].message);
+		*msg_out = win->message_queue[peek];
+
+		win->message_queue[peek].message = 0;
+		win->message_queue_index = peek;
+		return true;
+	}
+	else {
+		msg_out->message = 0;
+	}
+	return false;
 }
 
 void init_kernel_window_manager() {

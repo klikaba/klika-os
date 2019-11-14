@@ -45,7 +45,8 @@ isr_stub_128:
     pop rdx
     pop rcx
     pop rbx
-    pop rax
+    ;pop rax
+    add rsp, 8 ; skip pushed rax - return result fo system_call_handler
 
     sti
     iretq

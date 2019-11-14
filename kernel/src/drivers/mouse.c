@@ -1,3 +1,4 @@
+#include <window_manager.h>
 #include <mouse.h>
 #include <string.h>
 #include <kernel.h>
@@ -79,8 +80,8 @@ static void mouse_callback(isr_ctx_t *ctx __attribute__((unused))) {
 finish_packet:
     mouse_cycle = 0;
     /* We now have a full mouse packet ready to use */
-    mouse_device_packet_t packet;
-    packet.magic = MOUSE_MAGIC;
+    message_t message;
+    message.message = MESSAGE_MOUSE_MOVE;
     int x = mouse_byte[1];
     int y = mouse_byte[2];
     if (x && mouse_byte[0] & (1 << 4)) {
@@ -96,31 +97,32 @@ finish_packet:
       x = 0;
       y = 0;
     }
-    packet.x_difference = x;
-    packet.y_difference = y;
-    packet.buttons = 0;
+    mouse_x_difference = x;
+    mouse_y_difference = y;
+    message.mouse_buttons = 0;
     if (mouse_byte[0] & 0x01) {
-      packet.buttons |= LEFT_CLICK;
+      message.message = MESSAGE_MOUSE_CLICK;
+      message.mouse_buttons |= LEFT_CLICK;
     }
     if (mouse_byte[0] & 0x02) {
-      packet.buttons |= RIGHT_CLICK;
+      message.message = MESSAGE_MOUSE_CLICK;
+      message.mouse_buttons |= RIGHT_CLICK;
     }
     if (mouse_byte[0] & 0x04) {
-      packet.buttons |= MIDDLE_CLICK;
+      message.message = MESSAGE_MOUSE_CLICK;
+      message.mouse_buttons |= MIDDLE_CLICK;
     }
 
-    mouse_buttons = packet.buttons;
-    mouse_x_difference = packet.x_difference;
-    mouse_y_difference = packet.y_difference;
-    mouse_x += packet.x_difference;
-    mouse_y -= packet.y_difference;
+    // TODO - remove global once 
+    mouse_buttons = message.mouse_buttons;
+    mouse_x += mouse_x_difference;
+    mouse_y -= mouse_y_difference;
     if (mouse_x > 1024) mouse_x = 1024;
     if (mouse_x < 0) mouse_x = 0;
     if (mouse_y > 768) mouse_y = 768;
     if (mouse_y < 0) mouse_y = 0;
 
-    // DEBUG("MOUSE: %i %i - %i %i\n\r", old_mouse_x, old_mouse_y, mouse_x, mouse_y);
-    // gfx_mouse_xor_blit(mouse_x, mouse_y);
+    window_add_message(message);
 read_next:
     break;
   }

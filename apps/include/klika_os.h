@@ -3,4 +3,10 @@
 
 #include <syscalls.h>
 
+#define DEBUG _debug
+
+#define PAGE_SIZE (2*1024*1024)
+
+void _debug(const char *fmt, ...);
+
 #endif

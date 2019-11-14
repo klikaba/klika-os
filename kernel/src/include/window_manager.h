@@ -1,9 +1,13 @@
 #ifndef __WINDOW_MANAGER_H
 #define __WINDOW_MANAGER_H
 
+#include <messaging.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <mouse.h>
 
-#define SCREEN_UPDATE_TRESHOLD (1193180 / 1000)
+#define MAX_WINDOW_NAME_LENGTH 128
+#define MAX_MESSAGE_QUEUE_LENGTH 128
 
 typedef struct window_struct {
 	uint32_t handle;
@@ -12,7 +16,9 @@ typedef struct window_struct {
 	int z;
 	int width;
 	int height;
-	char title[128];
+	char title[MAX_WINDOW_NAME_LENGTH];
+	int message_queue_index;
+	message_t message_queue[MAX_MESSAGE_QUEUE_LENGTH];
 } window_t;
 
 #define MAX_WINDOW_COUNT 64
@@ -20,6 +26,9 @@ typedef struct window_struct {
 extern window_t* window_list[MAX_WINDOW_COUNT];
 
 window_t* window_create(int x, int y, int width, int height, char* title);
+void window_add_message(message_t msg);
+bool window_pop_message(message_t* msg_out, window_t* win);
+window_t* window_find(uint32_t handle);
 void init_kernel_window_manager();
 void window_manager_redraw();
 

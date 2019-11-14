@@ -1,4 +1,4 @@
-name = countdown
+name = simple_win
 
 cc = x86_64-elf-gcc
 ld = x86_64-elf-ld

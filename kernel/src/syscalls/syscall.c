@@ -1,9 +1,10 @@
 #include <kernel.h>
+#include <stdint.h>
 #include <isr.h>
 
-typedef long (*sys_call_ptr_t)(isr_ctx_t *regs);
+typedef uint64_t (*sys_call_ptr_t)(isr_ctx_t *regs);
 
-#define __SYSCALL(nr, sym) extern long sym(isr_ctx_t *regs);
+#define __SYSCALL(nr, sym) extern uint64_t sym(isr_ctx_t *regs);
 #include <syscalls.h>
 #undef __SYSCALL
 
@@ -15,13 +16,16 @@ const sys_call_ptr_t sys_call_table[] = {
 
 #define dim(x) (sizeof(x) / sizeof((x)[0]))
 
-long system_call_handler(isr_ctx_t *regs) {
-  kprintf_xy(10, 3, "SYSCALL: %i", regs->rax);
+
+//RDI, RSI, RDX, RCX, R8, R9
+uint64_t system_call_handler(isr_ctx_t *regs) {
+  DEBUG("SYSCALL: %i(%i %i %i %i %i %i)\n\r", regs->rax, regs->rdi, regs->rsi, regs->rdx, regs->rcx, regs->r8, regs->r9);
 
   uint64_t idx = regs->rax;
   if (idx < dim(sys_call_table)) {
   	return (sys_call_table[idx])(regs);
   }
-	return -1;
+  DEBUG("SYSCALL: %i not found!\n\r", regs->rax);
+	return 0xFFFFFFFFFFFFFFFF;
 }
 

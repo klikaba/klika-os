@@ -22,9 +22,11 @@ mblock_t *find_heap_block(uint32_t size) {
 }
 
 void debug_heap_dump() {
+  DEBUG("MMU[heap]: ------- HEAP DUMP --------\n\r");
   HEAP_WALKER(mb) {
     DEBUG("MMU[heap]: mb: 0x%X mag:%X siz:%i free:%i\n\r", mb, mb->magic, mb->size, mb->free);
   }
+  DEBUG("MMU[heap]: --------------------------\n\r");
 }
 
 void sbrk(uint32_t size) {
@@ -32,9 +34,9 @@ void sbrk(uint32_t size) {
   // Find last entry and m ap to it (we are never freeing pages)
   for (uint64_t i=0; i<512; i++) {
     if (pde[i].all == 0) {
-      uint64_t frame = (uint64_t)alloc_frame();
-      pde[i].all = (frame * PAGE_SIZE) | 0x83;
-      DEBUG("MMU[heap]: Sbrk new frame : 0x%X (0x%X)\n\r", frame, frame * PAGE_SIZE);
+      uint64_t frame_address = (uint64_t)alloc_frame();
+      pde[i].all = frame_address | 0x83;
+      DEBUG("MMU[heap]: Sbrk new frame : %i 0x%X\n\r", i, frame_address);
       break;
     }
   }
@@ -47,21 +49,25 @@ void sbrk(uint32_t size) {
   while(mb->next != NULL) { mb = mb->next; }
   mb->size += PAGE_SIZE;
   heap_end += PAGE_SIZE;
-  DEBUG("--------------------\n\r");
   debug_heap_dump();
   DEBUG("MMU[heap]: Heap after srbk 0x%X\n\r", TO_PHYS_U64(heap_end));
 }
 
 mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
+  DEBUG("MMU[heap]: split prev: 1\n\r");
   uint32_t old_size = mb->size;
   mblock_t *old_next = mb->next;
   uint8_t *ptr = (uint8_t*)mb;
+  DEBUG("MMU[heap]: split prev: 2\n\r");
 
   mb->free = false;
   mb->size = size;
 
+  DEBUG("MMU[heap]: split prev: 3\n\r");
   mblock_t *next_mb = (mblock_t*)(ptr + sizeof(mblock_t) + mb->size);
   mb->next = next_mb;
+  DEBUG("MMU[heap]: split prev: 4\n\r");
+  DEBUG("MMU[heap]: split prev: %X\n\r", next_mb);
   next_mb->magic = MBLOCK_MAGIC;
   next_mb->size = old_size - size - sizeof(mblock_t);
   next_mb->next = old_next;

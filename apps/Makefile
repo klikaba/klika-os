@@ -1,4 +1,4 @@
-apps = countdown hello_world
+apps = hello_world simple_win
 
 all: $(apps)
 

@@ -5,6 +5,7 @@
 #include <memory.h>
 #include <stdint.h>
 #include <string.h>
+#include <vesa.h>
 #include <x86.h>
 #include <isr.h>
 
@@ -18,6 +19,9 @@ pde_t   pde_user[512] __attribute__((aligned(4096)));
 pdpe_t  pdpe_krnluser[512] __attribute__((aligned(4096)));
 pdpe_t  pde_krnluser[512] __attribute__((aligned(4096)));
 
+pdpe_t  pdpe_video[512] __attribute__((aligned(4096)));
+pde_t   pde_video[512] __attribute__((aligned(4096)));
+
 static void init_pagging_kernel() {
   // Setup new PAGGING DIRECTORY
   memset(&pml4e, 0, sizeof(pml4e_t) * 512);
@@ -27,8 +31,8 @@ static void init_pagging_kernel() {
   memset(&pde_krnluser, 0, sizeof(pde_t) * 512);
 
   // Kernel space
-  pml4e[0x100].all = TO_PHYS_U64(&pdpe) | 3; // KERNEL_VMA: Present + Write
-  pml4e[0x1C0].all = TO_PHYS_U64(&pdpe_krnluser) | 3; // KERNEL_USER TO KRNLVMA: Present + Write
+  pml4e[0x100].all = TO_PHYS_U64(&pdpe) | 3; // KERNEL_VMA: Present + Write (0x100 KERNEL_START_MEMORY)
+  pml4e[0x1C0].all = TO_PHYS_U64(&pdpe_krnluser) | 3; // KERNEL_USER TO KRNLVMA: Present + Write (0x1C0 KERNEL_USER_VIEW_START_MEMORY)
   pdpe[0].all = TO_PHYS_U64(&pde) | 3; 
   pdpe_krnluser[0].all = TO_PHYS_U64(&pde_krnluser) | 3; 
 
@@ -49,11 +53,28 @@ static void init_pagging_user() {
   pdpe_user[0].all = TO_PHYS_U64(&pde_user) | 0x07; 
 }
 
+static void init_pagging_video() {
+  uint64_t video_framebuffer = vesa_video_info.linear_addr;
+  DEBUG("MMU: Video memory %0x\n\r", video_framebuffer);
+
+  memset(&pdpe_video, 0, sizeof(pdpe_t) * 512);
+  memset(&pde_video, 0, sizeof(pde_t) * 512);
+
+  pml4e[0x180].all = TO_PHYS_U64(&pdpe_video) | 3; // KERNEL_VMA: Present + Write (0x180 : KERNEL_VIDEO_MEMORY)
+  pdpe_video[0].all = TO_PHYS_U64(&pde_video) | 3; 
+  // Dummy way : map whole PDE ... (more than needed but it's simpel enough)
+  // TODO : if user have memory on this address - there will be a PROBLEM :D
+  for (uint64_t i=0; i<256; i++) {
+    pde_video[i].all = (video_framebuffer + (i * PAGE_SIZE)) | 0x83; // Present + Write + Large (2MB)
+  }  
+}
+
 void init_kernel_pagging() {
   DEBUG("MMU[pagging] PAGGING: init ...");
   init_mmu_frames(128 * 1024 * 1024); // 128Megs for now - TODO : autodetect);
   init_pagging_kernel();
   init_pagging_user();
+  init_pagging_video();
   x86_set_cr3(TO_PHYS_U64(pml4e));
   init_mmu_heap();
 }

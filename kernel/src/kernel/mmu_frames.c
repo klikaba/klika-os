@@ -80,7 +80,7 @@ void* alloc_frame() {
 
 void* alloc_frame_temp(uint64_t *phys_out) {
   uint64_t addr = (uint64_t)alloc_frame();
-  DEBUG("MMU[frames]: alloc_frame_temp frame ... 0x%X\n\r", addr);
+  DEBUG("MMU[frames]: alloc_frame_temp frame address 0x%X\n\r", addr);
 
   if (addr != 0) {
     *phys_out = addr;

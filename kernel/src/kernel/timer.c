@@ -1,17 +1,17 @@
+#include <window_manager.h>
 #include <timer.h>
-#include <isr.h>
 #include <memory.h>
 #include <console.h>
+#include <isr.h>
 #include <pic.h>
 #include <x86.h>
 
 uint64_t __tick = 0;
 
-void timer_callback(isr_ctx_t *ctx __attribute__((unused))) {
+void timer_callback() {
     __tick++;
-
-    // Change color - top-right char
-    *(CONSOLE_VIDEO_MEMORY+159) += 1;
+    // win manager will decide does it need to redraw or not
+    window_manager_redraw();
 }
 
 uint64_t timer_tick() {
@@ -29,12 +29,12 @@ void init_kernel_timer() {
     irq_enable(PIC_IRQ0);
 }
 
-void krnl_delay(unsigned int delay) {
-    uint64_t start_pit, end_pit, gap;
+// void krnl_delay(unsigned int delay) {
+//     uint64_t start_pit, end_pit, gap;
 
-    start_pit = __tick;
-    gap = delay / (1000 / TIMER_HZ);
-    end_pit = start_pit + gap;
+//     start_pit = __tick;
+//     gap = delay / (1000 / TIMER_HZ);
+//     end_pit = start_pit + gap;
 
-    while (__tick < end_pit);
-}
+//     while (__tick < end_pit);
+// }

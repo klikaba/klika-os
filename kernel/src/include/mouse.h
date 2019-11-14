@@ -3,17 +3,46 @@
 
 #include <stdint.h>
 
-#define MOUSE_LEFT    1
-#define MOUSE_RIGHT   2
-#define MOUSE_MIDLE   4
+#define PACKETS_IN_PIPE 1024
+#define DISCARD_POINT 32
 
-struct mouse_packet_struct {
-  uint8_t flags;
-  int32_t dx;
-  int32_t dy;
-} __attribute__ ((packed));
+#define MOUSE_IRQ 12
 
-typedef struct mouse_packet_struct mouse_packet_t;
+#define MOUSE_PORT   0x60
+#define MOUSE_STATUS 0x64
+#define MOUSE_ABIT   0x02
+#define MOUSE_BBIT   0x01
+#define MOUSE_WRITE  0xD4
+#define MOUSE_F_BIT  0x20
+#define MOUSE_V_BIT  0x08
+
+#define MOUSE_DEFAULT 0
+#define MOUSE_SCROLLWHEEL 1
+#define MOUSE_BUTTONS 2
+
+typedef enum {
+	LEFT_CLICK   = 0x01,
+	RIGHT_CLICK  = 0x02,
+	MIDDLE_CLICK = 0x04,
+
+	MOUSE_SCROLL_UP = 0x10,
+	MOUSE_SCROLL_DOWN = 0x20,
+} mouse_click_t;
+
+typedef struct {
+	uint32_t magic;
+	int32_t x_difference;
+	int32_t y_difference;
+	mouse_click_t buttons;
+} mouse_device_packet_t;
+
+extern int32_t mouse_x;
+extern int32_t mouse_y;
+extern int32_t mouse_x_difference;
+extern int32_t mouse_y_difference;
+extern mouse_click_t mouse_buttons;
+
+#define MOUSE_MAGIC 0xFEED1234
 
 void init_kernel_mouse(void);
 

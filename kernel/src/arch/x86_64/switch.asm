@@ -41,8 +41,7 @@ irq0_first_jump:
     mov rdi, rax
     call __switch_to
 
-    ; mov rsi, rsp
-    ; call timer_callback
+    call timer_callback
 
     ; PIC : End of innterrupt
 	mov al, 0x20

@@ -121,6 +121,53 @@ typedef struct multiboot_tag_elf_sections {
     multiboot_elf_sections_entry_t sections[];
 } __attribute__((packed)) multiboot_tag_elf_sections_t;
 
+struct multiboot_color
+{
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+};
+
+
+struct multiboot_tag_framebuffer_common
+{
+    uint32_t type;
+    uint32_t size;
+
+    uint64_t framebuffer_addr;
+    uint32_t framebuffer_pitch;
+    uint32_t framebuffer_width;
+    uint32_t framebuffer_height;
+    uint8_t framebuffer_bpp;
+#define MULTIBOOT_FRAMEBUFFER_TYPE_INDEXED 0
+#define MULTIBOOT_FRAMEBUFFER_TYPE_RGB     1
+#define MULTIBOOT_FRAMEBUFFER_TYPE_EGA_TEXT     2
+    uint8_t framebuffer_type;
+    uint16_t reserved;
+};
+
+struct multiboot_tag_framebuffer
+{
+    struct multiboot_tag_framebuffer_common common;
+    union
+    {
+        struct
+        {
+            uint16_t framebuffer_palette_num_colors;
+        struct multiboot_color framebuffer_palette[0];
+        };
+        struct
+        {
+            uint8_t framebuffer_red_field_position;
+            uint8_t framebuffer_red_mask_size;
+            uint8_t framebuffer_green_field_position;
+            uint8_t framebuffer_green_mask_size;
+            uint8_t framebuffer_blue_field_position;
+            uint8_t framebuffer_blue_mask_size;
+        };
+    };
+};
+
 typedef struct reserved_areas {
     uint64_t kernel_start;
     uint64_t kernel_end;

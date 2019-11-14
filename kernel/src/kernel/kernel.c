@@ -19,6 +19,8 @@
 #include <mmu_heap.h>
 #include <mouse.h>
 #include <assert.h>
+#include <vesa.h>
+#include <window_manager.h>
 
 #define __UNUSED__ __attribute__((unused))
 
@@ -89,14 +91,15 @@ void init_kernel_console() {
 
 
 #include <../../../apps/hello_world/build/hello_world_byte.c>
-#include <../../../apps/countdown/build/countdown_byte.c>
+#include <../../../apps/simple_win/build/simple_win_byte.c>
 
-void kmain(/*unsigned long magic, unsigned long addr*/) {
+void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_serial();
   init_kernel_console();
+  init_kernel_vesa(TO_VMA_PTR(multiboot_info_t *, mbi_phys));
   kprintf("\nKLIKA OS v0.1\n");
   init_kernel_pagging();
-  // ******* malloc can be used after this point
+  init_kernel_window_manager();
 
   init_kernel_pic();
   init_kernel_isr();
@@ -104,7 +107,8 @@ void kmain(/*unsigned long magic, unsigned long addr*/) {
   init_kernel_keyboard();
   init_kernel_mouse();
 
-  create_user_process(countdown);
+  create_user_process(simple_win);
+  create_user_process(simple_win);
   create_user_process(hello_world);
 
   do_first_task_jump();

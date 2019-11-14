@@ -38,6 +38,8 @@ typedef struct task_struct {
   // For now we are supporting only 2MB programs :) 
   // We keep track of one entry in PDE that will be mapped to 0x0000000 (user program space)
   pde_t pde; 
+  // Win manager reference if any
+  uint32_t win_handle;
   struct task_struct* next;
   struct task_struct* prev;
 }  __attribute__((packed)) task_t;

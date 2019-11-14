@@ -20,7 +20,7 @@ c_include := 'src/include'
 cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 		  -ffreestanding -mno-red-zone -mno-mmx -mno-sse -mno-sse2 \
 	      -I $(c_include) -nostartfiles -nodefaultlibs -fno-exceptions \
-	      -Wall -Wextra -Werror -c -mcmodel=large
+	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-implicit-fallthrough -O2
 c_source_files := $(wildcard src/drivers/*.c) $(wildcard src/kernel/*.c) $(wildcard src/lib/*.c) $(wildcard src/arch/x86_64/*.c) $(wildcard src/syscalls/*.c)
 c_object_files := $(patsubst src/%.c, \
 	build/%.o, $(c_source_files))
@@ -48,7 +48,7 @@ run-qemu: $(iso)
 iso: $(iso)
 
 debug: nasm_flags += -g -F dwarf
-debug: cflags += -g
+debug: cflags += -g 
 debug: all
 
 $(iso): $(kernel) $(grub_cfg)

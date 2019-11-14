@@ -1,3 +1,5 @@
 __SYSCALL(0, sysc_console_putc)
 __SYSCALL(1, sysc_console_clear)
 __SYSCALL(2, syscall_windows_create)
+__SYSCALL(3, syscall_memory_sbrk)
+__SYSCALL(4, syscall_debug_puts)

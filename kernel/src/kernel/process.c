@@ -222,14 +222,17 @@ void create_user_process(void* elf_raw_data) {
 
   task->rsp = (uint64_t)rsp; //- switch will do it
   task->id = rand();
-  task->pde.all = phys_addr | 0x87; // Present + Write + CPL3
+
+  memset(task->pde, 0, sizeof(pde_t) * 512);
+  task->pde[0].all = phys_addr | 0x87; // Present + Write + CPL3
+
   DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n\r", task_memory, phys_addr, task->rsp);
   task_list_insert(task);
 }
 
 void* to_kernel_space(task_t* task, uint64_t user_address) {
   return (void*)(task->kernel_mem_addr + user_address);
-}
+} 
 
 void kill_process(task_t* task) {
   DEBUG("KILL PROCES id:%i\n\r", task->id);
@@ -251,7 +254,7 @@ task_t* next_task() {
 
 void __switch_to(task_t* next) {
   kprintf_xy(0, 0, "Task : 0x%X 0x%X", next->pde, next->rsp);
-  pde_user[0] = next->pde;
+  memcpy(pde_user, next->pde, 512 * sizeof(pde_t));
   tss64.rsp0 = (uint64_t)(next->kstack + KERNEL_STASK_SIZE - 8);
   x86_tlb_flush_all();
 }

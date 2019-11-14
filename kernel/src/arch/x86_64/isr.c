@@ -150,5 +150,8 @@ static void page_fault_handler(isr_ctx_t *regs __attribute__((unused)) ) {
     uint64_t faulting_address;
     asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
 
-    HALT_AND_CATCH_FIRE("PAGW FAULT on 0x%X\n", faulting_address);
+    DEBUG("!!!!!PAGW FAULT on 0x%X\n", faulting_address);
+    kill_process(task_list_current);
+    debug_heap_dump();
+    do_first_task_jump();
 }

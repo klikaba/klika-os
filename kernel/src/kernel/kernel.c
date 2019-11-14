@@ -89,8 +89,6 @@ void init_kernel_console() {
   console_init(&__krnl_console);
 }
 
-
-#include <../../../apps/hello_world/build/hello_world_byte.c>
 #include <../../../apps/simple_win/build/simple_win_byte.c>
 
 void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
@@ -109,7 +107,6 @@ void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
 
   create_user_process(simple_win);
   create_user_process(simple_win);
-  create_user_process(hello_world);
 
   do_first_task_jump();
   while(1) { }

@@ -37,7 +37,7 @@ typedef struct task_struct {
   uint8_t kstack[KERNEL_STASK_SIZE];
   // For now we are supporting only 2MB programs :) 
   // We keep track of one entry in PDE that will be mapped to 0x0000000 (user program space)
-  pde_t pde; 
+  pde_t pde[512]; 
   // Kernel address that points to user space
   uint64_t kernel_mem_addr;
   // Win manager reference if any

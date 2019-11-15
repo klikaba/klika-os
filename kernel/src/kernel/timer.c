@@ -6,7 +6,7 @@
 #include <pic.h>
 #include <x86.h>
 
-uint64_t __tick = 0;
+volatile uint64_t __tick = 0;
 
 void timer_callback() {
     __tick++;

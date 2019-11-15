@@ -49,7 +49,7 @@ uint8_t mouse_read() {
   return inp(0x60);
 }
 
-
+message_t old_message;
 
 static void mouse_callback(isr_ctx_t *ctx __attribute__((unused))) {
   uint8_t status = inp(MOUSE_STATUS);
@@ -121,8 +121,15 @@ finish_packet:
     if (mouse_x < 0) mouse_x = 0;
     if (mouse_y > 768) mouse_y = 768;
     if (mouse_y < 0) mouse_y = 0;
+    message.mouse_x = mouse_x;
+    message.mouse_y = mouse_y;
 
-    window_add_message(message);
+    // Do not send same message twice
+    if (old_message.message != message.message || old_message.mouse_x != message.mouse_x ||
+        old_message.mouse_y != message.mouse_y || old_message.mouse_buttons != message.mouse_buttons ) {
+      window_add_message(message);
+      old_message = message;
+    }
 read_next:
     break;
   }

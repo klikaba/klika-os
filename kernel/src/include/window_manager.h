@@ -2,6 +2,7 @@
 #define __WINDOW_MANAGER_H
 
 #include <messaging.h>
+#include <process.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <mouse.h>
@@ -18,6 +19,7 @@ typedef struct window_struct {
 	int height;
 	char title[MAX_WINDOW_NAME_LENGTH];
 	int message_queue_index;
+	task_t* parent_task;
 	message_t message_queue[MAX_MESSAGE_QUEUE_LENGTH];
 } window_t;
 

@@ -15,13 +15,19 @@ int main() {
 		if (msg.message != 0) {
 			switch(msg.message) {
 				case MESSAGE_MOUSE_MOVE:
-					DEBUG("Mouse move (%i, %i)", msg.mouse_x, msg.mouse_y);
+					DEBUG("Message: %i - Mouse move (%i, %i)", msg.message, msg.mouse_x, msg.mouse_y);
 					break;
 				case MESSAGE_MOUSE_CLICK:
-					DEBUG("Mouse click (%i, %i) : %i", msg.mouse_x, msg.mouse_y, msg.mouse_buttons);
+					DEBUG("Message: %i - Mouse click (%i, %i) : %i", msg.message, msg.mouse_x, msg.mouse_y, msg.mouse_buttons);
 					break;
-				case MESSAGE_KEY:
-					DEBUG("Keyboard (%i, %c)", msg.key << 8, msg.key & 0xFF);
+				case MESSAGE_KEY_PRESS:
+					DEBUG("Message: %i - Key press (%c)", msg.message, msg.key & 0xFF);
+					break;
+				case MESSAGE_KEY_RELEASE:
+					DEBUG("Message: %i - Key release (%c)", msg.message, msg.key & 0xFF);
+					break;
+				default:
+					DEBUG("Got message : %i", msg.message);
 					break;
 			}
 		}

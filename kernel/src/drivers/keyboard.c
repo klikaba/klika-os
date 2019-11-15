@@ -1,3 +1,4 @@
+#include <process.h>
 #include <window_manager.h>
 #include <keyboard.h>
 #include <isr.h>
@@ -9,27 +10,34 @@
 
 static int32_t convert(uint32_t code);
 
+message_t old_msg;
+
 static void keyboard_callback(isr_ctx_t *ctx __attribute__((unused))) {
   uint8_t scancode = inp(KEYBOARD_DATA_PORT);
   uint8_t code;
   uint32_t packet = 0;
+  message_t msg;
 
   code = (uint8_t)convert(scancode);
   if (code) {
     if (scancode & KEY_RELEASED) {
       packet = 0;
+      msg.message = MESSAGE_KEY_RELEASE; // if released reset old (in case if user taps multiple times)
     }
     else {
       packet = 1;
+      msg.message = MESSAGE_KEY_PRESS;
     }
     packet <<= 8;
     packet |= code;
   }
 
-  message_t msg;
-  msg.message = MESSAGE_KEY;
   msg.key = code;
-  window_add_message(msg);
+
+  if (msg.message != old_msg.message || msg.key != old_msg.key) {
+  	window_add_message(msg);
+  	old_msg = msg;
+  }
 
   pic_acknowledge(PIC_IRQ1);
 }
@@ -43,8 +51,6 @@ void init_kernel_keyboard() {
 // adapted from Projeto-SOmBRA kbd.c
 static int32_t convert(uint32_t code) {
 	static uint8_t k_shift = 0;
-	// static uint8_t k_alt   = 0;
-	// static uint8_t k_ctrl  = 0;
 
 	static uint8_t k_num    = 0;
 	static uint8_t k_caps   = 0;
@@ -54,7 +60,6 @@ static int32_t convert(uint32_t code) {
 	uint8_t leds = false;
 	uint8_t  i;
 
-/* Verifica se o código da tecla é menor ou igual ao tamanho do keymap. */
 	if (code>=KEYMAP_SIZE){
 		return 0;
 	}

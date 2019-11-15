@@ -5,7 +5,7 @@
 
 #define TIMER_HZ 50
 
-extern uint64_t __tick;
+extern volatile uint64_t __tick;
 
 void init_kernel_timer();
 uint64_t timer_tick();

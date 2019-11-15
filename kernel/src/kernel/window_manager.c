@@ -131,12 +131,13 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	new_win->height = height;
 	new_win->handle = __window_handle++;
 	new_win->message_queue_index = 0;
+	new_win->parent_task = task_list_current;
 	memset(new_win->message_queue, 0, sizeof(message_t)*MAX_MESSAGE_QUEUE_LENGTH);
 	strncpy(new_win->title, title, MAX_WINDOW_NAME_LENGTH-1);
 	for(int i=0; i<MAX_WINDOW_COUNT; i++) {
 		if (window_list[i] == NULL) {
 			window_list[i] = new_win;
-			task_list_current->win_handle = new_win->handle;
+			task_list_current->window = new_win;
 			break;
 		}
 	}
@@ -199,7 +200,6 @@ void present_video_buffer() {
  	#endif	
   fast_memcpy((unsigned char*)vesa_video_info.addr, (unsigned char*)buffer_video_info.addr, VIDEO_INFO_MEM_SIZE(buffer_video_info));
 }
-
 
 void window_bring_to_front(int win_idx) {
 	if (__window_count <= 1) {
@@ -279,6 +279,8 @@ void window_add_message(message_t msg) {
 		return;
 	}
 	win->message_queue[win->message_queue_index++] = msg;
+	// if in WAIT state, awake 
+	win->parent_task->state = PROCESS_STATE_READY;
 	if (win->message_queue_index >= MAX_MESSAGE_QUEUE_LENGTH) {
 		win->message_queue_index = 0;
 	}

@@ -176,66 +176,96 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
   return header->e_entry;
 }
 
+static uint32_t __task_ids = 0;
+
+void create_kernel_process(void* entry_point) {
+  task_t* task = create_task_struct();
+
+  uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STACK_SIZE);
+  rsp--;
+  uint64_t jmp_rsp = (uint64_t)rsp;
+  *rsp-- = GDT_KERNEL_DATA;       // SS
+  *rsp-- = jmp_rsp;               // RSP
+  *rsp-- = 0x286;                 // RFLAGS
+  *rsp-- = GDT_KERNEL_CODE;       // CS
+  *rsp-- = (uint64_t)entry_point; // RIP
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp = 0;
+
+  memset(task->pde, 0, sizeof(pde_t) * 512);
+
+  task->rsp = (uint64_t)rsp; 
+  task->id = __task_ids++;
+  task->attribute = PROCESS_ATTR_KERNEL_SPACE;
+  task->state = PROCESS_STATE_READY;
+
+  DEBUG("PROC: Kernel task created : x%X) entry:0x%X rsp:0x%X\n\r", entry_point, task->rsp);
+  task_list_insert(task);
+}
 
 void create_user_process(void* elf_raw_data) {
   task_t* task = create_task_struct();
 
-  // setup task MMU
+  // Allocate memory for task (2MB max)
   uint64_t phys_addr;
   uint8_t* task_memory = alloc_frame_temp(&phys_addr);
   DEBUG("PROC: create_process_user phys_addr: 0x%X virt_addr: 0x%X\n\r", phys_addr, task_memory);
-  task->kernel_mem_addr = (uint64_t)task_memory;
   uint64_t entry_point = load_elf(elf_raw_data, task_memory);
   
-  uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STASK_SIZE - 8);
-  //rsp--;
-  /*
-  +------------+
-  +40 | %SS        |
-  +32 | %RSP       |
-  +24 | %RFLAGS    |
-  +16 | %CS        |
-  +8 | %RIP       | <-- %RSP
-  +------------+
-  * */
-  *rsp-- = GDT_USER_DATA | 3;              // SS
-  *rsp-- = 0x200000 - 8;       // RSP  2MB - 8
+  uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STACK_SIZE);
+  rsp--;
+  *rsp-- = GDT_USER_DATA | 3;  // SS
+  *rsp-- = 0x200000 - 8;       // RSP
   *rsp-- = 0x286;              // RFLAGS
-  *rsp-- = GDT_USER_CODE | 3;              // CS
-  *rsp-- = entry_point; 
-  *rsp-- = 1;
-  *rsp-- = 2;
-  *rsp-- = 3;
-  *rsp-- = 4;
-  *rsp-- = 5;
-  *rsp-- = 6;
-  *rsp-- = 7;
-  *rsp-- = 8;
-  *rsp-- = 9;
-  *rsp-- = 10;
-  *rsp-- = 11;
-  *rsp-- = 12;
-  *rsp-- = 13;
-  *rsp-- = 14;
-  *rsp = 15;
-  // rsp -= 14; // rax,rbx,rcx,rdx,rsi,rdi,rbp,r8,r9,r10,r11,r12,r13,r14,r15 - switch.asm irq0
-
-  task->rsp = (uint64_t)rsp; //- switch will do it
-  task->id = rand();
+  *rsp-- = GDT_USER_CODE | 3;  // CS
+  *rsp-- = entry_point;        // RIP
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp = 0;
 
   memset(task->pde, 0, sizeof(pde_t) * 512);
+
+  task->rsp = (uint64_t)rsp; //- switch will do it
+  task->id = __task_ids++;
+  task->attribute = PROCESS_ATTR_USER_SPACE;
+  task->state = PROCESS_STATE_READY;
   task->pde[0].all = phys_addr | 0x87; // Present + Write + CPL3
 
   DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n\r", task_memory, phys_addr, task->rsp);
   task_list_insert(task);
 }
 
-void* to_kernel_space(task_t* task, uint64_t user_address) {
-  return (void*)(task->kernel_mem_addr + user_address);
-} 
-
 void kill_process(task_t* task) {
-  DEBUG("KILL PROCES id:%i\n\r", task->id);
+  if (task->id == 0) {
+    DEBUG("PROC: WARNING! - Cannot kill kernel idle task!");
+    return;
+  }
+  DEBUG("PROC: KILL-PROCESS with id:%i\n\r", task->id);
   task_list_delete(task);
   task_list_current = task_list_head;
 }
@@ -245,23 +275,37 @@ task_t* current_task() {
 }
 
 task_t* next_task() {
-  task_list_current = task_list_current->next;
-  if (task_list_current == NULL) {
-    task_list_current = task_list_head;
-  }
-  return task_list_current;
+  task_t* task = task_list_current;
+  do {
+    task = task->next;
+    if (task == NULL) {
+      task = task_list_head;
+    }
+  } while(task->state == PROCESS_STATE_WAIT);
+  task_list_current = task;
+  return task;
 }
 
 void __switch_to(task_t* next) {
-  kprintf_xy(0, 0, "Task : 0x%X 0x%X", next->pde, next->rsp);
-  memcpy(pde_user, next->pde, 512 * sizeof(pde_t));
-  tss64.rsp0 = (uint64_t)(next->kstack + KERNEL_STASK_SIZE - 8);
-  x86_tlb_flush_all();
+  // Set TSS stack pointer for interrupt return
+  tss64.rsp0 = (uint64_t)(next->kstack + KERNEL_STACK_SIZE - 8);
+  // Change states. Is this best moment?
+  task_list_current->state = PROCESS_STATE_READY;
+  next->state = PROCESS_STATE_RUNNING;
+  
+  if (next->attribute & PROCESS_ATTR_USER_SPACE) {
+    // Copy user tables
+    memcpy(pde_user, next->pde, 512 * sizeof(pde_t));
+    x86_tlb_flush_all();
+  }
 }
 
 void do_first_task_jump() {
   __asm__ __volatile__ ("jmp irq0_first_jump");
 }
 
+void schedule() {
+  __asm__ __volatile__ ("int $32");
 
+}
 

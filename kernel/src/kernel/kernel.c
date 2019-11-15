@@ -91,6 +91,12 @@ void init_kernel_console() {
 
 #include <../../../apps/simple_win/build/simple_win_byte.c>
 
+void idle() {
+  while(1) {
+    x86_hlt();
+  }
+}
+
 void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_serial();
   init_kernel_console();
@@ -105,6 +111,7 @@ void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_keyboard();
   init_kernel_mouse();
 
+  create_kernel_process((void*)idle);
   create_user_process(simple_win);
   create_user_process(simple_win);
 

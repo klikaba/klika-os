@@ -141,6 +141,7 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 			break;
 		}
 	}
+	window_sort_windows();
 	return new_win;
 }
 
@@ -272,18 +273,21 @@ window_t* window_find_top() {
 	return window_list[__window_count-1];
 }
 
-
-void window_add_message(message_t msg) {
-	window_t* win = window_find_top();
-	if (win == NULL) {
-		return;
-	}
+void window_add_message(message_t msg, window_t* win) {
 	win->message_queue[win->message_queue_index++] = msg;
 	// if in WAIT state, awake 
 	win->parent_task->state = PROCESS_STATE_READY;
 	if (win->message_queue_index >= MAX_MESSAGE_QUEUE_LENGTH) {
 		win->message_queue_index = 0;
 	}
+}
+
+void window_add_messageto_top(message_t msg) {
+	window_t* win = window_find_top();
+	if (win == NULL) {
+		return;
+	}
+	window_add_message(msg, win);
 }
 
 bool window_pop_message(message_t* msg_out, window_t* win) {

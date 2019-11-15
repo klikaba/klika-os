@@ -127,7 +127,7 @@ finish_packet:
     // Do not send same message twice
     if (old_message.message != message.message || old_message.mouse_x != message.mouse_x ||
         old_message.mouse_y != message.mouse_y || old_message.mouse_buttons != message.mouse_buttons ) {
-      window_add_message(message);
+      window_add_messageto_top(message);
       old_message = message;
     }
 read_next:

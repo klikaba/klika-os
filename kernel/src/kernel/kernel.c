@@ -112,7 +112,7 @@ void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_mouse();
 
   create_kernel_process((void*)idle);
-  create_user_process(simple_win);
+  // create_user_process(simple_win);
   create_user_process(simple_win);
 
   do_first_task_jump();

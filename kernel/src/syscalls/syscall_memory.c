@@ -8,6 +8,7 @@
 
 #define __UNUSED__ __attribute__((unused))
 
+// syscall_memory_sbrk()
 long syscall_memory_sbrk(isr_ctx_t *regs __UNUSED__) {
 	DEBUG("SYSCALL[memory]: Sbrk called for task %i\n\r", task_list_current->id);
 

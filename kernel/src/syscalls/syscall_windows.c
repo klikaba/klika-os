@@ -7,7 +7,7 @@
 #include <gfx.h>
 #include <isr.h>
 
-//RDI, RSI, RDX, RCX, R8, R9
+// syscall_windows_create(int x, int y, int width, int height, char* title)
 uint64_t syscall_windows_create(isr_ctx_t *regs) {
 	int x = regs->rdi;
 	int y = regs->rsi;

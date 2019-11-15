@@ -28,13 +28,3 @@ void init_kernel_timer() {
     // Start timer IRQ
     irq_enable(PIC_IRQ0);
 }
-
-// void krnl_delay(unsigned int delay) {
-//     uint64_t start_pit, end_pit, gap;
-
-//     start_pit = __tick;
-//     gap = delay / (1000 / TIMER_HZ);
-//     end_pit = start_pit + gap;
-
-//     while (__tick < end_pit);
-// }

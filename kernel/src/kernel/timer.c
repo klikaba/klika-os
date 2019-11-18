@@ -1,7 +1,6 @@
 #include <window_manager.h>
 #include <timer.h>
 #include <memory.h>
-#include <console.h>
 #include <isr.h>
 #include <pic.h>
 #include <x86.h>

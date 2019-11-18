@@ -1,4 +1,4 @@
-%define STACK_SIZE 4096
+%define STACK_SIZE 4096*4
 
 extern main
 extern init_heap
@@ -10,7 +10,6 @@ bits 64
 start:
 	; setup stack
 	mov rsp, user_stack_top
-	add rsp, STACK_SIZE
 
 	; setup heap
 	call init_heap

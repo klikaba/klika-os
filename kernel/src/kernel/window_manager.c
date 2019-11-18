@@ -11,11 +11,7 @@
 #include <gfx.h>
 #include <isr.h>
 
-#define WIN_BACKGROUND_COLOR 	0x7F7F7F
-#define WIN_BORDER_COLOR      0xCCCCCC
-#define WIN_INACTIVE_FRAME  	0x0000AA
-#define WIN_ACTIVE_FRAME    	0x0000FF
-#define WIN_FRAME_TEXT_COLOR  0xFFFFFF
+#define WINDOW_BAR_HEIGHT  (8 + 2*3)
 
 #define WIN_SORT_VAL(win) (win == NULL ? 1000000000 : win->z) 
 
@@ -87,7 +83,6 @@ bool window_point_inside(window_t* win, int x, int y) {
 				 y >= win->y && y <= win->y + win->height;
 }
 
-#define WINDOW_BAR_HEIGHT  (8 + 2*3)
 
 bool window_point_inside_bar(window_t* win, int x, int y) {
 	return x >= win->x && x <= win->x + win->width &&
@@ -122,6 +117,14 @@ window_t* window_find(uint32_t handle) {
 	return NULL;
 }
 
+
+void window_present_context(window_t* win  __UNUSED__, context_t* context __UNUSED__) {
+	memcpy(win->context.buffer, context->buffer, context->width * context->height * 4);
+	// fast_memcpy((unsigned char*)win->context.buffer, (unsigned char*)context->buffer, context->width * context->height * (32 / 8));
+  // fast_memcpy((unsigned char*)vesa_video_info.addr, (unsigned char*)buffer_video_info.addr, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+
+}
+
 window_t* window_create(int x, int y, int width, int height, char* title) {
 	window_t* new_win = (window_t*)malloc(sizeof(window_t));
 	new_win->x = x;
@@ -134,6 +137,13 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	new_win->parent_task = task_list_current;
 	memset(new_win->message_queue, 0, sizeof(message_t)*MAX_MESSAGE_QUEUE_LENGTH);
 	strncpy(new_win->title, title, MAX_WINDOW_NAME_LENGTH-1);
+
+	new_win->context.width = width;
+	new_win->context.height = height;
+	new_win->context.bpp = 32;
+	new_win->context.buffer = (uint32_t*)malloc(width * height * (32 / 8));
+
+	// Add to list of windows : for now array of pointer to win
 	for(int i=0; i<MAX_WINDOW_COUNT; i++) {
 		if (window_list[i] == NULL) {
 			window_list[i] = new_win;
@@ -145,22 +155,9 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	return new_win;
 }
 
-void window_draw(window_t *win, bool is_top) {
-	int x1 = win->x;
-	int y1 = win->y;
-	int x2 = win->x + win->width;
-	int y2 = win->y + win->height;
-
-	// Main background
-	gfx_fillrect(&buffer_video_info, x1, y1, x2, y2, WIN_BORDER_COLOR);
-	gfx_fillrect(&buffer_video_info, x1+1, y1+1, x2-1, y2-1, WIN_BACKGROUND_COLOR);
-
-	// Frame top
-	uint32_t top_frame_color = is_top ? WIN_ACTIVE_FRAME : WIN_INACTIVE_FRAME;
-	gfx_fillrect(&buffer_video_info, x1 + 1, y1 + 1, x2 - 1, y1 + WINDOW_BAR_HEIGHT, top_frame_color);
-
-	// Frame label
-	gfx_puts(&buffer_video_info, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
+void window_draw(window_t *win, bool is_top __UNUSED__) {
+	// Prsent window buffer 
+	gfx_blit(&buffer_video_info, win->x, win->y, win->width, win->height, win->context.buffer);
 }
 
 void window_draw_all() {
@@ -257,9 +254,38 @@ void window_handle_mouse() {
 	}
 }
 
+bmp_image_t* bmp_read_from_memory(void* bmp_file) {
+	bmp_image_t* bmp = (bmp_image_t*)bmp_file;
+	DEBUG("BMP: type  = %i", bmp->header.type);
+	DEBUG("BMP: size  = %i", bmp->header.size);
+	DEBUG("BMP: reserved1 = %i", bmp->header.reserved1);
+	DEBUG("BMP: reserved2 = %i", bmp->header.reserved2);
+	DEBUG("BMP: offset= %i", bmp->header.offset);
+	DEBUG("BMP: dib_header_size   = %i", bmp->header.dib_header_size);
+	DEBUG("BMP: width_px  = %i", bmp->header.width_px);
+	DEBUG("BMP: height_px = %i", bmp->header.height_px);
+	DEBUG("BMP: num_planes= %i", bmp->header.num_planes);
+	DEBUG("BMP: bits_per_pixel= %i", bmp->header.bits_per_pixel);
+	DEBUG("BMP: compression   = %i", bmp->header.compression);
+	DEBUG("BMP: image_size_bytes  = %i", bmp->header.image_size_bytes);
+	DEBUG("BMP: x_resolution_ppm  = %i", bmp->header.x_resolution_ppm);
+	DEBUG("BMP: y_resolution_ppm  = %i", bmp->header.y_resolution_ppm);
+	DEBUG("BMP: num_colors= %i", bmp->header.num_colors);
+	DEBUG("BMP: important_colors  = %i", bmp->header.important_colors);
+	bmp->data = (uint32_t*)(((uint8_t*)bmp_file) + bmp->header.offset);
+	return bmp;
+}
+
+bmp_image_t* bmp;
+
 void window_manager_redraw() {
 	window_sort_windows();
-	memset((void*)buffer_video_info.addr, 0, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	if (bmp == NULL) {
+		memset((void*)buffer_video_info.addr, 0, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	}
+	else {
+  	fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)bmp->data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	}
 	window_handle_mouse();
   window_draw_all();
   window_draw_mouse();
@@ -308,6 +334,9 @@ bool window_pop_message(message_t* msg_out, window_t* win) {
 	return false;
 }
 
+#include "../lib/klika-background.bmp.h"
+
+
 void init_kernel_window_manager() {
 	DEBUG("SIZEOF LIST :%i\n\r", sizeof(window_list));
 	memset(window_list, 0, MAX_WINDOW_COUNT * sizeof(window_t*));
@@ -320,4 +349,6 @@ void init_kernel_window_manager() {
   DEBUG("WIN: Double Frame buffer info: %i x %i : %ibpp\n\r", buffer_video_info.width, buffer_video_info.height, buffer_video_info.bits);
   DEBUG("WIN: Double Frame buffer pitch: %i\n\r", buffer_video_info.pitch);
   DEBUG("WIN: Double Frame buffer type: %i\n\r", buffer_video_info.type);
+
+  bmp = bmp_read_from_memory(klika_beee_bmp);
 }

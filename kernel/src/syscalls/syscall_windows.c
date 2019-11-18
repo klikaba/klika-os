@@ -18,3 +18,14 @@ uint64_t syscall_windows_create(isr_ctx_t *regs) {
 	
 	return win->handle;
 }
+
+// syscall_windows_present(uint32_t handle, context_t*)
+uint64_t syscall_windows_present(isr_ctx_t *regs) {
+	window_t* win = window_find(regs->rdi);
+	if (win != NULL) {
+		context_t* context = (context_t*)regs->rsi;
+		window_present_context(win, context);
+		return 1;
+	}
+	return 0;
+}

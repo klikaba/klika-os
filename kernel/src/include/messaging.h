@@ -15,6 +15,7 @@ typedef struct {
 	int16_t 	mouse_y;
 	mouse_click_t 	mouse_buttons;
 	uint16_t 	key;
+	uint64_t  param0;
 } message_t;
 
 #endif

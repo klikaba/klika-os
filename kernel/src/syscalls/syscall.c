@@ -17,7 +17,6 @@ const sys_call_ptr_t sys_call_table[] = {
 
 #define dim(x) (sizeof(x) / sizeof((x)[0]))
 
-
 //RDI, RSI, RDX, RCX, R8, R9
 uint64_t system_call_handler(isr_ctx_t *regs) {
   // DEBUG("SYSCALL[%i]:  %i(%i %i %i %i %i %i)\n\r", task_list_current->id, regs->rax, regs->rdi, 

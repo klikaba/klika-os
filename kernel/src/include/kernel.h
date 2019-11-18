@@ -23,14 +23,11 @@
 #define GDT_USER_DATA   0x20
 #define GDT_TSS         0x28 
 
-void kputs(char *string);
-void kprintf(const char *fmt, ...);
-void kprintf_xy(int x, int y, const char *fmt, ...);
 void HALT_AND_CATCH_FIRE(const char *fmt, ...);
 void _kdebug(const char *fmt, ...);
-void _kpanic(const char *fmt, ...);
 
-#define PANIC _kpanic
+#define __UNUSED__ __attribute__((unused))
+
 #define DEBUG _kdebug
 
 #endif

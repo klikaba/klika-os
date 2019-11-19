@@ -30,4 +30,8 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 - More compponents (button, text, radio, checkbox, ...)
 - Calculator
 - Sudoku
--
+
+
+## Images
+
+[[https://github.com/klikaba/klika-os/blob/master/assets/screen_1.png|alt=octocat]]

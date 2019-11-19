@@ -88,6 +88,7 @@ window_t window_create(int x, int y, int width, int height, char* title) {
 	window.window_procedure = &window_procedure;
 	window.default_window_procedure = &default_window_procedure;
 	window.redraw = true;
+	window.title = strdup(title);
 	context_create(&window, width, height, 32);
 	window.handle = syscall(SYSCall_windows_create, x, y, width, height, title);
 	window_change_state(&window, WINDOW_STATE_CREATED);
@@ -111,5 +112,5 @@ void window_predraw(window_t *win) {
 	gfx_fillrect(&win->context, x1 + 1, y1 + 1, x2 - 1, y1 + WINDOW_BAR_HEIGHT, top_frame_color);
 
 	// Frame label
-	gfx_puts(&win->context, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, "Hello world");
+	gfx_puts(&win->context, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
 }

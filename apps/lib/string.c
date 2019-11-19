@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdint.h>
+#include <malloc.h>
 #include <types.h>
 
 
@@ -124,6 +125,11 @@ char* strcpy(char *dest, const char *src) {
   char *temp = dest;
   while(*dest = *src++);
   return temp;
+}
+
+char *strdup(const char *str) {
+	char *new_string = malloc(strlen(str) + 1);
+	return strcpy(new_string, str);
 }
 
 int isspace(char c) {

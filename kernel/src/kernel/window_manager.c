@@ -11,6 +11,13 @@
 #include <gfx.h>
 #include <isr.h>
 
+// Remove to have black wallpaper (fast compile)
+#define WALLPAPER
+
+#ifdef WALLPAPER
+#include "../lib/klika-wallpaper.bmp.h"
+#endif
+
 #define WINDOW_BAR_HEIGHT  (8 + 2*3)
 
 #define WIN_SORT_VAL(win) (win == NULL ? 1000000000 : win->z) 
@@ -256,22 +263,25 @@ void window_handle_mouse() {
 
 bmp_image_t* bmp_read_from_memory(void* bmp_file) {
 	bmp_image_t* bmp = (bmp_image_t*)bmp_file;
-	DEBUG("BMP: type  = %i", bmp->header.type);
-	DEBUG("BMP: size  = %i", bmp->header.size);
-	DEBUG("BMP: reserved1 = %i", bmp->header.reserved1);
-	DEBUG("BMP: reserved2 = %i", bmp->header.reserved2);
-	DEBUG("BMP: offset= %i", bmp->header.offset);
-	DEBUG("BMP: dib_header_size   = %i", bmp->header.dib_header_size);
-	DEBUG("BMP: width_px  = %i", bmp->header.width_px);
-	DEBUG("BMP: height_px = %i", bmp->header.height_px);
-	DEBUG("BMP: num_planes= %i", bmp->header.num_planes);
-	DEBUG("BMP: bits_per_pixel= %i", bmp->header.bits_per_pixel);
-	DEBUG("BMP: compression   = %i", bmp->header.compression);
-	DEBUG("BMP: image_size_bytes  = %i", bmp->header.image_size_bytes);
-	DEBUG("BMP: x_resolution_ppm  = %i", bmp->header.x_resolution_ppm);
-	DEBUG("BMP: y_resolution_ppm  = %i", bmp->header.y_resolution_ppm);
-	DEBUG("BMP: num_colors= %i", bmp->header.num_colors);
-	DEBUG("BMP: important_colors  = %i", bmp->header.important_colors);
+	DEBUG("BMP[wallpaper]: type  = %i\n\r", bmp->header.type);
+	DEBUG("BMP[wallpaper]: size  = %i\n\r", bmp->header.size);
+	DEBUG("BMP[wallpaper]: reserved1 = %i\n\r", bmp->header.reserved1);
+	DEBUG("BMP[wallpaper]: reserved2 = %i\n\r", bmp->header.reserved2);
+	DEBUG("BMP[wallpaper]: offset = %i\n\r", bmp->header.offset);
+	DEBUG("BMP[wallpaper]: dib_header_size = %i\n\r", bmp->header.dib_header_size);
+	DEBUG("BMP[wallpaper]: width_px = %i\n\r", bmp->header.width_px);
+	DEBUG("BMP[wallpaper]: height_px = %i\n\r", bmp->header.height_px);
+	DEBUG("BMP[wallpaper]: num_planes = %i\n\r", bmp->header.num_planes);
+	DEBUG("BMP[wallpaper]: bits_per_pixel = %i\n\r", bmp->header.bits_per_pixel);
+	DEBUG("BMP[wallpaper]: compression = %i\n\r", bmp->header.compression);
+	DEBUG("BMP[wallpaper]: image_size_bytes = %i\n\r", bmp->header.image_size_bytes);
+	DEBUG("BMP[wallpaper]: x_resolution_ppm = %i\n\r", bmp->header.x_resolution_ppm);
+	DEBUG("BMP[wallpaper]: y_resolution_ppm = %i\n\r", bmp->header.y_resolution_ppm);
+	DEBUG("BMP[wallpaper]: num_colors = %i\n\r", bmp->header.num_colors);
+	DEBUG("BMP[wallpaper]: important_colors = %i\n\r", bmp->header.important_colors);
+	assert(bmp->header.type == 0x4D42); // 'B' 'M'
+	assert(bmp->header.bits_per_pixel == 32);
+	assert(bmp->header.compression == 0);
 	bmp->data = (uint32_t*)(((uint8_t*)bmp_file) + bmp->header.offset);
 	return bmp;
 }
@@ -334,8 +344,6 @@ bool window_pop_message(message_t* msg_out, window_t* win) {
 	return false;
 }
 
-#include "../lib/klika-background.bmp.h"
-
 
 void init_kernel_window_manager() {
 	DEBUG("SIZEOF LIST :%i\n\r", sizeof(window_list));
@@ -350,5 +358,7 @@ void init_kernel_window_manager() {
   DEBUG("WIN: Double Frame buffer pitch: %i\n\r", buffer_video_info.pitch);
   DEBUG("WIN: Double Frame buffer type: %i\n\r", buffer_video_info.type);
 
-  bmp = bmp_read_from_memory(klika_beee_bmp);
+  #ifdef WALLPAPER
+  bmp = bmp_read_from_memory(klika_wallpaper_bmp);
+  #endif
 }

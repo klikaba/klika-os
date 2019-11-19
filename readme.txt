@@ -1,69 +1,33 @@
-# Black Eye OS
+# Klika-OS
 
+Klika-OS is a hobbyist and educational operating system writen in C (and some small parts are written in assembly).
 
-Exploring new concepts of OS design with 64bit processors.
+## Features
 
+- 64bit OS (x86_64)
+- Grub 2
+- Pagging (2MB) pages
+- Multiprocess / multi thread
+- Drivers: serial, mouse, keyboard, vesa
+- Userspace (ring 3)
+- System calls (int 0x80)
+- Graphics (double buffered)
+- Window manager (in kernel space) 
+- GUI library (in user space) - based on messaging (similar to WinAPI)
 
+## Kernel TODO
+- Ram disk (based on James M tutorial http://jamesmolloy.co.uk/tutorial_html/8.-The%20VFS%20and%20the%20initrd.html)
+- Serial driver to use vfs
+- Time : kernel and syscall
+- Kill process (partially done : extend to remove win)
+- Load ELF larger than 2MB
+- Optimise graphics
+- Child threds in userspace
+- Scalable fonts (https://gitlab.com/bztsrc/scalable-font)
+- Full screen or no Exclusive mode (for game loops)
 
-
-
-# Prerequirments
-* nasm
-* quemu (quemu-system-x86)
-* grub-mkrescue
-* git :)
-
-
-# WINDOWS MANAGER
-
-- CREATE_WINDOW - 
-       
-876543210987 654332109 876543210 987654321 098765432 109876543210
-
-# LOADER BIG PAGE 2MB
-
-               P4(9)   v  P3(9)    P2(9)          A(21)
-|           |         |         |         |         |            |
-| 63 - 48   | 47 - 39 | 38 - 30 | 29 - 21 |       20 - 0         |
-876543210987 654332109 876543210 987654321 098765432109876543210
-
-             0x000         0         0              0
-000000000000 000000000 000000000 000000000 000000000000000000000 0000000000000000 - 00000000001FFFFF 	USER SPACE (2MB)
-
-             0x100         0      0 - 511           0
-111111111111 100000000 000000000 000000000 000000000000000000000 FFFF800000000000 - FFFF800040000000  KERNEL  (512 * 2MB)
-
-             0x180         0      0 - 511           0
-111111111111 110000000 000000000 000000000 000000000000000000000 FFFFC00000000000 - FFFFC00040000000 	VIDEO
-
-             0x1C0         0      0 - 511           0
-111111111111 111000000 000000000 000000000 000000000000000000000 FFFFE00000000000 - FFFFE00040000000  TMP PROCESS MAPPING (512 * 2MB)
-
-
-111111111111111000000000000000000000000000000000000000000000
-KERNEL_START         FFFF800000000000
-                          KERNEL
-KERNEL_END           FFFF800000XXXXXX
-													BITSET
-HEAP                 FFFF800000XXXXXX + 0x200000 (2MB)
-											  KERNEL HEAP
-
-
-HEAP:
-
-
-
-# INTERRUPT STACK
-
-    +------------+
-+40 | %SS        |
-+32 | %RSP       |
-+24 | %RFLAGS    |
-+16 | %CS        |
- +8 | %RIP       |
-  0 | ERROR CODE | <-- %RSP
-    +------------+
-
-
-
-
+## Apps
+- More compponents (button, text, radio, checkbox, ...)
+- Calculator
+- Sudoku
+-

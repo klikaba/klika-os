@@ -40,6 +40,7 @@ struct window_struct {
 	bool redraw;
 	int state;
 	context_t context;
+	char* title;
 };
 typedef struct window_struct window_t;
 

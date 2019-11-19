@@ -15,6 +15,7 @@ void fast_memcpy(unsigned char* dst, unsigned char* src, size_t s);
 
 size_t strlen(const char *str);
 char* strcpy(char *dest, const char *src);
+char* strdup(const char *str);
 int isspace(char c);
 int isprint(char c);
 

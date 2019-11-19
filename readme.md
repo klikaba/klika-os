@@ -22,7 +22,7 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 - Kill process (partially done : extend to remove win)
 - Load ELF larger than 2MB
 - Optimise graphics
-- Child threds in userspace
+- Child threads in userspace
 - Scalable fonts (https://gitlab.com/bztsrc/scalable-font)
 - Full screen or no Exclusive mode (for game loops)
 

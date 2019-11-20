@@ -7,15 +7,14 @@
 #define MESSAGE_MOUSE_CLICK 	2
 #define MESSAGE_KEY_PRESS 	  3
 #define MESSAGE_KEY_RELEASE	  4
+#define MESSAGE_WINDOW_DRAG	  5
 
 typedef struct {
-	uint32_t 	message;
-	uint32_t 	handle;
-	int16_t 	mouse_x;
-	int16_t 	mouse_y;
-	mouse_click_t 	mouse_buttons;
-	uint16_t 	key;
-	uint64_t  param0;
+	uint16_t 		message;
+	uint16_t 		handle;
+	int16_t 		x;
+	int16_t 		y;
+	int32_t 		key;
 } message_t;
 
 #endif

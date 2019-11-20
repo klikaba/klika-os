@@ -1,6 +1,7 @@
 #include <klika_os.h>
 #include <malloc.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define END_OF_INITIALISED_HEAP PAGE_SIZE
 
@@ -76,6 +77,12 @@ void free(void *ptr) {
   if (mb->magic == MBLOCK_MAGIC) {
     mb->free = true;
   }
+}
+
+void *calloc(size_t num, size_t size) {
+  void *ptr = malloc(num * size);
+  memset(ptr, 0, num * size);
+  return ptr;
 }
 
 void init_heap() {

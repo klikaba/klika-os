@@ -14,7 +14,7 @@ long syscall_messaging_get(isr_ctx_t *regs) {
 	window_t* win = window_find(regs->rsi);
 	if (win != NULL) {
 		// If no events - go to WAIT state
-		if(!window_pop_message(msg, win)) {
+		if(!window_pop_message(win, msg)) {
 			task_list_current->state = PROCESS_STATE_WAIT;
 			schedule();
 		}
@@ -27,7 +27,7 @@ long syscall_messaging_create(isr_ctx_t *regs) {
 	message_t* msg = (message_t*)regs->rdi;
 	window_t* win = window_find(regs->rsi);
 	if (win != NULL) {
-		window_add_message(*msg, win);
+		window_add_message(win, msg);
 	}
 	return true;
 }

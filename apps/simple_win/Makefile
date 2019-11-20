@@ -15,7 +15,7 @@ cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-parentheses -Wno-implicit-fallthrough \
 	      -fdata-sections -ffunction-sections
 
-c_source_files := $(wildcard *.c) $(wildcard ../lib/*.c) 
+c_source_files := $(wildcard *.c) $(wildcard ../lib/*.c) $(wildcard ../lib/windows/*.c) 
 c_object_files := $(patsubst %.c, build/%.o, $(c_source_files))
 
 assembly_source_files := $(wildcard ../lib/*.asm)

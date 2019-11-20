@@ -12,7 +12,7 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
-#define WALLPAPER
+// #define WALLPAPER
 
 #ifdef WALLPAPER
 #include "../lib/klika-wallpaper.bmp.h"
@@ -25,7 +25,7 @@
 window_t* window_list[MAX_WINDOW_COUNT];
 video_info_t buffer_video_info;
 uint64_t __last_update_tick = 0;
-uint32_t __window_handle = 1000; // 1000 just magic number to start from (0 means no window)
+uint16_t __window_handle = 1000; // 1000 just magic number to start from (0 means no window)
 int __window_count = 0;
 
 window_t* window_to_drag = NULL;
@@ -79,9 +79,11 @@ void window_sort_windows() {
   } 
 
   // find count
-  for (__window_count=0; __window_count<MAX_WINDOW_COUNT; __window_count++) {
-  	if (window_list[__window_count] == NULL) break;
+  int count = 0;
+  for (; count < MAX_WINDOW_COUNT; count++) {
+  	if (window_list[count] == NULL) break;
   }
+  __window_count = count;
 }
 
 
@@ -140,11 +142,14 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	new_win->width = width;
 	new_win->height = height;
 	new_win->handle = __window_handle++;
+
+	// Message queue
 	new_win->message_queue_index = 0;
 	new_win->parent_task = task_list_current;
 	memset(new_win->message_queue, 0, sizeof(message_t)*MAX_MESSAGE_QUEUE_LENGTH);
 	strncpy(new_win->title, title, MAX_WINDOW_NAME_LENGTH-1);
 
+	// Context setup
 	new_win->context.width = width;
 	new_win->context.height = height;
 	new_win->context.bpp = 32;
@@ -185,7 +190,7 @@ void window_draw_mouse() {
 		for (int j=0; j<11; j++) {
 			if (*buf) {
 				uint32_t color = mouse_color_mapping[*buf];
-				if (mouse_buttons & LEFT_CLICK) {
+				if (mouse_buttons & MOUSE_LEFT_CLICK) {
 					color = 0xFFFFFF;
 				}
 	    	if (mouse_x + j >= 0 && mouse_x + j < buffer_video_info.width &&
@@ -231,10 +236,17 @@ void window_bring_to_front(int win_idx) {
 
 // HOLYY SHAJT - simplify this poop
 void window_handle_mouse() {
-	if (mouse_buttons & LEFT_CLICK) {
+	if (mouse_buttons & MOUSE_LEFT_CLICK) {
 		if (window_to_drag != NULL) {
 			window_to_drag->x += mouse_x - __old_mouse_x;
 			window_to_drag->y += mouse_y - __old_mouse_y;
+			if (__old_mouse_x != mouse_x || __old_mouse_y != mouse_y) {
+				message_t msg;
+				msg.message = MESSAGE_WINDOW_DRAG;
+				msg.x = window_to_drag->x;
+				msg.y = window_to_drag->x;
+				window_add_messageto_top(&msg);
+			}
 			__old_mouse_x = mouse_x;
 			__old_mouse_y = mouse_y;
 		}	
@@ -309,8 +321,8 @@ window_t* window_find_top() {
 	return window_list[__window_count-1];
 }
 
-void window_add_message(message_t msg, window_t* win) {
-	win->message_queue[win->message_queue_index++] = msg;
+void window_add_message(window_t *win, message_t *msg) {
+	win->message_queue[win->message_queue_index++] = *msg;
 	// if in WAIT state, awake 
 	win->parent_task->state = PROCESS_STATE_READY;
 	if (win->message_queue_index >= MAX_MESSAGE_QUEUE_LENGTH) {
@@ -318,15 +330,15 @@ void window_add_message(message_t msg, window_t* win) {
 	}
 }
 
-void window_add_messageto_top(message_t msg) {
+void window_add_messageto_top(message_t *msg) {
 	window_t* win = window_find_top();
 	if (win == NULL) {
 		return;
 	}
-	window_add_message(msg, win);
+	window_add_message(win, msg);
 }
 
-bool window_pop_message(message_t* msg_out, window_t* win) {
+bool window_pop_message(window_t* win, message_t* msg_out) {
 	int peek = win->message_queue_index - 1;
 	if (peek < 0) {
 		peek = MAX_MESSAGE_QUEUE_LENGTH-1;

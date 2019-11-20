@@ -27,6 +27,7 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 - Full screen or no Exclusive mode (for game loops)
 
 ## Apps
+- exit()
 - More compponents (button, text, radio, checkbox, ...)
 - Calculator
 - Sudoku

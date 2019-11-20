@@ -13,7 +13,7 @@ int32_t mouse_x = 0;
 int32_t mouse_y = 0;
 int32_t mouse_x_difference = 0;
 int32_t mouse_y_difference = 0;
-mouse_click_t mouse_buttons;
+int32_t mouse_buttons;
 
 void mouse_wait(uint8_t a_type) {
   uint32_t _time_out=100000; 
@@ -99,35 +99,35 @@ finish_packet:
     }
     mouse_x_difference = x;
     mouse_y_difference = y;
-    message.mouse_buttons = 0;
+    message.key = 0;
     if (mouse_byte[0] & 0x01) {
       message.message = MESSAGE_MOUSE_CLICK;
-      message.mouse_buttons |= LEFT_CLICK;
+      message.key |= MOUSE_LEFT_CLICK;
     }
     if (mouse_byte[0] & 0x02) {
       message.message = MESSAGE_MOUSE_CLICK;
-      message.mouse_buttons |= RIGHT_CLICK;
+      message.key |= MOUSE_RIGHT_CLICK;
     }
     if (mouse_byte[0] & 0x04) {
       message.message = MESSAGE_MOUSE_CLICK;
-      message.mouse_buttons |= MIDDLE_CLICK;
+      message.key |= MOUSE_MIDDLE_CLICK;
     }
 
     // TODO - remove global once 
-    mouse_buttons = message.mouse_buttons;
+    mouse_buttons = message.key;
     mouse_x += mouse_x_difference;
     mouse_y -= mouse_y_difference;
     if (mouse_x > 1024) mouse_x = 1024;
     if (mouse_x < 0) mouse_x = 0;
     if (mouse_y > 768) mouse_y = 768;
     if (mouse_y < 0) mouse_y = 0;
-    message.mouse_x = mouse_x;
-    message.mouse_y = mouse_y;
+    message.x = mouse_x;
+    message.x = mouse_y;
 
     // Do not send same message twice
-    if (old_message.message != message.message || old_message.mouse_x != message.mouse_x ||
-        old_message.mouse_y != message.mouse_y || old_message.mouse_buttons != message.mouse_buttons ) {
-      window_add_messageto_top(message);
+    if (old_message.message != message.message || old_message.x != message.x ||
+        old_message.y != message.y || old_message.key != message.key ) {
+      window_add_messageto_top(&message);
       old_message = message;
     }
 read_next:

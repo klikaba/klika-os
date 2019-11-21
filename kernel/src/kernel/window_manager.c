@@ -12,7 +12,7 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
-#define WALLPAPER
+// #define WALLPAPER
 
 #ifdef WALLPAPER
 #include "../lib/klika-wallpaper.bmp.h"
@@ -27,6 +27,8 @@ video_info_t buffer_video_info;
 uint64_t __last_update_tick = 0;
 uint16_t __window_handle = 1000; // 1000 just magic number to start from (0 means no window)
 int __window_count = 0;
+
+bool __window_need_redraw = true;
 
 window_t* window_to_drag = NULL;
 int __old_mouse_x, __old_mouse_y;
@@ -131,7 +133,7 @@ void window_present_context(window_t* win  __UNUSED__, context_t* context __UNUS
 	memcpy(win->context.buffer, context->buffer, context->width * context->height * 4);
 	// fast_memcpy((unsigned char*)win->context.buffer, (unsigned char*)context->buffer, context->width * context->height * (32 / 8));
   // fast_memcpy((unsigned char*)vesa_video_info.addr, (unsigned char*)buffer_video_info.addr, VIDEO_INFO_MEM_SIZE(buffer_video_info));
-
+  window_need_redraw();
 }
 
 window_t* window_create(int x, int y, int width, int height, char* title) {
@@ -164,6 +166,7 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 		}
 	}
 	window_sort_windows();
+	window_need_redraw();
 	return new_win;
 }
 
@@ -232,9 +235,10 @@ void window_bring_to_front(int win_idx) {
 	window_t* tmp = window_list[__window_count - 1];
 	window_list[__window_count - 1] = window_list[win_idx];
 	window_list[win_idx] = tmp;
+	window_need_redraw();
 }
 
-// HOLYY SHAJT - simplify this poop
+// HOOLI SHAJT - simplify this poop
 void window_handle_mouse() {
 	if (mouse_buttons & MOUSE_LEFT_CLICK) {
 		if (window_to_drag != NULL) {
@@ -271,6 +275,7 @@ void window_handle_mouse() {
 	} else {
 		window_to_drag = NULL; // DIRTY
 	}
+	window_need_redraw();
 }
 
 bmp_image_t* bmp_read_from_memory(void* bmp_file) {
@@ -300,7 +305,14 @@ bmp_image_t* bmp_read_from_memory(void* bmp_file) {
 
 bmp_image_t* bmp;
 
+void window_need_redraw() {
+	__window_need_redraw = true;
+}
+
 void window_manager_redraw() {
+	if (!__window_need_redraw) {
+		return;
+	}
 	window_sort_windows();
 	if (bmp == NULL) {
 		memset((void*)buffer_video_info.addr, 0, VIDEO_INFO_MEM_SIZE(buffer_video_info));
@@ -312,6 +324,7 @@ void window_manager_redraw() {
   window_draw_all();
   window_draw_mouse();
   present_video_buffer();
+	__window_need_redraw = false;
 }
 
 window_t* window_find_top() {

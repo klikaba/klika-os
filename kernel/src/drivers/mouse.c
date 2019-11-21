@@ -130,6 +130,7 @@ finish_packet:
       if (old_message.message == MESSAGE_MOUSE_PRESS) {
         message.message = MESSAGE_MOUSE_RELEASE;
       }
+      window_handle_mouse();
       window_add_messageto_top(&message);
       old_message = message;
     }

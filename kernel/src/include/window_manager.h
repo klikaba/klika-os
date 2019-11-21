@@ -62,6 +62,9 @@ extern window_t* window_list[MAX_WINDOW_COUNT];
 window_t* window_create(int x, int y, int width, int height, char* title);
 void window_present_context(window_t* win, context_t* context);
 
+void window_handle_mouse();
+void window_need_redraw();
+
 void window_add_message(window_t *win, message_t *msg);
 void window_add_messageto_top(message_t *msg);
 bool window_pop_message(window_t* win, message_t* msg_out);

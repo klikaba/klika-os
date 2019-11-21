@@ -9,6 +9,7 @@
 #define SYSCall_messaging_get  		3
 #define SYSCall_messaging_create 	4
 #define SYSCall_windows_present  	5
+#define SYSCall_process_create    6
 
 extern uint64_t syscall(uint64_t sys_no, ...);
 

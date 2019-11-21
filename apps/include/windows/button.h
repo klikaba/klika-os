@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 #define WINDOW_TYPE_BUTTON 1
 
 #define BUTTON_STATE_NORMAL  0

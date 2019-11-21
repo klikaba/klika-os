@@ -178,7 +178,7 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
 
 static uint32_t __task_ids = 0;
 
-void create_kernel_process(void* entry_point) {
+task_t* create_kernel_process(void* entry_point) {
   task_t* task = create_task_struct();
 
   uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STACK_SIZE);
@@ -214,9 +214,11 @@ void create_kernel_process(void* entry_point) {
 
   DEBUG("PROC: Kernel task created : x%X) entry:0x%X rsp:0x%X\n\r", entry_point, task->rsp);
   task_list_insert(task);
+
+  return task;
 }
 
-void create_user_process(void* elf_raw_data) {
+task_t* create_user_process(void* elf_raw_data) {
   task_t* task = create_task_struct();
 
   // Allocate memory for task (2MB max)
@@ -258,6 +260,8 @@ void create_user_process(void* elf_raw_data) {
 
   DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n\r", task_memory, phys_addr, task->rsp);
   task_list_insert(task);
+
+  return task;
 }
 
 void kill_process(task_t* task) {

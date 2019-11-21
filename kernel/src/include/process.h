@@ -59,8 +59,8 @@ task_t* task_list_insert(task_t* new_task);
 void task_list_delete(task_t* task);
 void task_list_dump();
 
-void create_kernel_process(void* entry_point);
-void create_user_process(void* elf_raw_data);
+task_t *create_kernel_process(void* entry_point);
+task_t *create_user_process(void* elf_raw_data);
 void kill_process(task_t* task);
 
 task_t* next_task();

@@ -12,7 +12,7 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
-// #define WALLPAPER
+#define WALLPAPER
 
 #ifdef WALLPAPER
 #include "../lib/klika-wallpaper.bmp.h"

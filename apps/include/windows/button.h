@@ -16,6 +16,6 @@
 
 #define button_t window_t
 
-window_t *button_create(window_t *parent, int x, int y, int width, int height, char* title, int id);
-bool button_default_procedure(window_t *win, struct message_struct *msg);
-void on_button_predraw(window_t *win);
+button_t *button_create(window_t *parent, int x, int y, int width, int height, char* title, int id);
+bool button_default_procedure(button_t *win, struct message_struct *msg);
+void on_button_predraw(button_t *win);

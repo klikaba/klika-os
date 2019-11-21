@@ -11,8 +11,8 @@
 #include <gfx.h>
 
 
-window_t *button_create(window_t *parent, int x, int y, int width, int height, char* title, int id) {
-	window_t *window = calloc(sizeof(window_t), 1);
+button_t *button_create(window_t *parent, int x, int y, int width, int height, char* title, int id) {
+	button_t *window = calloc(sizeof(button_t), 1);
 
 	// Init window structure
 	window->type = WINDOW_TYPE_BUTTON;
@@ -42,7 +42,7 @@ window_t *button_create(window_t *parent, int x, int y, int width, int height, c
 	return window;	
 }
 
-bool button_default_procedure(window_t *win, struct message_struct *msg) {
+bool button_default_procedure(button_t *win, struct message_struct *msg) {
 	switch(msg->message) {
 		case MESSAGE_MOUSE_PRESS:
 			if (WINDOW_EXT(win->parent)->focused == win) {
@@ -74,7 +74,7 @@ bool button_default_procedure(window_t *win, struct message_struct *msg) {
 }
 
 
-void on_button_predraw(window_t *win) {
+void on_button_predraw(button_t *win) {
 	int x1 = win->x;
 	int y1 = win->y;
 	int x2 = x1 + win->width;

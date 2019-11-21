@@ -2,6 +2,7 @@
 #include <syscalls.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 
 int __debug_helper_index;
 #define MAX_DEBUG_BUFFER_SIZE 256
@@ -15,6 +16,7 @@ static int debug_printf_helper(unsigned c, void *ptr) {
 
 void _debug(const char* fmt, ...) {
 	char buf[MAX_DEBUG_BUFFER_SIZE];
+  memset(buf, 0, MAX_DEBUG_BUFFER_SIZE);
   __debug_helper_index = 0;
   va_list args;
   va_start(args, fmt);

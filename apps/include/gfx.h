@@ -18,7 +18,9 @@ void gfx_rect(context_t* context, int x1, int y1, int x2, int y2, uint32_t color
 void gfx_fillrect(context_t* context, int x1, int y1, int x2, int y2, uint32_t color);
 
 void gfx_putchar(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char c);
+void gfx_putchar_trans(context_t* context, int x, int y, uint32_t color, const char c);
 void gfx_puts(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char *c);
+void gfx_puts_trans(context_t* context, int x, int y, uint32_t color, const char *c);
 
 void gfx_blit(context_t* context, int x, int y, int width, int height, uint32_t* src);
 

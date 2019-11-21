@@ -123,7 +123,7 @@ size_t strlen(const char *str) {
 
 char* strcpy(char *dest, const char *src) {
   char *temp = dest;
-  while(*dest = *src++);
+  while(*dest++ = *src++);
   return temp;
 }
 

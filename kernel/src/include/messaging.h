@@ -4,10 +4,11 @@
 #include <mouse.h>
 
 #define MESSAGE_MOUSE_MOVE 		1
-#define MESSAGE_MOUSE_CLICK 	2
-#define MESSAGE_KEY_PRESS 	  3
-#define MESSAGE_KEY_RELEASE	  4
-#define MESSAGE_WINDOW_DRAG	  5
+#define MESSAGE_MOUSE_PRESS 	2
+#define MESSAGE_MOUSE_RELEASE	3
+#define MESSAGE_KEY_PRESS		  4
+#define MESSAGE_KEY_RELEASE   5
+#define MESSAGE_WINDOW_DRAG	  6
 
 typedef struct {
 	uint16_t 		message;

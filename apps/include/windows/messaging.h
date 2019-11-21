@@ -5,16 +5,17 @@
 #include <stdint.h>
 
 #define MESSAGE_MOUSE_MOVE 		1
-#define MESSAGE_MOUSE_CLICK 	2
-#define MESSAGE_KEY_PRESS		  3
-#define MESSAGE_KEY_RELEASE   4
-#define MESSAGE_WINDOW_DRAG	  5
+#define MESSAGE_MOUSE_PRESS 	2
+#define MESSAGE_MOUSE_RELEASE	3
+#define MESSAGE_KEY_PRESS		  4
+#define MESSAGE_KEY_RELEASE   5
+#define MESSAGE_WINDOW_DRAG	  6
 
-#define MESSAGE_MOUSE_MOVE 		1
-#define MESSAGE_MOUSE_CLICK 	2
-#define MESSAGE_KEY_PRESS 	  3
-#define MESSAGE_KEY_RELEASE	  4
-#define MESSAGE_WINDOW_DRAG	  5
+#define MOUSE_LEFT_CLICK   			0x01
+#define MOUSE_RIGHT_CLICK  			0x02
+#define MOUSE_MIDDLE_CLICK 			0x04
+#define MOUSE_MOUSE_SCROLL_UP 	0x10
+#define MOUSE_MOUSE_SCROLL_DOWN 0x20
 
 typedef struct message_struct {
 	uint16_t 		message;

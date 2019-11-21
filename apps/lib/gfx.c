@@ -1,4 +1,5 @@
 #include <klika_os.h>
+#include <windows.h>
 #include <gfx.h>
 #include <string.h>
 #include <font_8x8.h>
@@ -51,18 +52,42 @@ void gfx_putchar(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bg
   }
 }
 
+void gfx_putchar_trans(context_t* context, int x, int y, uint32_t color, const char c) {
+  uint8_t i, j;
+  for(i = 0; i < 8; i++) {
+    for(j = 0; j < 8; j++) {
+    	if (x+i >= 0 && x+1 < context->width &&
+    		  y+j >= 0 && y+1 < context->height) {
+    		bool draw = ((font8x8_basic[c & 0x7F][j] >> i ) & 1);
+    		if (draw) {
+  				CONTEXT_32[FIRST_PIXEL(x+i, y+j)] = color;
+  			}
+  		}
+    }
+  }
+}
+
+
+void gfx_puts(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char *c) {
+	while(*c) {
+		gfx_putchar(context, x, y, fgcolor, bgcolor, *c++);
+		x += 8;
+	}
+}
+
+void gfx_puts_trans(context_t* context, int x, int y, uint32_t color, const char *c) {
+	while(*c) {
+		gfx_putchar_trans(context, x, y, color, *c++);
+		x += 8;
+	}
+}
+
+
 // Optimize + CLIP
 void gfx_blit(context_t* context, int x, int y, int width, int height, uint32_t* src) {
 	for (int i=0; i<height; i++) {
 		for (int j=0; j<width; j++) {
 			CONTEXT_32[FIRST_PIXEL(x+j, y+i)] = *(src + (j + i * width));
 		}
-	}
-}
-
-void gfx_puts(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char *c) {
-	while(*c) {
-		gfx_putchar(context, x, y, fgcolor, bgcolor, *c++);
-		x += 8;
 	}
 }

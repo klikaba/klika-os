@@ -191,7 +191,7 @@ void window_draw_mouse() {
 			if (*buf) {
 				uint32_t color = mouse_color_mapping[*buf];
 				if (mouse_buttons & MOUSE_LEFT_CLICK) {
-					color = 0xFFFFFF;
+					color ^= 0xFFFFFF;
 				}
 	    	if (mouse_x + j >= 0 && mouse_x + j < buffer_video_info.width &&
     		  mouse_y + i >= 0 && mouse_y + i < buffer_video_info.height) {
@@ -244,7 +244,7 @@ void window_handle_mouse() {
 				message_t msg;
 				msg.message = MESSAGE_WINDOW_DRAG;
 				msg.x = window_to_drag->x;
-				msg.y = window_to_drag->x;
+				msg.y = window_to_drag->y;
 				window_add_messageto_top(&msg);
 			}
 			__old_mouse_x = mouse_x;

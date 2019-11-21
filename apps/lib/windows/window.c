@@ -9,32 +9,7 @@
 #include <string.h>
 #include <gfx.h>
 
-bool window_default_procedure(window_t *win, message_t *msg) {
-	// DEBUG("Default win proc: win[%i] <- %i", win->handle, msg->message);
-	switch(msg->message) {
-		case MESSAGE_WINDOW_DRAG:
-			win->x = msg->x;
-			win->y = msg->y;
-			return true;
-		case WINDOW_LIB_MESSAGE_CREATE:
-			window_send_message_simple(win, WINDOW_LIB_MESSAGE_PREDRAW);
-			break;		
-		case WINDOW_LIB_MESSAGE_PREDRAW:
-			on_window_predraw(win);
-			window_send_message_simple(win, WINDOW_LIB_MESSAGE_DRAW);
-			return true;
-		case WINDOW_LIB_MESSAGE_DRAW:
-			window_send_message_simple(win, WINDOW_LIB_MESSAGE_PRESENT);
-			return true;
-		case WINDOW_LIB_MESSAGE_PRESENT:
-			syscall(SYSCall_windows_present, win->handle, WINDOW_EXT(win)->context);
-			return true;
-		// case DESTROY:
-	}
-	return true;
-}
-
-///////////////////// WINDOW ACTIONS ///////////////////////
+static window_t *window_find_focused_component(window_t *win, message_t *msg);
 
 void window_change_state(window_t* win, int state) {
 	switch(state) {
@@ -58,19 +33,21 @@ context_t *window_context_create(int width, int height, int bpp) {
 	return context;
 }
 
-window_t *window_create(int x, int y, int width, int height, char* title) {
+window_t *window_create(int x, int y, int width, int height, char* title, int id) {
 	window_t *window = calloc(sizeof(window_t), 1);
 
 	// Init window structure
+	window->type = WINDOW_TYPE_WINDOW;
+	window->id = id;
 	window->x = x;
 	window->y = y;
 	window->height = height;
 	window->width = width;
-	window->window_default_procedure = &window_default_procedure;
+	window->default_procedure = &window_default_procedure;
 	window->title = strdup(title);
 
 	// Create Ext params
-	window_ext_t *ext = malloc(sizeof(window_ext_t));
+	window_ext_t *ext = calloc(sizeof(window_ext_t), 1);
 	ext->context = window_context_create(width, height, 32);
 	window->ext = ext;
 
@@ -101,4 +78,86 @@ void on_window_predraw(window_t *win) {
 
 	// Frame label
 	gfx_puts(WINDOW_EXT(win)->context, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
+}
+
+void window_add_child(window_t *parent, window_t *child) {
+	window_t *w = parent;
+	while (w->next != NULL) { w = w->next; }
+	w->next = child;
+}
+
+bool window_point_inside(window_t* win, int x, int y) {
+	return x >= win->x && x <= win->x + win->width &&
+				 y >= win->y && y <= win->y + win->height;
+}
+
+bool window_dispatch_message(window_t *win, struct message_struct *msg) {
+	bool consumed = false;
+	if (win->window_procedure != NULL) {
+		consumed = win->window_procedure(win, msg);
+	}
+	if (!consumed) {
+		consumed = win->default_procedure(win, msg);
+	}
+	return consumed;
+}
+
+bool window_dispatch_message_simple(window_t *win, int message) {
+	message_t msg;
+	msg.message = message;
+	return window_dispatch_message(win, &msg);
+}
+
+void window_dispatch(window_t *win, struct message_struct *msg) {
+	for (window_t *w = win; w != NULL; w = w->next) {
+		// If message is consumed, stop the chain
+		if (window_dispatch_message(w, msg)) {
+			break;
+		}
+	}
+}
+
+bool window_default_procedure(window_t *win, message_t *msg) {
+	switch(msg->message) {
+		case MESSAGE_MOUSE_PRESS:
+		case MESSAGE_MOUSE_RELEASE:
+			WINDOW_EXT(win)->focused = window_find_focused_component(win, msg);
+			return false;
+		case MESSAGE_WINDOW_DRAG:
+			win->x = msg->x;
+			win->y = msg->y;
+			return true;
+		case WINDOW_LIB_MESSAGE_CREATE:
+			window_send_message_simple(win, WINDOW_LIB_MESSAGE_PREDRAW);
+			return false;
+		case WINDOW_LIB_MESSAGE_PREDRAW:
+			on_window_predraw(win);
+			window_send_message_simple(win, WINDOW_LIB_MESSAGE_DRAW);
+			return false;
+		case WINDOW_LIB_MESSAGE_DRAW:
+			window_send_message_simple(win, WINDOW_LIB_MESSAGE_PRESENT);
+			return false;
+		case WINDOW_LIB_MESSAGE_PRESENT:
+			syscall(SYSCall_windows_present, win->handle, WINDOW_EXT(win)->context);
+			return true;
+	}
+	return false;
+}
+
+vector_t mouse_to_local(window_t *win, message_t *msg) {
+	return (vector_t){msg->x - win->x, msg->y - win->y};
+}
+
+static window_t *window_find_focused_component(window_t *win, message_t *msg) {
+	vector_t local = mouse_to_local(win, msg);
+	for(window_t *w = win->next; w != NULL; w = w->next) {
+		if (window_point_inside(w, local.x, local.y)) {
+			return w;
+		}
+	}
+	return NULL;
+}
+
+void window_invalidate(window_t *win) {
+	window_send_message_simple(win, WINDOW_LIB_MESSAGE_PREDRAW);
 }

@@ -101,15 +101,15 @@ finish_packet:
     mouse_y_difference = y;
     message.key = 0;
     if (mouse_byte[0] & 0x01) {
-      message.message = MESSAGE_MOUSE_CLICK;
+      message.message = MESSAGE_MOUSE_PRESS;
       message.key |= MOUSE_LEFT_CLICK;
     }
     if (mouse_byte[0] & 0x02) {
-      message.message = MESSAGE_MOUSE_CLICK;
+      message.message = MESSAGE_MOUSE_PRESS;
       message.key |= MOUSE_RIGHT_CLICK;
     }
     if (mouse_byte[0] & 0x04) {
-      message.message = MESSAGE_MOUSE_CLICK;
+      message.message = MESSAGE_MOUSE_PRESS;
       message.key |= MOUSE_MIDDLE_CLICK;
     }
 
@@ -122,11 +122,14 @@ finish_packet:
     if (mouse_y > 768) mouse_y = 768;
     if (mouse_y < 0) mouse_y = 0;
     message.x = mouse_x;
-    message.x = mouse_y;
+    message.y = mouse_y;
 
     // Do not send same message twice
     if (old_message.message != message.message || old_message.x != message.x ||
         old_message.y != message.y || old_message.key != message.key ) {
+      if (old_message.message == MESSAGE_MOUSE_PRESS) {
+        message.message = MESSAGE_MOUSE_RELEASE;
+      }
       window_add_messageto_top(&message);
       old_message = message;
     }

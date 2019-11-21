@@ -28,7 +28,7 @@ context_t *window_context_create(int width, int height, int bpp) {
 	context->height = height;
 	context->bpp = bpp;
 	context->buffer = malloc(context_size);
-	memset(context->buffer, 0xFF, context_size);
+	memset(context->buffer, 0xF4, context_size); // f4f4f4 - WINDOW_BACKGROUND_COLOR
 
 	return context;
 }

@@ -25,7 +25,7 @@ void increment_counter(int add) {
 }
 
 int main() {
-	window = window_create(100, 100, 300, 300, "Hello World ;)", MSG_USER_WIN);
+	window = window_create(100, 100, 300, 300, "Simple Window", MSG_USER_WIN);
 	button1 = button_create(window, 10, 50, 100, 20, "Click me +", MSG_USER_BTN1);
 	button2 = button_create(window, 120, 50, 100, 20, "Click me -", MSG_USER_BTN2);
 	label = label_create(window, 10, 80, 100, 20, "", MSG_USER_LABEL);

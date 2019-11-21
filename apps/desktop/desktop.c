@@ -54,7 +54,7 @@ bool button_procedure(button_t *button, struct message_struct *msg) {
 
 int main() {
 	app_icon_bmp = bmp_read_from_memory(app_icon_data);
-	window = window_create(100, 100, 300, 300, "Desktop", MSG_USER_WIN);
+	window = window_create(0, 768 - 100, 1024, 100, "Applications", MSG_USER_WIN);
 	button_t *btn = button_create(window, 10, 20, 64, 64 + 9, "Simple", MSG_USER_BTN_SIMPLE_WIN);
 	btn->window_procedure = &button_procedure;
 

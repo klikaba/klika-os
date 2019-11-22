@@ -14,6 +14,8 @@
 #define WINDOW_LIB_MESSAGE_PREDRAW	1001
 #define WINDOW_LIB_MESSAGE_DRAW   	1002
 #define WINDOW_LIB_MESSAGE_PRESENT 	1003
+#define WINDOW_LIB_BUTTON_CLOSE   	1004
+#define WINDOW_LIB_BUTTON_MIN     	1005
 
 #define WINDOW_USER_MESSAGE         10000
 
@@ -51,6 +53,8 @@ typedef struct {
 typedef struct {
 	context_t *context;
 	struct window_struct *focused;
+	struct window_struct *button_close;
+	struct window_struct *button_min;
 } window_ext_t;
 
 struct window_struct {

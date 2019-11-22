@@ -1,4 +1,4 @@
-apps = simple_win
+apps = simple_win desktop
 
 all: $(apps)
 

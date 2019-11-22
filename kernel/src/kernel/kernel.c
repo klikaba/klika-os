@@ -39,7 +39,7 @@ void HALT_AND_CATCH_FIRE(const char *fmt, ...) {
   (void)_printf(fmt, args, serial_printf_help, NULL);
   va_end(args);
   x86_hlt(); 
-  while(1){}
+  while(1) {}
 }
 
 void _kdebug(const char *fmt, ...) {

@@ -1,5 +1,4 @@
 #include <windows.h>
-#include <windows/messaging.h>
 #include <klika_os.h>
 #include <syscalls.h>
 #include <stdbool.h>
@@ -57,6 +56,10 @@ window_t *window_create(int x, int y, int width, int height, char* title, int id
 	// Set state to be created
 	window_change_state(window, WINDOW_STATE_CREATED);
 
+	// Create Close and Min buttons
+	WINDOW_EXT(window)->button_close = button_create(window, 1, 1, 12, 12, "X", WINDOW_LIB_BUTTON_CLOSE);
+	WINDOW_EXT(window)->button_min = button_create(window, 16, 1, 12, 12, "_", WINDOW_LIB_BUTTON_MIN);
+
 	return window;
 }
 
@@ -67,9 +70,9 @@ void on_window_predraw(window_t *win) {
 	int y2 = WINDOW_EXT(win)->context->height;
 
 	// Main background
-	gfx_rect(WINDOW_EXT(win)->context, x1, y1, x2, y2, WIN_BACKGROUND_COLOR);
+	gfx_fillrect(WINDOW_EXT(win)->context, x1, y1, x2, y2, WIN_BACKGROUND_COLOR);
 	// Draw frame border
-	gfx_rect(WINDOW_EXT(win)->context, x1, x2, y1, y2, WIN_FRAME_COLOR);
+	gfx_rect(WINDOW_EXT(win)->context, x1, y1, x2, y2, WIN_FRAME_COLOR);
 
 	// TODO syscall - syscall_windows_is_top(win->handle)
 	bool is_top = false;
@@ -77,7 +80,8 @@ void on_window_predraw(window_t *win) {
 	gfx_fillrect(WINDOW_EXT(win)->context, x1 + 1, y1 + 1, x2 - 1, y1 + WINDOW_BAR_HEIGHT, top_frame_color);
 
 	// Frame label
-	gfx_puts(WINDOW_EXT(win)->context, x1 + 1 + 3, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
+	int text_x = (win->width - TEXT_FONT_WIDTH(win->title)) / 2;
+	gfx_puts(WINDOW_EXT(win)->context, x1 + text_x, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
 }
 
 void window_add_child(window_t *parent, window_t *child) {
@@ -139,6 +143,12 @@ bool window_default_procedure(window_t *win, message_t *msg) {
 			return false;
 		case WINDOW_LIB_MESSAGE_PRESENT:
 			syscall(SYSCall_windows_present, win->handle, WINDOW_EXT(win)->context);
+			return true;
+		case WINDOW_LIB_BUTTON_CLOSE:
+			DEBUG("CLOSE BUTTON PRESSED");
+			return true;
+		case WINDOW_LIB_BUTTON_MIN:
+			DEBUG("MIN BUTTON PRESSED");
 			return true;
 	}
 	return false;

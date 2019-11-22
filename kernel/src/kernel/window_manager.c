@@ -129,10 +129,9 @@ window_t* window_find(uint32_t handle) {
 }
 
 
-void window_present_context(window_t* win  __UNUSED__, context_t* context __UNUSED__) {
+void window_present_context(window_t* win  __UNUSED__, context_t* context) {
+	assert(context->bpp == 32);
 	memcpy(win->context.buffer, context->buffer, context->width * context->height * 4);
-	// fast_memcpy((unsigned char*)win->context.buffer, (unsigned char*)context->buffer, context->width * context->height * (32 / 8));
-  // fast_memcpy((unsigned char*)vesa_video_info.addr, (unsigned char*)buffer_video_info.addr, VIDEO_INFO_MEM_SIZE(buffer_video_info));
   window_need_redraw();
 }
 

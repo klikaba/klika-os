@@ -8,7 +8,7 @@
 
 // syscall_debug_puts(char* string)
 long syscall_debug_puts(isr_ctx_t *regs) {
-	DEBUG("APP[%i]: %s\n\r", task_list_current->id, regs->rdi);
+	DEBUG("APP[%i]: %s\n", task_list_current->id, regs->rdi);
 	return 1;
 }
 

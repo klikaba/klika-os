@@ -28,7 +28,7 @@ void debug_heap_dump() {
 }
 
 void sbrk(uint32_t size) {
-  DEBUG("Heap: Sbrk called : %i\n\r", size);
+  DEBUG("Heap: Sbrk called : %i\n", size);
 
   // Ask more memory from kernel
   syscall(SYSCall_memory_sbrk);
@@ -38,7 +38,7 @@ void sbrk(uint32_t size) {
   mb->size += PAGE_SIZE;
   heap_end += PAGE_SIZE;
   debug_heap_dump();
-  DEBUG("Heap: Heap after srbk 0x%X\n\r", heap_end);
+  DEBUG("Heap: Heap after srbk 0x%X\n", heap_end);
 }
 
 

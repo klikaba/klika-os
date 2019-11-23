@@ -12,7 +12,7 @@
 mblock_t *root_mblock;
 
 mblock_t *find_heap_block(uint32_t size) {
-  DEBUG("MMU[heap]: Heap find_heap_block %i\n\r", size);
+  DEBUG("MMU[heap]: Heap find_heap_block %i\n", size);
   HEAP_WALKER(mb) {
     if (mb->free && mb->size > size) { // not >= ... little hack to not match last block in a byte 
       return mb;
@@ -22,21 +22,21 @@ mblock_t *find_heap_block(uint32_t size) {
 }
 
 void debug_heap_dump() {
-  DEBUG("MMU[heap]: ------- HEAP DUMP --------\n\r");
+  DEBUG("MMU[heap]: ------- HEAP DUMP --------\n");
   HEAP_WALKER(mb) {
-    DEBUG("MMU[heap]: mb: 0x%X mag:%X siz:%i free:%i\n\r", mb, mb->magic, mb->size, mb->free);
+    DEBUG("MMU[heap]: mb: 0x%X mag:%X siz:%i free:%i\n", mb, mb->magic, mb->size, mb->free);
   }
-  DEBUG("MMU[heap]: --------------------------\n\r");
+  DEBUG("MMU[heap]: --------------------------\n");
 }
 
 void sbrk(uint32_t size) {
-  DEBUG("MMU[heap]: Sbrk called : %i\n\r", size);
+  DEBUG("MMU[heap]: Sbrk called : %i\n", size);
   // Find last entry and m ap to it (we are never freeing pages)
   for (uint64_t i=0; i<512; i++) {
     if (pde[i].all == 0) {
       uint64_t frame_address = (uint64_t)alloc_frame();
       pde[i].all = frame_address | 0x83;
-      DEBUG("MMU[heap]: Sbrk new frame : %i 0x%X\n\r", i, frame_address);
+      DEBUG("MMU[heap]: Sbrk new frame : %i 0x%X\n", i, frame_address);
       break;
     }
   }
@@ -50,7 +50,7 @@ void sbrk(uint32_t size) {
   mb->size += PAGE_SIZE;
   heap_end += PAGE_SIZE;
   debug_heap_dump();
-  DEBUG("MMU[heap]: Heap after srbk 0x%X\n\r", TO_PHYS_U64(heap_end));
+  DEBUG("MMU[heap]: Heap after srbk 0x%X\n", TO_PHYS_U64(heap_end));
 }
 
 mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
@@ -68,31 +68,38 @@ mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
   next_mb->next = old_next;
   next_mb->free = true;
 
-  DEBUG("MMU[heap]: split prev: 0x%X mag:%X siz:%i free:%i\n\r", mb, mb->magic, mb->size, mb->free);
-  DEBUG("MMU[heap]: split next: 0x%X mag:%X siz:%i free:%i\n\r", next_mb, next_mb->magic, next_mb->size, next_mb->free);
+  DEBUG("MMU[heap]: split prev: 0x%X mag:%X siz:%i free:%i\n", mb, mb->magic, mb->size, mb->free);
+  DEBUG("MMU[heap]: split next: 0x%X mag:%X siz:%i free:%i\n", next_mb, next_mb->magic, next_mb->size, next_mb->free);
 
   return mb;
 }
 
 void *malloc(uint32_t size) {
-  DEBUG("MMU[heap]: malloc %i\n\r", size);
+  DEBUG("MMU[heap]: malloc %i\n", size);
   mblock_t *mb = find_heap_block(size);
   if (mb == NULL) {
-    DEBUG("MMU[heap]: No more empty blocks ... sbrk-ing ...\n\r");
+    DEBUG("MMU[heap]: No more empty blocks ... sbrk-ing ...\n");
     sbrk(size);
     return malloc(size);
   } 
   else {
-    DEBUG("MMU[heap]: split block  ...\n\r");
+    DEBUG("MMU[heap]: split block  ...\n");
     mb = split_heap_block(mb, size);
   }
   return ((uint8_t*)mb) + sizeof(mblock_t);
 }
 
+void *calloc(size_t num, size_t size) {
+  void *ptr = malloc(num * size);
+  memset(ptr, 0, num * size);
+  return ptr;
+}
+
+
 void free(void *ptr) {
   mblock_t *mb = (mblock_t *)(((uint8_t*)ptr) - sizeof(mblock_t));
   if (mb->magic != MBLOCK_MAGIC) {
-    HALT_AND_CATCH_FIRE("HEAP: free(0x%X) - freeing bad block.\n\r");
+    HALT_AND_CATCH_FIRE("HEAP: free(0x%X) - freeing bad block.\n");
   }
   mb->free = true;
 }
@@ -103,7 +110,7 @@ void init_mmu_heap() {
   root_mblock->magic = MBLOCK_MAGIC;
   root_mblock->size = heap_end - heap_start - sizeof(mblock_t);
   root_mblock->next = NULL;
-  DEBUG("MMU[heap]: Heap init : start:0x%X end:0x%X\n\r", heap_start, heap_end);
-  DEBUG("MMU[heap]: Heap first block size : %i\n\r", root_mblock->size);
+  DEBUG("MMU[heap]: Heap init : start:0x%X end:0x%X\n", heap_start, heap_end);
+  DEBUG("MMU[heap]: Heap first block size : %i\n", root_mblock->size);
 }
 

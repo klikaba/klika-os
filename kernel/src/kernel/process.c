@@ -69,9 +69,9 @@ void task_list_delete(task_t* task) {
 }
 
 void task_list_dump() {
-  DEBUG("Task lsit dump:\n\r");
+  DEBUG("Task lsit dump:\n");
   for(task_t* current = task_list_head; current != NULL; current = current->next){
-    DEBUG("Task: %i\n\r", current->id);
+    DEBUG("Task: %i\n", current->id);
   }
 }
 
@@ -134,32 +134,32 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
   Elf64_Ehdr *header = elf_data_buffer;
   elf_check_supported(header);
 
-  DEBUG("***** Preparing ELF PROCESS\r\n");
+  DEBUG("***** Preparing ELF PROCESS\n");
 
-  DEBUG("ELF: Header e_type: %i\n\r",  header->e_type);
-  DEBUG("ELF: Header e_machine: %i\n\r",  header->e_machine);
-  DEBUG("ELF: Header e_version: %i\n\r",  header->e_version);
-  DEBUG("ELF: Header e_entry: %i\n\r",  header->e_entry);
-  DEBUG("ELF: Header e_phoff: %i\n\r",  header->e_phoff);
-  DEBUG("ELF: Header e_shoff: %i\n\r",  header->e_shoff);
-  DEBUG("ELF: Header e_flags: %i\n\r",  header->e_flags);
-  DEBUG("ELF: Header e_ehsize: %i\n\r",  header->e_ehsize);
-  DEBUG("ELF: Header e_phentsize: %i\n\r",  header->e_phentsize);
-  DEBUG("ELF: Header e_phnum: %i\n\r",  header->e_phnum);
-  DEBUG("ELF: Header e_shentsize: %i\n\r",  header->e_shentsize);
-  DEBUG("ELF: Header e_shnum: %i\n\r",  header->e_shnum);
-  DEBUG("ELF: Header e_shstrndx: %i\n\r",  header->e_shstrndx);
+  DEBUG("ELF: Header e_type: %i\n",  header->e_type);
+  DEBUG("ELF: Header e_machine: %i\n",  header->e_machine);
+  DEBUG("ELF: Header e_version: %i\n",  header->e_version);
+  DEBUG("ELF: Header e_entry: %i\n",  header->e_entry);
+  DEBUG("ELF: Header e_phoff: %i\n",  header->e_phoff);
+  DEBUG("ELF: Header e_shoff: %i\n",  header->e_shoff);
+  DEBUG("ELF: Header e_flags: %i\n",  header->e_flags);
+  DEBUG("ELF: Header e_ehsize: %i\n",  header->e_ehsize);
+  DEBUG("ELF: Header e_phentsize: %i\n",  header->e_phentsize);
+  DEBUG("ELF: Header e_phnum: %i\n",  header->e_phnum);
+  DEBUG("ELF: Header e_shentsize: %i\n",  header->e_shentsize);
+  DEBUG("ELF: Header e_shnum: %i\n",  header->e_shnum);
+  DEBUG("ELF: Header e_shstrndx: %i\n",  header->e_shstrndx);
   assert(header->e_phnum == 1);
 
   Elf64_Phdr *prog_header = (Elf64_Phdr*)(((char*)elf_data_buffer) + header->e_phoff);
-  DEBUG("ELF: P Header p_type;: 0x%X\n\r", prog_header->p_type);
-  DEBUG("ELF: P Header p_flags: 0x%X\n\r", prog_header->p_flags);
-  DEBUG("ELF: P Header p_offse: 0x%X\n\r", prog_header->p_offset);
-  DEBUG("ELF: P Header p_vaddr: 0x%X\n\r", prog_header->p_vaddr);
-  DEBUG("ELF: P Header p_paddr: 0x%X\n\r", prog_header->p_paddr);
-  DEBUG("ELF: P Header p_files: 0x%X\n\r", prog_header->p_filesz);
-  DEBUG("ELF: P Header p_memsz: 0x%X\n\r", prog_header->p_memsz);
-  DEBUG("ELF: P Header p_align: 0x%X\n\r", prog_header->p_align);
+  DEBUG("ELF: P Header p_type;: 0x%X\n", prog_header->p_type);
+  DEBUG("ELF: P Header p_flags: 0x%X\n", prog_header->p_flags);
+  DEBUG("ELF: P Header p_offse: 0x%X\n", prog_header->p_offset);
+  DEBUG("ELF: P Header p_vaddr: 0x%X\n", prog_header->p_vaddr);
+  DEBUG("ELF: P Header p_paddr: 0x%X\n", prog_header->p_paddr);
+  DEBUG("ELF: P Header p_files: 0x%X\n", prog_header->p_filesz);
+  DEBUG("ELF: P Header p_memsz: 0x%X\n", prog_header->p_memsz);
+  DEBUG("ELF: P Header p_align: 0x%X\n", prog_header->p_align);
 
   assert(prog_header->p_vaddr == 0);
   assert(prog_header->p_filesz <= PAGE_SIZE);
@@ -171,7 +171,7 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
   for (int i=0; i<32; i++) {
     DEBUG("%X ", ((uint8_t*)process_buffer)[i]);
   }
-  DEBUG("\n\r");
+  DEBUG("\n");
 
   return header->e_entry;
 }
@@ -212,7 +212,7 @@ task_t* create_kernel_process(void* entry_point) {
   task->attribute = PROCESS_ATTR_KERNEL_SPACE;
   task->state = PROCESS_STATE_READY;
 
-  DEBUG("PROC: Kernel task created : x%X) entry:0x%X rsp:0x%X\n\r", entry_point, task->rsp);
+  DEBUG("PROC: Kernel task created : x%X) entry:0x%X rsp:0x%X\n", entry_point, task->rsp);
   task_list_insert(task);
 
   return task;
@@ -224,7 +224,7 @@ task_t* create_user_process(void* elf_raw_data) {
   // Allocate memory for task (2MB max)
   uint64_t phys_addr;
   uint8_t* task_memory = alloc_frame_temp(&phys_addr);
-  DEBUG("PROC: create_process_user phys_addr: 0x%X virt_addr: 0x%X\n\r", phys_addr, task_memory);
+  DEBUG("PROC: create_process_user phys_addr: 0x%X virt_addr: 0x%X\n", phys_addr, task_memory);
   uint64_t entry_point = load_elf(elf_raw_data, task_memory);
   
   uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STACK_SIZE);
@@ -258,7 +258,7 @@ task_t* create_user_process(void* elf_raw_data) {
   task->state = PROCESS_STATE_READY;
   task->pde[0].all = phys_addr | 0x87; // Present + Write + CPL3
 
-  DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n\r", task_memory, phys_addr, task->rsp);
+  DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n", task_memory, phys_addr, task->rsp);
   task_list_insert(task);
 
   return task;
@@ -269,7 +269,7 @@ void kill_process(task_t* task) {
     DEBUG("PROC: WARNING! - Cannot kill kernel idle task!");
     return;
   }
-  DEBUG("PROC: KILL-PROCESS with id:%i\n\r", task->id);
+  DEBUG("PROC: KILL-PROCESS with id:%i\n", task->id);
   task_list_delete(task);
   task_list_current = task_list_head;
 }

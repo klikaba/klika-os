@@ -31,13 +31,14 @@ static void init_pagging_kernel() {
   memset(&pde_krnluser, 0, sizeof(pde_t) * 512);
 
   // Kernel space
-  pml4e[0x100].all = TO_PHYS_U64(&pdpe) | 3; // KERNEL_VMA: Present + Write (0x100 KERNEL_START_MEMORY)
+  pml4e[0].all = TO_PHYS_U64(&pdpe) | 3;
+  pml4e[0x100].all = TO_PHYS_U64(&pdpe) | 3;    // KERNEL_VMA: Present + Write (0x100 KERNEL_START_MEMORY)
   pml4e[0x1C0].all = TO_PHYS_U64(&pdpe_krnluser) | 3; // KERNEL_USER TO KRNLVMA: Present + Write (0x1C0 KERNEL_USER_VIEW_START_MEMORY)
   pdpe[0].all = TO_PHYS_U64(&pde) | 3; 
   pdpe_krnluser[0].all = TO_PHYS_U64(&pde_krnluser) | 3; 
 
   uint64_t num_pages = TO_PHYS_U64(heap_end) / PAGE_SIZE;
-  DEBUG("MMU[pagging]: Krnl space pages needed: %i\n\r", num_pages);
+  DEBUG("MMU[pagging]: Krnl space pages needed: %i\n", num_pages);
 
   for (uint64_t i=0; i<=num_pages; i++) {
     pde[i].all = (i * PAGE_SIZE) | 0x83; // Presetn + Write + Large (2MB)
@@ -55,7 +56,7 @@ static void init_pagging_user() {
 
 static void init_pagging_video() {
   uint64_t video_framebuffer = vesa_video_info.linear_addr;
-  DEBUG("MMU: Video memory %0x\n\r", video_framebuffer);
+  DEBUG("MMU: Video memory %0x\n", video_framebuffer);
 
   memset(&pdpe_video, 0, sizeof(pdpe_t) * 512);
   memset(&pde_video, 0, sizeof(pde_t) * 512);

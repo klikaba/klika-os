@@ -24,11 +24,11 @@ static void extract_framebuffer_info(multiboot_info_t *mbi) {
         vesa_video_info.bits = tagfb->common.framebuffer_bpp;
         vesa_video_info.pitch = tagfb->common.framebuffer_pitch;
         vesa_video_info.type = tagfb->common.framebuffer_type;
-        DEBUG("VESA: Frame buffer addr: 0x%X\n\r", vesa_video_info.addr);
-        DEBUG("VESA: Frame buffer linear addr: 0x%X\n\r", vesa_video_info.linear_addr);
-        DEBUG("VESA: Frame buffer info: %i x %i : %ibpp\n\r", vesa_video_info.width, vesa_video_info.height, vesa_video_info.bits);
-        DEBUG("VESA: Frame buffer pitch: %i\n\r", vesa_video_info.pitch);
-        DEBUG("VESA: Frame buffer type: %i\n\r", vesa_video_info.type);
+        DEBUG("VESA: Frame buffer addr: 0x%X\n", vesa_video_info.addr);
+        DEBUG("VESA: Frame buffer linear addr: 0x%X\n", vesa_video_info.linear_addr);
+        DEBUG("VESA: Frame buffer info: %i x %i : %ibpp\n", vesa_video_info.width, vesa_video_info.height, vesa_video_info.bits);
+        DEBUG("VESA: Frame buffer pitch: %i\n", vesa_video_info.pitch);
+        DEBUG("VESA: Frame buffer type: %i\n", vesa_video_info.type);
       }
   }
 }

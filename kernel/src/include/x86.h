@@ -35,15 +35,7 @@ static inline uint8_t inp(uint16_t _port) {
     return (rv);
 }
 
-static inline int8_t inp_s(uint16_t _port) {
-    uint8_t rv;
-    __asm__ __volatile__ ("inb %1, %0"
-                          : "=a" (rv)
-                          : "d" (_port));
-    return (rv);
-}
-
-static inline uint16_t inpw (uint16_t _port) {
+static inline uint16_t inpw(uint16_t _port) {
     uint16_t rv;
     __asm__ __volatile__ ("inw %1, %0"
                           : "=a" (rv)

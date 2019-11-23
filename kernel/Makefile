@@ -25,7 +25,7 @@ c_source_files := $(wildcard src/drivers/*.c) $(wildcard src/kernel/*.c) $(wildc
 c_object_files := $(patsubst src/%.c, \
 	build/%.o, $(c_source_files))
 quemu_mem := 128
-floppy_image = ../floppy.img
+hd_image = ../images/disk.img
 
 .PHONY: all clean run iso
 
@@ -35,7 +35,7 @@ clean:
 	@rm -rfv build
 
 run: $(iso)
-	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(floppy_image),if=floppy,format=raw -boot order=d -serial stdio
+	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(hd_image),format=raw,index=0,media=disk  -boot order=d -serial stdio
 
 run-bocsh: $(iso)
 	$(objcopy) --only-keep-debug $(kernel) $(kernel).sym
@@ -43,7 +43,7 @@ run-bocsh: $(iso)
 	$(bochs) -rc ../bochs.rc -f ../bochs.cfg -q
 
 run-qemu: $(iso)
-	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(floppy_image),if=floppy,format=raw -boot order=d -s -S
+	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(hd_image),format=raw,index=0,media=disk  -boot order=d -s -S
 
 iso: $(iso)
 

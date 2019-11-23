@@ -21,7 +21,7 @@ void mmu_frame_set(uint64_t frame_addr) {
   uint64_t frame = frame_addr / PAGE_SIZE;
   uint64_t idx = INDEX_FROM_BIT(frame);
   uint64_t off = OFFSET_FROM_BIT(frame);
-  DEBUG("MMU[frames]: Frame set bit for 0x%X %i %i\n\r", frame_addr, idx, off);
+  DEBUG("MMU[frames]: Frame set bit for 0x%X %i %i\n", frame_addr, idx, off);
   mmu_frames[idx] |= (0x1 << off);
 }
 
@@ -60,11 +60,11 @@ uint64_t mmu_frame_find_first() {
 }
 
 void dump_frames() {
-  DEBUG("Frames:\n\r");
+  DEBUG("Frames:\n");
   for (uint64_t i=0; i<INDEX_FROM_BIT(mmu_nframes); i++) {
     DEBUG("0x%X ", mmu_frames[i]);
   }
-  DEBUG("\n\r");
+  DEBUG("\n");
 }
   
 
@@ -80,13 +80,13 @@ void* alloc_frame() {
 
 void* alloc_frame_temp(uint64_t *phys_out) {
   uint64_t addr = (uint64_t)alloc_frame();
-  DEBUG("MMU[frames]: alloc_frame_temp frame address 0x%X\n\r", addr);
+  DEBUG("MMU[frames]: alloc_frame_temp frame address 0x%X\n", addr);
 
   if (addr != 0) {
     *phys_out = addr;
     for (uint64_t i=0; i<512; i++) {
       if (pde_krnluser[i].all == 0) {
-        DEBUG("MMU[frames]: alloc new frame %i\n\r", i);
+        DEBUG("MMU[frames]: alloc new frame %i\n", i);
         pde_krnluser[i].all = addr | 0x83;
 
         x86_set_cr3(TO_PHYS_U64(pml4e));      
@@ -105,7 +105,7 @@ void init_mmu_frames(uint64_t memory_size) {
   mmu_nframes = memory_size / PAGE_SIZE;
   mmu_frames = (uint32_t*)&kernel_end;
   heap_start = round_up((uint64_t)(mmu_frames + mmu_nframes), 8);
-  DEBUG("MMU[frames]: Frames %i, %i\n\r", mmu_nframes, INDEX_FROM_BIT(mmu_nframes));
+  DEBUG("MMU[frames]: Frames %i, %i\n", mmu_nframes, INDEX_FROM_BIT(mmu_nframes));
   memset(mmu_frames, 0, INDEX_FROM_BIT(mmu_nframes) * sizeof(uint32_t));
   heap_end = round_up(heap_start, 0x200000); // Round up to end of page
 
@@ -116,5 +116,5 @@ void init_mmu_frames(uint64_t memory_size) {
   for (uint64_t i=0; i<num_pages; i++) {
     mmu_frame_set(i * PAGE_SIZE);
   }
-  DEBUG("MMU[frames]: Used Mem %0iKB\n\r", TO_PHYS_U64(heap_end) / 1024 / 1024);
+  DEBUG("MMU[frames]: Used Mem %0iKB\n", TO_PHYS_U64(heap_end) / 1024 / 1024);
 }

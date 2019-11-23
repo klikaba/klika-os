@@ -10,7 +10,7 @@
 
 // syscall_memory_sbrk()
 long syscall_memory_sbrk(isr_ctx_t *regs __UNUSED__) {
-	DEBUG("SYSCALL[memory]: Sbrk called for task %i\n\r", task_list_current->id);
+	DEBUG("SYSCALL[memory]: Sbrk called for task %i\n", task_list_current->id);
 
 	uint64_t phys_addr = (uint64_t)alloc_frame(&phys_addr);
 

@@ -12,7 +12,7 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
-#define WALLPAPER
+// #define WALLPAPER
 
 #ifdef WALLPAPER
 #include "../lib/klika-wallpaper.bmp.h"
@@ -279,22 +279,22 @@ void window_handle_mouse() {
 
 bmp_image_t* bmp_read_from_memory(void* bmp_file) {
 	bmp_image_t* bmp = (bmp_image_t*)bmp_file;
-	DEBUG("BMP[wallpaper]: type  = %i\n\r", bmp->header.type);
-	DEBUG("BMP[wallpaper]: size  = %i\n\r", bmp->header.size);
-	DEBUG("BMP[wallpaper]: reserved1 = %i\n\r", bmp->header.reserved1);
-	DEBUG("BMP[wallpaper]: reserved2 = %i\n\r", bmp->header.reserved2);
-	DEBUG("BMP[wallpaper]: offset = %i\n\r", bmp->header.offset);
-	DEBUG("BMP[wallpaper]: dib_header_size = %i\n\r", bmp->header.dib_header_size);
-	DEBUG("BMP[wallpaper]: width_px = %i\n\r", bmp->header.width_px);
-	DEBUG("BMP[wallpaper]: height_px = %i\n\r", bmp->header.height_px);
-	DEBUG("BMP[wallpaper]: num_planes = %i\n\r", bmp->header.num_planes);
-	DEBUG("BMP[wallpaper]: bits_per_pixel = %i\n\r", bmp->header.bits_per_pixel);
-	DEBUG("BMP[wallpaper]: compression = %i\n\r", bmp->header.compression);
-	DEBUG("BMP[wallpaper]: image_size_bytes = %i\n\r", bmp->header.image_size_bytes);
-	DEBUG("BMP[wallpaper]: x_resolution_ppm = %i\n\r", bmp->header.x_resolution_ppm);
-	DEBUG("BMP[wallpaper]: y_resolution_ppm = %i\n\r", bmp->header.y_resolution_ppm);
-	DEBUG("BMP[wallpaper]: num_colors = %i\n\r", bmp->header.num_colors);
-	DEBUG("BMP[wallpaper]: important_colors = %i\n\r", bmp->header.important_colors);
+	DEBUG("BMP[wallpaper]: type  = %i\n", bmp->header.type);
+	DEBUG("BMP[wallpaper]: size  = %i\n", bmp->header.size);
+	DEBUG("BMP[wallpaper]: reserved1 = %i\n", bmp->header.reserved1);
+	DEBUG("BMP[wallpaper]: reserved2 = %i\n", bmp->header.reserved2);
+	DEBUG("BMP[wallpaper]: offset = %i\n", bmp->header.offset);
+	DEBUG("BMP[wallpaper]: dib_header_size = %i\n", bmp->header.dib_header_size);
+	DEBUG("BMP[wallpaper]: width_px = %i\n", bmp->header.width_px);
+	DEBUG("BMP[wallpaper]: height_px = %i\n", bmp->header.height_px);
+	DEBUG("BMP[wallpaper]: num_planes = %i\n", bmp->header.num_planes);
+	DEBUG("BMP[wallpaper]: bits_per_pixel = %i\n", bmp->header.bits_per_pixel);
+	DEBUG("BMP[wallpaper]: compression = %i\n", bmp->header.compression);
+	DEBUG("BMP[wallpaper]: image_size_bytes = %i\n", bmp->header.image_size_bytes);
+	DEBUG("BMP[wallpaper]: x_resolution_ppm = %i\n", bmp->header.x_resolution_ppm);
+	DEBUG("BMP[wallpaper]: y_resolution_ppm = %i\n", bmp->header.y_resolution_ppm);
+	DEBUG("BMP[wallpaper]: num_colors = %i\n", bmp->header.num_colors);
+	DEBUG("BMP[wallpaper]: important_colors = %i\n", bmp->header.important_colors);
 	assert(bmp->header.type == 0x4D42); // 'B' 'M'
 	assert(bmp->header.bits_per_pixel == 32);
 	assert(bmp->header.compression == 0);
@@ -370,17 +370,17 @@ bool window_pop_message(window_t* win, message_t* msg_out) {
 
 
 void init_kernel_window_manager() {
-	DEBUG("SIZEOF LIST :%i\n\r", sizeof(window_list));
+	DEBUG("SIZEOF LIST :%i\n", sizeof(window_list));
 	memset(window_list, 0, MAX_WINDOW_COUNT * sizeof(window_t*));
 	memcpy(&buffer_video_info, &vesa_video_info, sizeof(video_info_t));
 	uint32_t screen_size = VIDEO_INFO_MEM_SIZE(vesa_video_info);
-	DEBUG("WIN: Allocating double buffer size : %i (%i MB)\n\r", screen_size, screen_size / 1024 / 1024);
+	DEBUG("WIN: Allocating double buffer size : %i (%i MB)\n", screen_size, screen_size / 1024 / 1024);
 	buffer_video_info.addr = (uint64_t)malloc(screen_size);
-  DEBUG("WIN: Double Frame buffer addr: 0x%X\n\r", buffer_video_info.addr);
-  DEBUG("WIN: Double Frame buffer linear addr: 0x%X\n\r", buffer_video_info.linear_addr);
-  DEBUG("WIN: Double Frame buffer info: %i x %i : %ibpp\n\r", buffer_video_info.width, buffer_video_info.height, buffer_video_info.bits);
-  DEBUG("WIN: Double Frame buffer pitch: %i\n\r", buffer_video_info.pitch);
-  DEBUG("WIN: Double Frame buffer type: %i\n\r", buffer_video_info.type);
+  DEBUG("WIN: Double Frame buffer addr: 0x%X\n", buffer_video_info.addr);
+  DEBUG("WIN: Double Frame buffer linear addr: 0x%X\n", buffer_video_info.linear_addr);
+  DEBUG("WIN: Double Frame buffer info: %i x %i : %ibpp\n", buffer_video_info.width, buffer_video_info.height, buffer_video_info.bits);
+  DEBUG("WIN: Double Frame buffer pitch: %i\n", buffer_video_info.pitch);
+  DEBUG("WIN: Double Frame buffer type: %i\n", buffer_video_info.type);
 
   #ifdef WALLPAPER
   bmp = bmp_read_from_memory(klika_wallpaper_bmp);

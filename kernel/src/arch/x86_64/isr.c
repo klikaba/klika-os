@@ -52,7 +52,7 @@ void init_kernel_isr()
 {
     memset(interrupt_handlers, 0, 256 * sizeof(isr_t));
 
-    DEBUG("ISR: init gates ...\n\r");
+    DEBUG("ISR: init gates ...\n");
     set_idt_gate(0, (uint64_t) isr_stub_0);
     set_idt_gate(1, (uint64_t) isr_stub_1);
     set_idt_gate(2, (uint64_t) isr_stub_2);
@@ -126,7 +126,7 @@ void isr_handler(isr_ctx_t *regs)
         "  code_segment        = 0x%X\n"
         "  cpu_flags           = 0x%X\n"
         "  stack_pointer       = 0x%X\n"
-        "  stack_segment       = 0x%X\n\r",
+        "  stack_segment       = 0x%X\n",
         int_no, exception_messages[int_no],
         task_list_current->id,
         regs->error_code,
@@ -136,7 +136,7 @@ void isr_handler(isr_ctx_t *regs)
         regs->rsp,
         regs->ss
     );
-    DEBUG("KILLING PROCESS %i!!!!\n\r", task_list_current->id);
+    DEBUG("KILLING PROCESS %i!!!!\n", task_list_current->id);
     kill_process(task_list_current);
     debug_heap_dump();
     do_first_task_jump();

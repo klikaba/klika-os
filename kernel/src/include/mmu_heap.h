@@ -16,6 +16,7 @@ struct mblock_struct {
 typedef struct mblock_struct mblock_t;
 
 void *malloc(uint32_t size);
+void *calloc(size_t num, size_t size);
 void free(void* size);
 void debug_heap_dump();
 void init_mmu_heap();

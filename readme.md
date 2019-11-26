@@ -8,10 +8,11 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 - Grub 2
 - Pagging (2MB) pages
 - Multiprocess / multi thread
-- Drivers: serial, mouse, keyboard, vesa
+- Drivers: serial, mouse, keyboard, vesa, ata
 - Userspace (ring 3)
 - System calls (int 0x80)
 - Graphics (double buffered)
+- ATA FAT 12/16/32 support (integrated using dosfs)
 - Window manager (in kernel space) 
 - GUI library (in user space) - based on messaging (similar to WinAPI)
 

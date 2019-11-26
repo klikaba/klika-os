@@ -24,12 +24,12 @@ void ide_select_drive(uint8_t bus, uint8_t i) {
 }
 
 void ide_primary_irq() {
-  DEBUG("ATA: primary IRQ\n");
+//  DEBUG("ATA: primary IRQ\n");
   pic_acknowledge(ATA_PRIMARY_IRQ);
 }
 
 void ide_secondary_irq() {
-  DEBUG("ATA: secondary IRQ\n");
+//  DEBUG("ATA: secondary IRQ\n");
   pic_acknowledge(ATA_SECONDARY_IRQ);
 }
 
@@ -46,31 +46,31 @@ bool ide_identify(uint8_t bus, uint8_t drive) {
 
   /* Now, send IDENTIFY */
   outp(io + ATA_REG_COMMAND, ATA_CMD_IDENTIFY);
-  DEBUG("ATA: Sent IDENTIFY\n");
+//  DEBUG("ATA: Sent IDENTIFY\n");
 
   /* Now, read status port */
   uint8_t status = inp(io + ATA_REG_STATUS);
   if (status) {
-    DEBUG("ATA: Satus %i\n", status);
+//    DEBUG("ATA: Satus %i\n", status);
 
     /* Now, poll untill BSY is clear. */
     while((inp(io + ATA_REG_STATUS) & ATA_SR_BSY) != 0);
 pm_stat_read:   
-    DEBUG("ATA: Busy clear\n");
+//    DEBUG("ATA: Busy clear\n");
     
     status = inp(io + ATA_REG_STATUS);
     if (status & ATA_SR_ERR) {
-      DEBUG("ATA: %s%s has ERR set. Disabled.\n", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
+//      DEBUG("ATA: %s%s has ERR set. Disabled.\n", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
       return false;
     }
 
     while(!(status & ATA_SR_DRQ)) {
       goto pm_stat_read;
     }
-    DEBUG("ATA: %s%s is online.\n", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
+//    DEBUG("ATA: %s%s is online.\n", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
     
     /* Now, actually read the data */
-    DEBUG("ATA: Reading ide_buffer ...\n");
+//    DEBUG("ATA: Reading ide_buffer ...\n");
     for(int i = 0; i<256; i++) {
       *(uint16_t *)(ide_buf + i*2) = inpw(io + ATA_REG_DATA);
       DEBUG("%02X %02X ", *(uint16_t *)(ide_buf + i*2) >> 8, *(uint16_t *)(ide_buf + i*2) &0xFF);
@@ -79,7 +79,7 @@ pm_stat_read:
     return true;
   }
   else {
-    DEBUG("ATA: Status 0\n");
+//    DEBUG("ATA: Status 0\n");
   }
   return false;
 }
@@ -96,29 +96,29 @@ void ide_poll(uint16_t io) {
   }
 retry:;
   uint8_t status = inp(io + ATA_REG_STATUS);
-  DEBUG("ATA: testing for BSY\n");
+//  DEBUG("ATA: testing for BSY\n");
 
   if(status & ATA_SR_BSY) {
     goto retry;
   }
-  DEBUG("ATA: BSY cleared\n");
+//  DEBUG("ATA: BSY cleared\n");
 retry2: 
   status = inp(io + ATA_REG_STATUS);
   if(status & ATA_SR_ERR) {
     HALT_AND_CATCH_FIRE("ERR set, device failure!\n");
   }
 
-  DEBUG("ATA: testing for DRQ\n");
+//  DEBUG("ATA: testing for DRQ\n");
   
   if (!(status & ATA_SR_DRQ)) {
     goto retry2;
   }
-  DEBUG("ATA: DRQ set, ready to PIO!\n");
+//  DEBUG("ATA: DRQ set, ready to PIO!\n");
   return;
 }
 
 uint8_t ata_read_one(uint8_t *buf, uint32_t lba) {
-  DEBUG("ATA: reading LBA : %i\n", lba);
+//  DEBUG("ATA: reading LBA : %i\n", lba);
   //lba &= 0x00FFFFFF; // ignore topmost byte
   /* We only support 28bit LBA so far */
   uint16_t io = 0;
@@ -140,39 +140,39 @@ uint8_t ata_read_one(uint8_t *buf, uint32_t lba) {
       ata_drive = ATA_SLAVE;
       break;
     default:
-      DEBUG("ATA: FATAL: unknown drive!\n");
+//      DEBUG("ATA: FATAL: unknown drive!\n");
       return 0;
   }
-  // DEBUG("ATA: io=0x%x %s\n", io, ata_drive == ATA_MASTER ? "Master" : "Slave");
+//  // DEBUG("ATA: io=0x%x %s\n", io, ata_drive == ATA_MASTER ? "Master" : "Slave");
   uint8_t cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
   // uint8_t slavebit = (drive == ATA_MASTER?0x00:0x01);
-  // DEBUG("ATA: LBA = 0x%x\n", lba);
-  // DEBUG("ATA: LBA>>24 & 0x0f = %d\n", (lba >> 24)&0x0f);
-  // DEBUG("ATA: (uint8_t)lba = %d\n", (uint8_t)lba);
-  // DEBUG("ATA: (uint8_t)(lba >> 8) = %d\n", (uint8_t)(lba >> 8));
-  // DEBUG("ATA: (uint8_t)(lba >> 16) = %d\n", (uint8_t)(lba >> 16));
+//  // DEBUG("ATA: LBA = 0x%x\n", lba);
+//  // DEBUG("ATA: LBA>>24 & 0x0f = %d\n", (lba >> 24)&0x0f);
+//  // DEBUG("ATA: (uint8_t)lba = %d\n", (uint8_t)lba);
+//  // DEBUG("ATA: (uint8_t)(lba >> 8) = %d\n", (uint8_t)(lba >> 8));
+//  // DEBUG("ATA: (uint8_t)(lba >> 16) = %d\n", (uint8_t)(lba >> 16));
   //outp(io + ATA_REG_HDDEVSEL, cmd | ((lba >> 24)&0x0f));
   outp(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t)((lba >> 24 & 0x0F))));
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", (cmd | (lba >> 24)&0x0f), io + ATA_REG_HDDEVSEL);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (cmd | (lba >> 24)&0x0f), io + ATA_REG_HDDEVSEL);
   //for(int k = 0; k < 10000; k++) ;
   outp(io + 1, 0x00);
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", 0x00, io + 1);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", 0x00, io + 1);
   //for(int k = 0; k < 10000; k++) ;
   outp(io + ATA_REG_SECCOUNT0, 1);
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t) numsects, io + ATA_REG_SECCOUNT0);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t) numsects, io + ATA_REG_SECCOUNT0);
   //for(int k = 0; k < 10000; k++) ;
   outp(io + ATA_REG_LBA0, (uint8_t)((lba)));
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba)), io + ATA_REG_LBA0);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba)), io + ATA_REG_LBA0);
   //for(int k = 0; k < 10000; k++) ;
   outp(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba) >> 8), io + ATA_REG_LBA1);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba) >> 8), io + ATA_REG_LBA1);
   //for(int k = 0; k < 10000; k++) ;
   outp(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba) >> 16), io + ATA_REG_LBA2);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba) >> 16), io + ATA_REG_LBA2);
   //for(int k = 0; k < 10000; k++) ;
   outp(io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
-  // DEBUG("ATA: issued 0x%x to 0x%x\n", ATA_CMD_READ_PIO, io + ATA_REG_COMMAND);
+//  // DEBUG("ATA: issued 0x%x to 0x%x\n", ATA_CMD_READ_PIO, io + ATA_REG_COMMAND);
 
   ide_poll(io);
 
@@ -185,7 +185,7 @@ uint8_t ata_read_one(uint8_t *buf, uint32_t lba) {
 
 void ata_probe() {
   if(ide_identify(ATA_PRIMARY, ATA_MASTER)) {
-    DEBUG("ATA: YESSS\n");
+//    DEBUG("ATA: YESSS\n");
     ata_pm = 1;
     /* Now, process the IDENTIFY data */
     /* Model goes from W#27 to W#46 */    
@@ -194,14 +194,14 @@ void ata_probe() {
       ata_device_name[i] = ide_buf[ATA_IDENT_MODEL + i + 1];
       ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
     }
-    DEBUG("ATA: Device: %s\n", ata_device_name);
+//    DEBUG("ATA: Device: %s\n", ata_device_name);
     ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
   }
   ide_identify(ATA_PRIMARY, ATA_SLAVE);
 }
 
 void init_kernel_ata() {
-  DEBUG("ATA: Checking for ATA drives\n");
+//  DEBUG("ATA: Checking for ATA drives\n");
 
   register_interrupt_handler(ISR_IRQE, ide_primary_irq);
   irq_enable(PIC_IRQE);

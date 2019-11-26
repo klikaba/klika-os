@@ -8,6 +8,7 @@
 #include <mmu_heap.h>
 #include <x86.h>
 #include <elf.h>
+#include <stdio.h>
 
 task_t *task_list_head = NULL;
 task_t *task_list_last = NULL;
@@ -132,7 +133,7 @@ bool elf_check_supported(Elf64_Ehdr *hdr) {
 
 uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
   Elf64_Ehdr *header = elf_data_buffer;
-  elf_check_supported(header);
+  assert(elf_check_supported(header));
 
   DEBUG("***** Preparing ELF PROCESS\n");
 
@@ -263,6 +264,27 @@ task_t* create_user_process(void* elf_raw_data) {
 
   return task;
 }
+
+task_t* create_user_process_file(char *filename) {
+  DEBUG("PROC: Creating user process from file %s\n", filename);
+  FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    DEBUG("PROC: File does not exist\n");
+    return NULL;
+  }
+
+  uint32_t size = fsize(file);
+  void *buffer = malloc(size + 512); // do we need + 512 ?
+  assert(buffer != NULL);
+  uint32_t read_bytes = fread(buffer, size, 1, file);
+  assert(read_bytes == size);
+  fclose(file);
+
+  task_t *new_task = create_user_process(buffer);
+  free(buffer);
+  return new_task;
+}
+
 
 void kill_process(task_t* task) {
   if (task->id == 0) {

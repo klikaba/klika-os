@@ -22,6 +22,10 @@ typedef struct {
 } __attribute__((packed)) bmp_header_t;
 
 typedef struct {
-    bmp_header_t header;
-    uint32_t*  data;
-} __attribute__((packed)) bmp_image_t;
+    uint8_t *buffer;
+    bmp_header_t *header;
+    uint32_t *data;
+} bmp_image_t;
+
+void bmp_from_file(char *filename, bmp_image_t *bmp_out);
+void bmp_close(bmp_image_t *bmp_image);

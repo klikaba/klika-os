@@ -20,19 +20,25 @@ c_include := 'src/include'
 cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 		  -ffreestanding -mno-red-zone -mno-mmx -mno-sse -mno-sse2 \
 	      -I $(c_include) -nostartfiles -nodefaultlibs -fno-exceptions \
-	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-implicit-fallthrough -O2
+	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-implicit-fallthrough -O2 \
+	      -Wno-parentheses
 c_source_files := $(wildcard src/drivers/*.c) $(wildcard src/kernel/*.c) $(wildcard src/lib/*.c) $(wildcard src/arch/x86_64/*.c) $(wildcard src/syscalls/*.c)
 c_object_files := $(patsubst src/%.c, \
 	build/%.o, $(c_source_files))
 quemu_mem := 128
 hd_image = ../images/disk.img
 
-.PHONY: all clean run iso
+.PHONY: all clean run iso install
 
 all: $(kernel)
 
 clean:
 	@rm -rfv build
+
+install:
+	dd if=/dev/zero of=../images/disk.img count=163840 bs=512
+	mformat -F -v KLIKA-OS -i ../images/disk.img
+	mcopy -svn -i ../images/disk.img ../images/disk/* ::. 
 
 run: $(iso)
 	$(qemu) -cdrom $(iso) -m $(quemu_mem) -drive file=$(hd_image),format=raw,index=0,media=disk  -boot order=d -serial stdio

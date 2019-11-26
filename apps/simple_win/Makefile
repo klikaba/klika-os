@@ -1,4 +1,5 @@
-name = simple_win
+name = simplew
+$(info =-=-=-=-=-=-=-=-=-=-=-=-=-= $(name) =-=-=-=-=-=-=-=-=-=-=-=-=-=)
 
 cc = x86_64-elf-gcc
 ld = x86_64-elf-ld
@@ -27,8 +28,11 @@ nasm_flags :=  -felf64 -w-number-overflow
 
 all: $(name)
 
+install:
+	mkdir -p ../../images/disk/apps/$(name) && cp $(name) ../../images/disk/apps/$(name)
+
 clean:
-	@rm -r build
+	@rm -r build || true
 
 debug: nasm_flags += -g -F dwarf
 debug: cflags += -g
@@ -38,7 +42,6 @@ $(name): $(assembly_object_files) $(c_object_files) $(linker_script)
 	$(ld) -nostdlib -n -T $(linker_script) -o $(name) $(c_object_files) $(assembly_object_files) --gc-sections
 	$(objdump) -D $(name) > build/$(name).dump.asm
 	$(objdump) -x $(name) >> build/$(name).headers.txt
-	xxd -i $(name) > build/$(name)_byte.c
 
 # compile assembly files
 build/%.o: ../lib/%.asm

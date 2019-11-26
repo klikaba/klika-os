@@ -132,6 +132,14 @@ char *strdup(const char *str) {
 	return strcpy(new_string, str);
 }
 
+int strcmp(const char* s1, const char* s2) {
+  while(*s1 && (*s1 == *s2)) {
+    s1++;
+    s2++;
+  }
+  return *(const unsigned char*)s1 - *(const unsigned char*)s2;
+}
+
 int isspace(char c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
 }

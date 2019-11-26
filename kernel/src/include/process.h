@@ -61,6 +61,7 @@ void task_list_dump();
 
 task_t *create_kernel_process(void* entry_point);
 task_t *create_user_process(void* elf_raw_data);
+task_t *create_user_process_file(char *filename);
 void kill_process(task_t* task);
 
 task_t* next_task();

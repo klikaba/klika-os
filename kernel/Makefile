@@ -36,7 +36,7 @@ clean:
 	@rm -rfv build
 
 install:
-	dd if=/dev/zero of=../images/disk.img count=163840 bs=512
+	dd if=/dev/zero of=../images/disk.img count=81920 bs=512
 	mformat -F -v KLIKA-OS -i ../images/disk.img
 	mcopy -svn -i ../images/disk.img ../images/disk/* ::. 
 

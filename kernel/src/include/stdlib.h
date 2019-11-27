@@ -17,4 +17,8 @@ void srand(unsigned int seed);
 div_t div(int numer, int denom);
 ldiv_t ldiv(long int numer, long int denom);
 
+int abs(int n);
+long int labs(long int n);
+long long int llabs(long long int n);
+
 #endif

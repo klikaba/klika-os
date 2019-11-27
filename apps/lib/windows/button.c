@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <gfx.h>
-
+#include <bmp.h>
 
 button_t *button_create(window_t *parent, int x, int y, int width, int height, char* title, int id) {
 	button_t *window = calloc(sizeof(button_t), 1);
@@ -26,20 +26,42 @@ button_t *button_create(window_t *parent, int x, int y, int width, int height, c
 	window->parent = parent;
 	window->state = BUTTON_STATE_NORMAL;
 
+	// Create Ext params
+	window->ext = calloc(sizeof(button_ext_t), 1);
+
 	window_add_child(parent, window);
 
-	// Create Ext params
-	// window_ext_t *ext = calloc(sizeof(window_ext_t), 1);
-	// ext->context = window_context_create(width, height, 32);
-	// window->ext = ext;
-
-	// Create window (systemcall)
-	// window->handle = syscall(SYSCall_windows_create, x, y, width, height, title);
-
-	// Set state to be created
-	// window_change_state(window, WINDOW_STATE_CREATED);
-
 	return window;	
+}
+
+bmp_image_t* button_get_image(button_t *button) {
+	if (!BUTTON_EXT(button)->bmp_present) {
+		return NULL;
+	}
+
+	int state = button->state;
+	bmp_image_t * bmp_press = BUTTON_EXT(button)->bmp_press;
+	bmp_image_t * bmp_normal = BUTTON_EXT(button)->bmp_normal;
+
+	// return specific state, if not return other
+	if (state == BUTTON_STATE_PRESS) {
+		return bmp_press != NULL ? bmp_press : bmp_normal;
+	}
+	else {
+		return bmp_normal != NULL ? bmp_normal : bmp_press;
+	}
+}
+
+void button_set_image(button_t *button, int state, bmp_image_t *bmp) {
+	switch(state) {
+		case BUTTON_STATE_NORMAL:
+			BUTTON_EXT(button)->bmp_normal = bmp;
+			break;
+		case BUTTON_STATE_PRESS:
+			BUTTON_EXT(button)->bmp_press = bmp;
+			break;
+	}
+	BUTTON_EXT(button)->bmp_present = (BUTTON_EXT(button)->bmp_press != NULL || BUTTON_EXT(button)->bmp_normal != NULL);
 }
 
 bool button_default_procedure(button_t *win, struct message_struct *msg) {
@@ -73,21 +95,51 @@ bool button_default_procedure(button_t *win, struct message_struct *msg) {
 	return false;
 }
 
-
-void on_button_predraw(button_t *win) {
+static void draw_button_frame(button_t *win) {
 	int x1 = win->x;
 	int y1 = win->y;
 	int x2 = x1 + win->width;
 	int y2 = y1 + win->height;
+	int shift = 0;
+
+	if (win->state == BUTTON_STATE_PRESS) {
+		gfx_rect_width(WINDOW_EXT(win->parent)->context, x1+1, y1+1, x2, y2, BTN_FRAME_COLOR, WINDOW_FRAME_WIDTH);
+		gfx_fillrect(WINDOW_EXT(win->parent)->context, x1+3, y1+3, x2-2, y2-2, BTN_BACKGROUND_COLOR);		
+		shift = 1;
+	}
+	else {
+		gfx_draw_shadowed_box(WINDOW_EXT(win->parent)->context, x1, y1, x2, y2, BTN_FRAME_COLOR, BTN_BACKGROUND_COLOR);
+	}
+
+	int text_x = x1 + (win->width - TEXT_FONT_WIDTH(win->title) ) / 2 + shift;
+	int text_y = y1 + (win->height - TEXT_FONT_HEIGHT(win->title) ) / 2 + shift;
+	gfx_puts(WINDOW_EXT(win->parent)->context, text_x, text_y, BTN_TEXT_COLOR, BTN_BACKGROUND_COLOR, win->title);
+}
+
+static void draw_button_with_image(button_t *win) {
+	int x1 = win->x;
+	int y1 = win->y;
+	int x2 = x1 + win->width-1;
+	int y2 = y1 + win->height-1;
 
 	// Main background
-	uint32_t bg_color = win->state == BUTTON_STATE_PRESS ? BTN_BACKGROUND_PRESS_COLOR : BTN_BACKGROUND_COLOR;
-	uint32_t fr_color = win->state == BUTTON_STATE_PRESS ? BTN_FRAME_PRESS_COLOR : BTN_FRAME_COLOR;
-	gfx_fillrect(WINDOW_EXT(win->parent)->context, x1, y1, x2, y2, bg_color);
-	gfx_rect(WINDOW_EXT(win->parent)->context, x1, y1, x2, y2, fr_color);
+	gfx_fillrect(WINDOW_EXT(win->parent)->context, x1, y1, x2, y2, WIN_BACKGROUND_COLOR);
 
-	// Frame label
+	int shift = win->state == BUTTON_STATE_NORMAL ? 0 : 1;
+	bmp_image_t *bmp = button_get_image(win);
+	gfx_blit(WINDOW_EXT(win->parent)->context, x1 + shift, y1 + shift, bmp->header->width_px, bmp->header->height_px, bmp->data);
+
+	// Frame label @ bottom
 	int text_x = x1 + (win->width - TEXT_FONT_WIDTH(win->title) ) / 2;
-	int text_y = y1 + (win->height - TEXT_FONT_HEIGHT(win->title) ) / 2;
-	gfx_puts(WINDOW_EXT(win->parent)->context, text_x, text_y, BTN_TEXT_COLOR, bg_color, win->title);
+	int text_y = y2 - TEXT_FONT_HEIGHT(win->title);
+	gfx_puts(WINDOW_EXT(win->parent)->context, text_x + shift, text_y + shift, 0, 0xFFFFFF, win->title);
+}
+
+void on_button_predraw(button_t *win) {
+	if (BUTTON_EXT(win)->bmp_present) {
+		draw_button_with_image(win);
+	}
+	else {
+		draw_button_frame(win);
+	}
 }

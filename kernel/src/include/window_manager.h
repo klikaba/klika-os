@@ -10,6 +10,9 @@
 #define MAX_WINDOW_NAME_LENGTH 128
 #define MAX_MESSAGE_QUEUE_LENGTH 128
 
+#define WINDOW_ATTR_TRANSP 0x01
+#define WINDOW_ATTR_BOTTOM 0x02
+
 typedef struct {
 	uint32_t* buffer;
 	int width;
@@ -25,6 +28,7 @@ typedef struct window_struct {
 	int width;
 	int height;
 	char title[MAX_WINDOW_NAME_LENGTH];
+    uint32_t attributes;
 	int message_queue_index;
 	task_t* parent_task;
 	message_t message_queue[MAX_MESSAGE_QUEUE_LENGTH];
@@ -51,9 +55,11 @@ typedef struct {
 } __attribute__((packed)) bmp_header_t;
 
 typedef struct {
-    bmp_header_t header;
-    uint32_t*  data;
-} __attribute__((packed)) bmp_image_t;
+    uint8_t *buffer;
+    bmp_header_t *header;
+    uint32_t *data;
+} bmp_image_t;
+
 
 #define MAX_WINDOW_COUNT 64
 

@@ -57,6 +57,7 @@ void on_label_predraw(label_t *label) {
 	int x2 = x1 + label->width;
 	int y2 = y1 + label->height;
 
+
 	gfx_fillrect(WINDOW_EXT(label->parent)->context, x1, y1, x2, y2, LABEL_BACKGROUND_COLOR);
 	gfx_puts(WINDOW_EXT(label->parent)->context, label->x, label->y, LABEL_TEXT_COLOR, LABEL_BACKGROUND_COLOR, label->title);
 }

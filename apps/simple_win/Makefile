@@ -30,6 +30,7 @@ all: $(name)
 
 install:
 	mkdir -p ../../images/disk/apps/$(name) && cp $(name) ../../images/disk/apps/$(name)
+	mkdir -p ../../images/disk/assets && cp ../lib/assets/*.* ../../images/disk/assets
 
 clean:
 	@rm -r build || true

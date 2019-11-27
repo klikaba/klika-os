@@ -239,3 +239,15 @@ EMIT2:        if((flags & PR_LJ) == 0)
   }
   return count;
 }
+
+int abs(int n) {
+  return n < 0 ? -n : n;
+}
+
+long int labs(long int n) {
+  return n < 0 ? -n : n;
+}
+
+long long int llabs(long long int n) {
+  return n < 0 ? -n : n;
+}

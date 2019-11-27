@@ -2,8 +2,8 @@
 
 #define WINDOW_TYPE_LABEL 2
 
-#define LABEL_TEXT_COLOR 0x000000
-#define LABEL_BACKGROUND_COLOR 0xF4F4F4
+#define LABEL_TEXT_COLOR 			 0x000000
+#define LABEL_BACKGROUND_COLOR 0xFFFFFF
 
 #define label_t window_t
 

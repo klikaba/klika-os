@@ -57,8 +57,15 @@ window_t *window_create(int x, int y, int width, int height, char* title, int id
 	window_change_state(window, WINDOW_STATE_CREATED);
 
 	// Create Close and Min buttons
-	WINDOW_EXT(window)->button_close = button_create(window, 1, 1, 12, 12, "X", WINDOW_LIB_BUTTON_CLOSE);
-	WINDOW_EXT(window)->button_min = button_create(window, 16, 1, 12, 12, "_", WINDOW_LIB_BUTTON_MIN);
+	WINDOW_EXT(window)->button_close = button_create(window, 10, 13, 20, 20, "", WINDOW_LIB_BUTTON_CLOSE);
+	bmp_image_t *bmp_close = malloc(sizeof(bmp_image_t));
+	bmp_from_file("/assets/btnclose.bmp", bmp_close);
+	button_set_image(WINDOW_EXT(window)->button_close, BUTTON_STATE_NORMAL, bmp_close);
+
+	WINDOW_EXT(window)->button_min = button_create(window, 30, 13, 20, 20, "", WINDOW_LIB_BUTTON_MIN);
+	bmp_image_t *bmp_min = malloc(sizeof(bmp_image_t));
+	bmp_from_file("/assets/btnmin.bmp", bmp_min);
+	button_set_image(WINDOW_EXT(window)->button_min, BUTTON_STATE_NORMAL, bmp_min);
 
 	return window;
 }
@@ -66,22 +73,25 @@ window_t *window_create(int x, int y, int width, int height, char* title, int id
 void on_window_predraw(window_t *win) {
 	int x1 = 0;
 	int y1 = 0;
-	int x2 = WINDOW_EXT(win)->context->width;
-	int y2 = WINDOW_EXT(win)->context->height;
-
-	// Main background
-	gfx_fillrect(WINDOW_EXT(win)->context, x1, y1, x2, y2, WIN_BACKGROUND_COLOR);
-	// Draw frame border
-	gfx_rect(WINDOW_EXT(win)->context, x1, y1, x2, y2, WIN_FRAME_COLOR);
-
+	int x2 = WINDOW_EXT(win)->context->width-1;
+	int y2 = WINDOW_EXT(win)->context->height-1;
 	// TODO syscall - syscall_windows_is_top(win->handle)
 	bool is_top = false;
-	uint32_t top_frame_color = is_top ? WIN_ACTIVE_FRAME : WIN_INACTIVE_FRAME;
-	gfx_fillrect(WINDOW_EXT(win)->context, x1 + 1, y1 + 1, x2 - 1, y1 + WINDOW_BAR_HEIGHT, top_frame_color);
+
+	// Draw frame border
+	uint32_t top_frame_color = is_top ? WIN_ACTIVE_FRAME_COLOR : WIN_INACTIVE_FRAME_COLOR;
+	gfx_draw_shadowed_box(WINDOW_EXT(win)->context, x1, y1, x2, y2, top_frame_color, WIN_BACKGROUND_COLOR);
+
+	uint32_t top_bar_color = is_top ? WIN_ACTIVE_BAR_COLOR : WIN_INACTIVE_BAR_COLOR;
+	gfx_fillrect(WINDOW_EXT(win)->context, x1 + 2, y1 + 2, x2 - 4, y1 + WINDOW_BAR_HEIGHT - 2, top_bar_color);
+	// Line under bar
+	gfx_hline(WINDOW_EXT(win)->context, x1 + 2, x2 - 4, y1 + WINDOW_BAR_HEIGHT - 2, top_frame_color);
+	gfx_hline(WINDOW_EXT(win)->context, x1 + 2, x2 - 4, y1 + WINDOW_BAR_HEIGHT - 3, top_frame_color);
 
 	// Frame label
 	int text_x = (win->width - TEXT_FONT_WIDTH(win->title)) / 2;
-	gfx_puts(WINDOW_EXT(win)->context, x1 + text_x, y1 + 1 + 3, WIN_FRAME_TEXT_COLOR, top_frame_color, win->title);
+	int text_y = (WINDOW_BAR_HEIGHT - TEXT_FONT_HEIGHT(win->title)) / 2;
+	gfx_puts(WINDOW_EXT(win)->context, x1 + text_x, y1 + text_y, WIN_BAR_TEXT_COLOR, top_bar_color, win->title);
 }
 
 void window_add_child(window_t *parent, window_t *child) {

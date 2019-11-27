@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <malloc.h>
 #include <types.h>
 
@@ -7,10 +8,6 @@
 // inline function to swap two numbers
 void swap(char *x, char *y) {
 	char t = *x; *x = *y; *y = t;
-}
-
-int abs(int n) {
-	return n < 0 ? -n : n;
 }
 
 // function to reverse buffer[i..j]

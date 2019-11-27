@@ -2,6 +2,8 @@
 #include <mmu_heap.h>
 #include <process.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <kernel.h>
 #include <assert.h>
@@ -12,13 +14,8 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
-// #define WALLPAPER
 
-#ifdef WALLPAPER
-#include "../lib/klika-wallpaper.bmp.h"
-#endif
-
-#define WINDOW_BAR_HEIGHT  (8 + 2*3)
+#define WINDOW_BAR_HEIGHT  44
 
 #define WIN_SORT_VAL(win) (win == NULL ? 1000000000 : win->z) 
 
@@ -53,6 +50,34 @@ short mouse_icon[] =  {
 };
 
 uint32_t mouse_color_mapping[] = {0, 0xFFFFFFFF, 0};
+
+
+void bmp_from_file(char *filename, bmp_image_t *bmp_out) {
+	DEBUG("BMP FILE OPENING ...");
+	FILE *file = fopen(filename, "r");
+	if (file == NULL) {
+		return;
+	}
+	DEBUG("BMP FILE OPENED");
+	uint32_t size = fsize(file);
+
+
+	void *buffer = malloc(size + 512);
+	DEBUG("BMP ALLOCATED ...");
+
+	fread(buffer, size, 1, file);
+	DEBUG("BMP READ ...");
+
+	bmp_out->buffer = buffer;
+	bmp_out->header = (bmp_header_t*)bmp_out->buffer;
+	bmp_out->data = (uint32_t*)(((uint8_t*)buffer) + bmp_out->header->offset);
+	// Usually header is negative (means that image is stored : top - to -bottom)
+	bmp_out->header->height_px = abs(bmp_out->header->height_px);
+}
+
+void bmp_close(bmp_image_t *bmp_image) {
+	free(bmp_image->buffer);
+}
 
 static int find_max_z() {
 	int last_z = 0;
@@ -277,32 +302,32 @@ void window_handle_mouse() {
 	window_need_redraw();
 }
 
-bmp_image_t* bmp_read_from_memory(void* bmp_file) {
-	bmp_image_t* bmp = (bmp_image_t*)bmp_file;
-	DEBUG("BMP[wallpaper]: type  = %i\n", bmp->header.type);
-	DEBUG("BMP[wallpaper]: size  = %i\n", bmp->header.size);
-	DEBUG("BMP[wallpaper]: reserved1 = %i\n", bmp->header.reserved1);
-	DEBUG("BMP[wallpaper]: reserved2 = %i\n", bmp->header.reserved2);
-	DEBUG("BMP[wallpaper]: offset = %i\n", bmp->header.offset);
-	DEBUG("BMP[wallpaper]: dib_header_size = %i\n", bmp->header.dib_header_size);
-	DEBUG("BMP[wallpaper]: width_px = %i\n", bmp->header.width_px);
-	DEBUG("BMP[wallpaper]: height_px = %i\n", bmp->header.height_px);
-	DEBUG("BMP[wallpaper]: num_planes = %i\n", bmp->header.num_planes);
-	DEBUG("BMP[wallpaper]: bits_per_pixel = %i\n", bmp->header.bits_per_pixel);
-	DEBUG("BMP[wallpaper]: compression = %i\n", bmp->header.compression);
-	DEBUG("BMP[wallpaper]: image_size_bytes = %i\n", bmp->header.image_size_bytes);
-	DEBUG("BMP[wallpaper]: x_resolution_ppm = %i\n", bmp->header.x_resolution_ppm);
-	DEBUG("BMP[wallpaper]: y_resolution_ppm = %i\n", bmp->header.y_resolution_ppm);
-	DEBUG("BMP[wallpaper]: num_colors = %i\n", bmp->header.num_colors);
-	DEBUG("BMP[wallpaper]: important_colors = %i\n", bmp->header.important_colors);
-	assert(bmp->header.type == 0x4D42); // 'B' 'M'
-	assert(bmp->header.bits_per_pixel == 32);
-	assert(bmp->header.compression == 0);
-	bmp->data = (uint32_t*)(((uint8_t*)bmp_file) + bmp->header.offset);
-	return bmp;
-}
+// bmp_image_t* bmp_read_from_memory(void* bmp_file) {
+// 	bmp_image_t* bmp = (bmp_image_t*)bmp_file;
+// 	DEBUG("BMP[wallpaper]: type  = %i\n", bmp->header.type);
+// 	DEBUG("BMP[wallpaper]: size  = %i\n", bmp->header.size);
+// 	DEBUG("BMP[wallpaper]: reserved1 = %i\n", bmp->header.reserved1);
+// 	DEBUG("BMP[wallpaper]: reserved2 = %i\n", bmp->header.reserved2);
+// 	DEBUG("BMP[wallpaper]: offset = %i\n", bmp->header.offset);
+// 	DEBUG("BMP[wallpaper]: dib_header_size = %i\n", bmp->header.dib_header_size);
+// 	DEBUG("BMP[wallpaper]: width_px = %i\n", bmp->header.width_px);
+// 	DEBUG("BMP[wallpaper]: height_px = %i\n", bmp->header.height_px);
+// 	DEBUG("BMP[wallpaper]: num_planes = %i\n", bmp->header.num_planes);
+// 	DEBUG("BMP[wallpaper]: bits_per_pixel = %i\n", bmp->header.bits_per_pixel);
+// 	DEBUG("BMP[wallpaper]: compression = %i\n", bmp->header.compression);
+// 	DEBUG("BMP[wallpaper]: image_size_bytes = %i\n", bmp->header.image_size_bytes);
+// 	DEBUG("BMP[wallpaper]: x_resolution_ppm = %i\n", bmp->header.x_resolution_ppm);
+// 	DEBUG("BMP[wallpaper]: y_resolution_ppm = %i\n", bmp->header.y_resolution_ppm);
+// 	DEBUG("BMP[wallpaper]: num_colors = %i\n", bmp->header.num_colors);
+// 	DEBUG("BMP[wallpaper]: important_colors = %i\n", bmp->header.important_colors);
+// 	assert(bmp->header.type == 0x4D42); // 'B' 'M'
+// 	assert(bmp->header.bits_per_pixel == 32);
+// 	assert(bmp->header.compression == 0);
+// 	bmp->data = (uint32_t*)(((uint8_t*)bmp_file) + bmp->header.offset);
+// 	return bmp;
+// }
 
-bmp_image_t* bmp;
+bmp_image_t wallpaper_bmp;
 
 void window_need_redraw() {
 	__window_need_redraw = true;
@@ -313,12 +338,7 @@ void window_manager_redraw() {
 		return;
 	}
 	window_sort_windows();
-	if (bmp == NULL) {
-		memset((void*)buffer_video_info.addr, 0, VIDEO_INFO_MEM_SIZE(buffer_video_info));
-	}
-	else {
-  	fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)bmp->data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
-	}
+	fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)wallpaper_bmp.data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
 	window_handle_mouse();
   window_draw_all();
   window_draw_mouse();
@@ -382,7 +402,5 @@ void init_kernel_window_manager() {
   DEBUG("WIN: Double Frame buffer pitch: %i\n", buffer_video_info.pitch);
   DEBUG("WIN: Double Frame buffer type: %i\n", buffer_video_info.type);
 
-  #ifdef WALLPAPER
-  bmp = bmp_read_from_memory(klika_wallpaper_bmp);
-  #endif
+  bmp_from_file("/assets/wallp.bmp", &wallpaper_bmp);
 }

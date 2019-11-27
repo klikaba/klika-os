@@ -45,3 +45,16 @@ ldiv_t ldiv(long int numer, long int denom) {
   }
   return result;
 }
+
+
+int abs(int n) {
+  return n < 0 ? -n : n;
+}
+
+long int labs(long int n) {
+  return n < 0 ? -n : n;
+}
+
+long long int llabs(long long int n) {
+  return n < 0 ? -n : n;
+}

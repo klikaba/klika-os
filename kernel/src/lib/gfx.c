@@ -53,6 +53,18 @@ void gfx_blit(video_info_t* video, int x, int y, int width, int height, uint32_t
 	}
 }
 
+// TODO: this is silly : use transparent map or alpha channel
+void gfx_blit_transparent(video_info_t* video, int x, int y, int width, int height, uint32_t* src, uint32_t trans_color) {
+	for (int i=0; i<height; i++) {
+		for (int j=0; j<width; j++) {
+			uint32_t c = *(src + (j + i * width));
+			if (c != trans_color) {
+				FRAMEBUFFER_32[FIRST_PIXEL(x+j, y+i)] = *(src + (j + i * width));
+			}
+		}
+	}
+}
+
 void gfx_puts(video_info_t* video, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char *c) {
 	while(*c) {
 		gfx_putchar(video, x, y, fgcolor, bgcolor, *c++);

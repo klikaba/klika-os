@@ -63,17 +63,16 @@ void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_serial();
   init_kernel_vesa(TO_VMA_PTR(multiboot_info_t *, mbi_phys));
   init_kernel_pagging();
-  init_kernel_window_manager();
 
   init_kernel_pic();
   init_kernel_isr();
   init_kernel_timer();
   init_kernel_keyboard();
   init_kernel_mouse();
-  //init_kernel_pci();
-
   init_kernel_ata();
   init_kernel_fat();
+
+  init_kernel_window_manager();
 
   create_kernel_process((void*)idle);
   create_user_process_file("/apps/desktop/desktop");

@@ -5,8 +5,6 @@
 
 #define WINDOW_TYPE_WINDOW 0
 
-#define WINDOW_EXT(win) ((window_ext_t*)win->ext)
-
 #define WINDOW_STATE_CREATED 0
 #define WINDOW_STATE_DESTORY 1
 
@@ -21,13 +19,15 @@
 
 #define WINDOW_MAX_COMPONENTS 32
 
-#define WIN_BACKGROUND_COLOR 	0xf4f4f4
-#define WIN_FRAME_COLOR 			0x3e78b3
-#define WIN_INACTIVE_FRAME  	0x3e78b3
-#define WIN_ACTIVE_FRAME    	0x3e78b3
-#define WIN_FRAME_TEXT_COLOR  0xFFFFFF
+#define WIN_BACKGROUND_COLOR 			0xFFFFFF
+#define WIN_ACTIVE_BAR_COLOR   		0xD5DFDF
+#define WIN_INACTIVE_BAR_COLOR		0xD5DFDF
+#define WIN_INACTIVE_FRAME_COLOR	0x000000
+#define WIN_ACTIVE_FRAME_COLOR 		0x000000
+#define WIN_BAR_TEXT_COLOR  			0x000000
 
-#define WINDOW_BAR_HEIGHT  (8 + 2*3)
+#define WINDOW_FRAME_WIDTH 2
+#define WINDOW_BAR_HEIGHT  44
 
 #define TEXT_FONT_WIDTH(str) (strlen(str)*8)
 #define TEXT_FONT_HEIGHT(str) (8)
@@ -49,6 +49,8 @@ typedef struct {
 	int height;
 	int bpp;
 } context_t;
+
+#define WINDOW_EXT(win) ((window_ext_t*)win->ext)
 
 typedef struct {
 	context_t *context;

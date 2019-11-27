@@ -67,7 +67,6 @@ void gfx_putchar_trans(context_t* context, int x, int y, uint32_t color, const c
   }
 }
 
-
 void gfx_puts(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char *c) {
 	while(*c) {
 		gfx_putchar(context, x, y, fgcolor, bgcolor, *c++);
@@ -82,7 +81,6 @@ void gfx_puts_trans(context_t* context, int x, int y, uint32_t color, const char
 	}
 }
 
-
 // Optimize + CLIP
 void gfx_blit(context_t* context, int x, int y, int width, int height, uint32_t* src) {
 	for (int i=0; i<height; i++) {
@@ -90,4 +88,30 @@ void gfx_blit(context_t* context, int x, int y, int width, int height, uint32_t*
 			CONTEXT_32[FIRST_PIXEL(x+j, y+i)] = *(src + (j + i * width));
 		}
 	}
+}
+
+void gfx_blit_trans(context_t* context, int x, int y, int width, int height, uint32_t* src, uint32_t color) {
+	for (int i=0; i<height; i++) {
+		for (int j=0; j<width; j++) {
+			uint32_t col = *(src + (j + i * width));
+			if (col != color) {
+				CONTEXT_32[FIRST_PIXEL(x+j, y+i)] = col;
+			}
+		}
+	}
+}
+
+void gfx_rect_width(context_t *context, int x1, int y1, int x2, int y2, uint32_t color, int width) {
+	for (int i=0; i<width; i++) {
+		gfx_hline(context, x1, x2, y1+i, color);
+		gfx_hline(context, x1, x2, y2-i, color);
+		gfx_vline(context, x1+i, y1, y2, color);
+		gfx_vline(context, x2-i, y1, y2, color);
+	}
+}
+
+void gfx_draw_shadowed_box(context_t *context, int x1, int y1, int x2, int y2, uint32_t color, uint32_t bg_color) {
+	gfx_rect_width(context, x1, y1, x2-2, y2-2, color, WINDOW_FRAME_WIDTH);
+	gfx_rect_width(context, x1+2, y1+2, x2, y2, color, WINDOW_FRAME_WIDTH);
+	gfx_fillrect(context, x1+2, y1+2, x2-4, y2-4, bg_color);
 }

@@ -14,6 +14,7 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
+#define WALLPAPER 
 
 #define WINDOW_BAR_HEIGHT  44
 
@@ -338,7 +339,12 @@ void window_manager_redraw() {
 		return;
 	}
 	window_sort_windows();
-	fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)wallpaper_bmp.data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	if (wallpaper_bmp.data != NULL) {
+		fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)wallpaper_bmp.data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	}
+	else {
+		memset((void*)buffer_video_info.addr, 0xC1, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	}
 	window_handle_mouse();
   window_draw_all();
   window_draw_mouse();
@@ -402,5 +408,10 @@ void init_kernel_window_manager() {
   DEBUG("WIN: Double Frame buffer pitch: %i\n", buffer_video_info.pitch);
   DEBUG("WIN: Double Frame buffer type: %i\n", buffer_video_info.type);
 
+
+  #ifdef WALLPAPER
   bmp_from_file("/assets/wallp.bmp", &wallpaper_bmp);
+  #else
+  wallpaper_bmp.data = NULL;
+  #endif
 }

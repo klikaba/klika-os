@@ -80,7 +80,7 @@ make clean all install run
 #include <windows.h>
 #include <stdlib.h>
 
-#define MSG_USER_WIN 		(WINDOW_USER_MESSAGE + 1)
+#define MSG_USER_WIN		(WINDOW_USER_MESSAGE + 1)
 #define MSG_USER_BTN1 	(WINDOW_USER_MESSAGE + 2)
 #define MSG_USER_BTN2 	(WINDOW_USER_MESSAGE + 3)
 #define MSG_USER_LABEL 	(WINDOW_USER_MESSAGE + 4)

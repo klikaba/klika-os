@@ -10,7 +10,8 @@ bochs = bochs
 
 arch ?= x86_64
 kernel := build/kernel-$(arch).bin
-iso := build/klika-os-$(arch).iso
+isoname := klika-os-$(arch).iso
+iso := build/$(isoname)
 linker_script := src/ldscripts/kernel.ld
 grub_cfg := src/grub/grub.cfg
 assembly_source_files := $(wildcard src/drivers/*.asm) $(wildcard src/kernel/*.asm) $(wildcard src/lib/*.asm) $(wildcard src/arch/x86_64/*.asm)
@@ -62,6 +63,7 @@ $(iso): $(kernel) $(grub_cfg)
 	@cp $(kernel) build/isofiles/boot/kernel.bin
 	@cp $(grub_cfg) build/isofiles/boot/grub
 	@grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
+	@cp $(iso) ../images/$(isoname)
 
 $(kernel): $(assembly_object_files) $(c_object_files) $(linker_script)
 	$(ld) -nostdlib -n -T $(linker_script) -o $(kernel) $(assembly_object_files) $(c_object_files)

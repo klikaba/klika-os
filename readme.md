@@ -41,6 +41,24 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 	- Fixed font 8x8
 - BMP file support :(
 
+## Run
+
+### Using qemu
+
+```
+$(qemu) -cdrom images/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
+```
+
+### Using VBox
+
+Convert raw qemu image to .vdi image:
+
+```
+qemu-img convert -O vdi images/disk.img images/disk.vdi
+```
+
+Mount disk.vdi (master) and klika-os-x86_64.iso (slave).
+
 ## Build
 
 Dependencies:

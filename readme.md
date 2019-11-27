@@ -152,7 +152,7 @@ int main() {
 
 ## Apps TODO
 - exit()
-- More compponents (button, text, radio, checkbox, ...)
+- More components (button, text, radio, checkbox, ...)
 - Calculator
 - Sudoku
 

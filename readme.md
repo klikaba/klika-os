@@ -41,10 +41,41 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 	- Fixed font 8x8
 - BMP file support :(
 
+## Build
+
+Dependencies:
+- qemu
+- mtools
+- gcc crosscompiler
+	- x86_64-elf-gcc
+	- x86_64-elf-ld
+	- x86_64-elf-as
+	- x86_64-elf-nm
+	- x86_64-elf-objdump
+	- x86_64-elf-objcopy
+	- nasm
+	- qemu-system-x86_64
+	- grub-mkrescue
+
+Build apps:
+
+```bash
+cd apps
+make clean all
+```
+
+Build kernel and create iso image (all), create hd disk image (install) and run qemu (run):
+
+```bash
+cd kernel
+make clean all install run
+```
+
 
 ## Simple app
 
 ```c
+// See ./apps/simple_win
 #include <klika_os.h>
 #include <windows.h>
 #include <stdlib.h>

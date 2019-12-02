@@ -41,12 +41,63 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 	- Fixed font 8x8
 - BMP file support :(
 
+
+## Build
+
+
+### Platform's Cross Compiler
+
+Most effective way to build and run KLIKA-OS is to install GCC cross compiler for your platform. GCC tools must be named using `x86_64-elf` prefix like:
+
+```
+x86_64-elf-gcc
+x86_64-elf-ld
+x86_64-elf-as
+x86_64-elf-nm
+x86_64-elf-objdump
+x86_64-elf-objcopy
+...
+```
+
+Dependencies:
+
+- qemu (4.0.0)
+- mtools (MUST BE 4.0.23)
+- gcc crosscompile
+	- x86_64-elf-gcc (8.3.0)
+	- x86_64-elf-ld (binutils 2.32)
+	- x86_64-elf-as (binutils 2.32)
+	- x86_64-elf-nm (binutils 2.32)
+	- x86_64-elf-objdump (binutils 2.32)
+	- x86_64-elf-objcopy (binutils 2.32)
+	- nasm (2.14.02)
+	- grub-mkrescue (2.05)
+
+To build and run with qemu:
+
+```
+cd apps
+make all
+```
+
+```
+cd kernel
+make all iso install run
+```
+
+
+### Using Vagrant
+
+SOON.
+
 ## Run
+
+Repostiory already contains pre-built ISO and HD images. Fastest way to run it will be using qemu:
 
 ### Using qemu
 
 ```
-$(qemu) -cdrom images/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
+qemu -cdrom images/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
 ```
 
 ### Using VBox
@@ -57,40 +108,12 @@ Convert raw qemu image to .vdi image:
 qemu-img convert -O vdi images/disk.img images/disk.vdi
 ```
 
-Mount disk.vdi (master) and klika-os-x86_64.iso (slave).
+Mount disk.vdi (master) and klika-os-x86_64.iso (slave). Start machine.
 
-## Build
+## Building apps
 
-Dependencies:
-- qemu
-- mtools
-- gcc crosscompiler
-	- x86_64-elf-gcc
-	- x86_64-elf-ld
-	- x86_64-elf-as
-	- x86_64-elf-nm
-	- x86_64-elf-objdump
-	- x86_64-elf-objcopy
-	- nasm
-	- qemu-system-x86_64
-	- grub-mkrescue
+Best way to create new app is just to copy `simple_win` from `apps` folder. 
 
-Build apps:
-
-```bash
-cd apps
-make clean all
-```
-
-Build kernel and create iso image (all), create hd disk image (install) and run qemu (run):
-
-```bash
-cd kernel
-make clean all install run
-```
-
-
-## Simple app
 
 ```c
 // See ./apps/simple_win
@@ -151,11 +174,11 @@ int main() {
 - Transaprent pixels
 
 ## Apps TODO
+- Desktop - discover apps from `/apps` folder
 - exit()
 - More components (button, text, radio, checkbox, ...)
 - Calculator
 - Sudoku
-
 
 ## Images
 

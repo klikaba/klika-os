@@ -1,4 +1,14 @@
 .DS_Store
+*.lst
+*.o
+*.eep
+*.lss
+*.map
+*.sym
 build
 kernel/bochslog.log
 kernel/bochs-serial.txt
+.cproject
+.dep/
+.project
+.settings/

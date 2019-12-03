@@ -1,5 +1,5 @@
 name = simplew
-$(info =-=-=-=-=-=-=-=-=-=-=-=-=-= $(name) =-=-=-=-=-=-=-=-=-=-=-=-=-=)
+$(info =-=-=-=-=-=-=-=-= $(name) : $(MAKECMDGOALS) =-=-=-=-=-=-=-=-=)
 
 cc = x86_64-elf-gcc
 ld = x86_64-elf-ld
@@ -24,16 +24,20 @@ assembly_object_files := $(patsubst ../lib/%.asm, build/%.o, $(assembly_source_f
 
 nasm_flags :=  -felf64 -w-number-overflow
 
-.PHONY: all clean run
+.PHONY: all clean run install
 
 all: $(name)
 
 install:
-	mkdir -p ../../images/disk/apps/$(name) && cp $(name) ../../images/disk/apps/$(name)
-	mkdir -p ../../images/disk/assets && cp ../lib/assets/*.* ../../images/disk/assets
+	mkdir -p ../../images/disk/apps/$(name) 
+	cp $(name) ../../images/disk/apps/$(name)
+	mkdir -p ../../images/disk/assets 
+	cp ../lib/assets/*.* ../../images/disk/assets
 
 clean:
-	@rm -r build || true
+	@rm -rf build || true
+	@rm -rf lib || true
+
 
 debug: nasm_flags += -g -F dwarf
 debug: cflags += -g

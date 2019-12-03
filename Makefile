@@ -1,12 +1,11 @@
-SUBDIRS = projectX projectY
+apps = apps kernel
 
-all: kernel apps
+all: 
+	$(MAKE) -C apps clean all install
+	$(MAKE) -C kernel clean all
 
-kernel:
-	make -C kernel clean all
-apps:
-	make -C apps 
-run: $(kernel) $(apps)
-	make -C kernel clean all run
+run: all
+	$(MAKE) -C kernel run
 
-.PHONY: kernel apps
+.PHONY: $(apps) all 
+

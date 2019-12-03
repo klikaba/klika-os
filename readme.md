@@ -76,15 +76,8 @@ Dependencies:
 To build and run with qemu:
 
 ```
-cd apps
-make all
+make all run
 ```
-
-```
-cd kernel
-make all iso install run
-```
-
 
 ### Using Vagrant
 
@@ -97,7 +90,7 @@ Repostiory already contains pre-built ISO and HD images. Fastest way to run it w
 ### Using qemu
 
 ```
-qemu -cdrom images/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
+qemu-system-x86_64  -cdrom kernel/build/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
 ```
 
 ### Using VBox
@@ -112,7 +105,7 @@ Mount disk.vdi (master) and klika-os-x86_64.iso (slave). Start machine.
 
 ## Building apps
 
-Best way to create new app is just to copy `simple_win` from `apps` folder. 
+Best way to create new app is just to copy `simple_win` from `apps` folder. Example for GUI app:
 
 
 ```c
@@ -144,7 +137,7 @@ int main() {
 	window = window_create(100, 100, 300, 300, "Simple Window", MSG_USER_WIN);
 	button_create(window, 10, layout_y, 100, 30, "Click me +", MSG_USER_BTN1);
 	button_create(window, 120, layout_y, 100, 30, "Click me -", MSG_USER_BTN2);
-	label = label_create(window, 10, layout_y + 40, 100, 20, "", MSG_USER_LABEL);
+	label = label_create(window, 10, layout_y + 40, 200, 20, "Number of clicks", MSG_USER_LABEL);
 
 	while(window_get_message(window, &msg)) { 
 		switch(msg.message) {

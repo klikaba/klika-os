@@ -168,14 +168,16 @@ vector_t mouse_to_local(window_t *win, message_t *msg) {
 	return (vector_t){msg->x - win->x, msg->y - win->y};
 }
 
+// found last one
 static window_t *window_find_focused_component(window_t *win, message_t *msg) {
 	vector_t local = mouse_to_local(win, msg);
+	window_t *found = NULL;
 	for(window_t *w = win->next; w != NULL; w = w->next) {
 		if (window_point_inside(w, local.x, local.y)) {
-			return w;
+			found = w;
 		}
 	}
-	return NULL;
+	return found;
 }
 
 void window_invalidate(window_t *win) {

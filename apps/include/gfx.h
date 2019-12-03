@@ -16,6 +16,7 @@ void gfx_vline(context_t* context, int x, int y1, int y2, uint32_t color);
 
 void gfx_rect(context_t* context, int x1, int y1, int x2, int y2, uint32_t color);
 void gfx_fillrect(context_t* context, int x1, int y1, int x2, int y2, uint32_t color);
+void gfx_fillrect_dot(context_t* context, int x1, int y1, int x2, int y2, uint32_t color);
 void gfx_rect_width(context_t *context, int x1, int y1, int x2, int y2, uint32_t color, int width);
 void gfx_draw_shadowed_box(context_t *context, int x1, int y1, int x2, int y2, uint32_t color, uint32_t bg_color);
 

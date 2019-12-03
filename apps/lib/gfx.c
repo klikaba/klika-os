@@ -40,6 +40,16 @@ void gfx_fillrect(context_t* context, int x1, int y1, int x2, int y2, uint32_t c
 	}
 }
 
+void gfx_fillrect_dot(context_t* context, int x1, int y1, int x2, int y2, uint32_t color) {
+	for (; x1 <= x2; x1++) {
+		for (; y1 <= y2; y1++) {
+			if ((x1 % 2 == 0) || (y1 % 2 == 0)) {
+				CONTEXT_32[FIRST_PIXEL(x1, y1)] = color;
+			}
+		}
+	}
+}
+
 void gfx_putchar(context_t* context, int x, int y, uint32_t fgcolor, uint32_t bgcolor, const char c) {
   uint8_t i, j;
   for(i = 0; i < 8; i++) {

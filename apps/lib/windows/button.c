@@ -82,14 +82,14 @@ bool button_default_procedure(button_t *win, struct message_struct *msg) {
 			}
 			return false;
 		case WINDOW_LIB_MESSAGE_CREATE:
-			window_dispatch_message_simple(win, WINDOW_LIB_MESSAGE_PREDRAW);
+			// window_dispatch_message_simple(win, WINDOW_LIB_MESSAGE_PREDRAW);
 			return false;
 		case WINDOW_LIB_MESSAGE_PREDRAW:
 			on_button_predraw(win);
-			window_dispatch_message_simple(win, WINDOW_LIB_MESSAGE_DRAW);
+			// window_dispatch_message_simple(win, WINDOW_LIB_MESSAGE_DRAW);
 			return false;
 		case WINDOW_LIB_MESSAGE_DRAW:
-			window_dispatch_message_simple(win, WINDOW_LIB_MESSAGE_PRESENT);
+			// window_dispatch_message_simple(win, WINDOW_LIB_MESSAGE_PRESENT);
 			return false;
 	}
 	return false;

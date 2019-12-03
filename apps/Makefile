@@ -1,8 +1,15 @@
 apps = simple_win desktop
 
-all: $(apps)
-
 $(apps):
-	$(MAKE) -C $@ clean all install
+	$(MAKE) -C $@ $(TARGET)
 
-.PHONY: $(apps)
+all: 
+	$(foreach app, $(apps), $(MAKE) -C $(app) $@;)	
+
+clean: 
+	$(foreach app, $(apps), $(MAKE) -C $(app) $@;)	
+
+install: 
+	$(foreach app, $(apps), $(MAKE) -C $(app) $@;)	
+
+.PHONY: $(apps) all clean install

@@ -1,4 +1,4 @@
-#include <mmu_pagging.h>
+#include <mmu_paging.h>
 #include <mmu_frames.h>
 #include <mmu_heap.h>
 #include <kernel.h>
@@ -22,8 +22,8 @@ pdpe_t  pde_krnluser[512] __attribute__((aligned(4096)));
 pdpe_t  pdpe_video[512] __attribute__((aligned(4096)));
 pde_t   pde_video[512] __attribute__((aligned(4096)));
 
-static void init_pagging_kernel() {
-  // Setup new PAGGING DIRECTORY
+static void init_paging_kernel() {
+  // Setup new PAGING DIRECTORY
   memset(&pml4e, 0, sizeof(pml4e_t) * 512);
   memset(&pdpe, 0, sizeof(pdpe_t) * 512);
   memset(&pde, 0, sizeof(pde_t) * 512);
@@ -38,14 +38,14 @@ static void init_pagging_kernel() {
   pdpe_krnluser[0].all = TO_PHYS_U64(&pde_krnluser) | 3; 
 
   uint64_t num_pages = TO_PHYS_U64(heap_end) / PAGE_SIZE;
-  DEBUG("MMU[pagging]: Krnl space pages needed: %i\n", num_pages);
+  DEBUG("MMU[paging]: Krnl space pages needed: %i\n", num_pages);
 
   for (uint64_t i=0; i<=num_pages; i++) {
     pde[i].all = (i * PAGE_SIZE) | 0x83; // Presetn + Write + Large (2MB)
   }
 }
 
-static void init_pagging_user() {
+static void init_paging_user() {
   // User space
   memset(&pdpe_user, 0, sizeof(pdpe_t) * 512);
   memset(&pde_user, 0, sizeof(pde_t) * 512);
@@ -54,7 +54,7 @@ static void init_pagging_user() {
   pdpe_user[0].all = TO_PHYS_U64(&pde_user) | 0x07; 
 }
 
-static void init_pagging_video() {
+static void init_paging_video() {
   uint64_t video_framebuffer = vesa_video_info.linear_addr;
   DEBUG("MMU: Video memory %0x\n", video_framebuffer);
 
@@ -70,12 +70,12 @@ static void init_pagging_video() {
   }  
 }
 
-void init_kernel_pagging() {
-  DEBUG("MMU[pagging] PAGGING: init ...");
+void init_kernel_paging() {
+  DEBUG("MMU[paging] PAGING: init ...");
   init_mmu_frames(128 * 1024 * 1024); // 128Megs for now - TODO : autodetect);
-  init_pagging_kernel();
-  init_pagging_user();
-  init_pagging_video();
+  init_paging_kernel();
+  init_paging_user();
+  init_paging_video();
   x86_set_cr3(TO_PHYS_U64(pml4e));
   init_mmu_heap();
 }

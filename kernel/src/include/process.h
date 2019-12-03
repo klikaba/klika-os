@@ -1,7 +1,7 @@
 #ifndef __PROCESS_H
 #define __PROCESS_H
 
-#include <mmu_pagging.h>
+#include <mmu_paging.h>
 #include <stdbool.h>
 #include <stdint.h>
 

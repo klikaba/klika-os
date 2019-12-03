@@ -1,5 +1,5 @@
 #include <process.h>
-#include <mmu_pagging.h>
+#include <mmu_paging.h>
 #include <string.h>
 #include <kernel.h>
 #include <stdlib.h>

@@ -1,5 +1,5 @@
-#ifndef __MMU_PAGGING_H
-#define __MMU_PAGGING_H
+#ifndef __MMU_PAGING_H
+#define __MMU_PAGING_H
 
 #include <stdint.h>
 
@@ -76,6 +76,6 @@ extern pdpe_t  pdpe_krnluser[512];
 extern pdpe_t  pde_krnluser[512];
 
 void* alloc_frame_temp(uint64_t *phys_out);
-void init_kernel_pagging();
+void init_kernel_paging();
 
 #endif

@@ -16,8 +16,8 @@ typedef union pci_dev {
 } pci_dev_t;
 
 // Ports
-#define PCI_CONFIG_ADDRESS  0xCF8
-#define PCI_CONFIG_DATA     0xCFC
+#define PCI_CONFIG_ADDRESS      0xCF8
+#define PCI_CONFIG_DATA         0xCFC
 
 // Config Address Register
 
@@ -47,10 +47,9 @@ typedef union pci_dev {
 #define PCI_HEADER_TYPE_DEVICE  0
 #define PCI_HEADER_TYPE_BRIDGE  1
 #define PCI_HEADER_TYPE_CARDBUS 2
-#define PCI_TYPE_BRIDGE 0x0604
-#define PCI_TYPE_SATA   0x0106
-#define PCI_NONE 0xFFFF
-
+#define PCI_TYPE_BRIDGE         0x0604
+#define PCI_TYPE_SATA           0x0106
+#define PCI_NONE                0xFFFF
 
 #define DEVICE_PER_BUS           32
 #define FUNCTION_PER_DEVICE      32
@@ -66,4 +65,3 @@ pci_dev_t pci_scan_bus(uint16_t vendor_id, uint16_t device_id, uint32_t bus, uin
 pci_dev_t pci_get_device(uint16_t vendor_id, uint16_t device_id, uint32_t device_type);
 
 void init_kernel_pci();
-

@@ -7,7 +7,7 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 - x86_64 OS
 - Grub2 as boot loader
 - Kernel @ 0xFFFF800000000000
-- Pagging 
+- Paging 
 	- 2MB pages
 	- Userspace mapped at 0x0000000000000000
 	- Kernel max 512MB

@@ -1,4 +1,4 @@
-#include <mmu_pagging.h>
+#include <mmu_paging.h>
 #include <mmu_frames.h>
 #include <process.h>
 #include <kernel.h>

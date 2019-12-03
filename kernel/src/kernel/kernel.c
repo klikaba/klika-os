@@ -14,7 +14,7 @@
 #include <process.h>
 #include <serial.h>
 #include <pic.h>
-#include <mmu_pagging.h>
+#include <mmu_paging.h>
 #include <mmu_heap.h>
 #include <mouse.h>
 #include <assert.h>
@@ -62,7 +62,7 @@ void idle() {
 void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_serial();
   init_kernel_vesa(TO_VMA_PTR(multiboot_info_t *, mbi_phys));
-  init_kernel_pagging();
+  init_kernel_paging();
 
   init_kernel_pic();
   init_kernel_isr();

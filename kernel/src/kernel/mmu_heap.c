@@ -1,6 +1,6 @@
 #include <mmu_heap.h>
 #include <mmu_frames.h>
-#include <mmu_pagging.h>
+#include <mmu_paging.h>
 #include <kernel.h>
 #include <memory.h>
 #include <stdint.h>

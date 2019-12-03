@@ -22,7 +22,7 @@ start:
 
     ; setup page entries to map kernel from KERNEL_VMA up to 2MB
     call set_up_page_tables
-    ; setup cr4 and cr3 to enable pagging
+    ; setup cr4 and cr3 to enable paging
     call enable_paging
 
     ; load the 64-bit GDT

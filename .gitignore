@@ -12,3 +12,4 @@ kernel/bochs-serial.txt
 .dep/
 .project
 .settings/
+images/disk

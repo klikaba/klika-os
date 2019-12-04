@@ -41,7 +41,7 @@ void bmp_blit(context_t* context, bmp_image_t *bmp, int x, int y) {
 		uint32_t *src = bmp->data;
 		for (int i=0; i<height; i++) {
 			for (int j=0; j<width; j++) {
-				CONTEXT_32[FIRST_PIXEL(x+j, y+(height-i))] = *(src + (j + i * width));
+				CONTEXT_32[FIRST_PIXEL(x+j, y+(height-1-i))] = *(src + (j + i * width));
 			}
 		}		
 	}

@@ -20,7 +20,7 @@ void draw_frame() {
 	uint32_t col = RGBA(rand()%255, rand()%255, rand()%255);
 
   gfx_line(context, x1, y1, x2, y2, col );
-	syscall(SYSCall_windows_present, window->handle, context);
+	window_present(window);
 }
 
 int main() {

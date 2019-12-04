@@ -15,14 +15,13 @@ int count = 0;
 void draw_frame() {
 	bmp_image_t *bmp = &bmps[bmp_index];
 
-	bmp_blit(WINDOW_EXT(window)->context, bmp, 2, WINDOW_BAR_HEIGHT+2);
-	window_invalidate(window);
+	bmp_blit(WINDOW_EXT(window)->context, bmp, 2, WINDOW_BAR_HEIGHT);
+	window_present(window);
 
 	// TODO - replace this with timer once implemented
 	if (count++ % 8 == 0) {
 		bmp_index = (bmp_index + 1) % 9;
 	}
-
 }
 
 int main() {
@@ -36,11 +35,14 @@ int main() {
 	bmp_from_file("/apps/demo2/0007.bmp", &bmps[7]);
 	bmp_from_file("/apps/demo2/0008.bmp", &bmps[8]);
 	
-	window = window_create(120, 120, 498+4, 372 + WINDOW_BAR_HEIGHT + 4, "Applications", MSG_USER_WIN);
+	window = window_create(120, 120, 498+5, 372 + WINDOW_BAR_HEIGHT + 4, "Applications", MSG_USER_WIN);
 
-	while(window_get_message(window, &msg)) { 
+	while(1) {
+		window_peek_message(window, &msg);
+		if (msg.message != 0) {
+			window_dispatch(window, &msg);
+		}
 		draw_frame();
-		window_dispatch(window, &msg);
 	}
 	return 0;
 }

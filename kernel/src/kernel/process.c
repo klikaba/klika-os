@@ -288,7 +288,7 @@ task_t* create_user_process_file(char *filename) {
 
 void kill_process(task_t* task) {
   if (task->id == 0) {
-    DEBUG("PROC: WARNING! - Cannot kill kernel idle task!");
+    HALT_AND_CATCH_FIRE("PROC: WARNING! - Cannot kill kernel idle task!");
     return;
   }
   DEBUG("PROC: KILL-PROCESS with id:%i\n", task->id);

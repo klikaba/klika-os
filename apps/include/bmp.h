@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <windows/window.h>
 
 typedef struct {
     uint16_t type;              // Magic identifier: 0x4d42
@@ -29,3 +30,4 @@ typedef struct {
 
 void bmp_from_file(char *filename, bmp_image_t *bmp_out);
 void bmp_close(bmp_image_t *bmp_image);
+void bmp_blit(context_t* context, bmp_image_t *bmp, int x, int y);

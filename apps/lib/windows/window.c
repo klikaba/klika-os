@@ -152,7 +152,7 @@ bool window_default_procedure(window_t *win, message_t *msg) {
 			window_send_message_simple(win, WINDOW_LIB_MESSAGE_PRESENT);
 			return false;
 		case WINDOW_LIB_MESSAGE_PRESENT:
-			syscall(SYSCall_windows_present, win->handle, WINDOW_EXT(win)->context);
+			window_present(win);
 			return true;
 		case WINDOW_LIB_BUTTON_CLOSE:
 			DEBUG("CLOSE BUTTON PRESSED");
@@ -182,4 +182,8 @@ static window_t *window_find_focused_component(window_t *win, message_t *msg) {
 
 void window_invalidate(window_t *win) {
 	window_send_message_simple(win, WINDOW_LIB_MESSAGE_PREDRAW);
+}
+
+void window_present(window_t *win) {
+	syscall(SYSCall_windows_present, win->handle, WINDOW_EXT(win)->context);
 }

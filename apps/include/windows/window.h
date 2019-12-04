@@ -90,6 +90,7 @@ void window_add_child(window_t *parent, window_t *child);
 void window_dispatch(window_t *win, struct message_struct *msg);
 bool window_dispatch_message(window_t *win, struct message_struct *msg);
 bool window_dispatch_message_simple(window_t *win, int message);
+void window_present(window_t *win);
 
 void window_invalidate(window_t *win);
 void window_change_state(window_t* win, int state);

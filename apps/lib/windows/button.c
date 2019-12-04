@@ -127,7 +127,7 @@ static void draw_button_with_image(button_t *win) {
 
 	int shift = win->state == BUTTON_STATE_NORMAL ? 0 : 1;
 	bmp_image_t *bmp = button_get_image(win);
-	gfx_blit(WINDOW_EXT(win->parent)->context, x1 + shift, y1 + shift, bmp->header->width_px, bmp->header->height_px, bmp->data);
+	bmp_blit(WINDOW_EXT(win->parent)->context, bmp, x1 + shift, y1 + shift);
 
 	// Frame label @ bottom
 	int text_x = x1 + (win->width - TEXT_FONT_WIDTH(win->title) ) / 2;

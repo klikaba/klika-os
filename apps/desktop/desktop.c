@@ -9,6 +9,7 @@ window_t  *window;
 #define MSG_USER_WIN (WINDOW_USER_MESSAGE + 1)
 #define MSG_USER_BTN_SIMPLE_WIN (WINDOW_USER_MESSAGE + 2)
 #define MSG_USER_BTN_DEMO1 (WINDOW_USER_MESSAGE + 3)
+#define MSG_USER_BTN_DEMO2 (WINDOW_USER_MESSAGE + 4)
 
 bmp_image_t app_icon_bmp;
 
@@ -23,7 +24,10 @@ int main() {
 	button_t *btn = button_create(window, 10, WINDOW_BAR_HEIGHT + 10, 64, 64 + 9, "Simple", MSG_USER_BTN_SIMPLE_WIN);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 
-	btn = button_create(window, 64+20, WINDOW_BAR_HEIGHT + 10, 64, 64 + 9, "Demo1", MSG_USER_BTN_DEMO1);
+	btn = button_create(window, 90, WINDOW_BAR_HEIGHT + 10, 64, 64 + 9, "Demo1", MSG_USER_BTN_DEMO1);
+	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
+
+	btn = button_create(window, 170, WINDOW_BAR_HEIGHT + 10, 64, 64 + 9, "Demo2", MSG_USER_BTN_DEMO2);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 
 	while(window_get_message(window, &msg)) { 
@@ -33,6 +37,9 @@ int main() {
 				break;
 			case MSG_USER_BTN_DEMO1:
 				start_app("/apps/demo1/demo1");				
+				break;
+			case MSG_USER_BTN_DEMO2:
+				start_app("/apps/demo2/demo2");				
 				break;
 		}
 		window_dispatch(window, &msg);

@@ -1,4 +1,4 @@
-apps = simple_win desktop
+apps = simple_win demo1 desktop
 
 $(apps):
 	$(MAKE) -C $@ $(TARGET)

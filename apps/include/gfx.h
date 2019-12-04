@@ -13,6 +13,7 @@ void gfx_putpixel(context_t* context, int x, int y, uint32_t color);
 
 void gfx_hline(context_t* context, int x1, int x2, int y, uint32_t color);
 void gfx_vline(context_t* context, int x, int y1, int y2, uint32_t color);
+void gfx_line(context_t *context, int x1, int y1, int x2, int y2, int color);
 
 void gfx_rect(context_t* context, int x1, int y1, int x2, int y2, uint32_t color);
 void gfx_fillrect(context_t* context, int x1, int y1, int x2, int y2, uint32_t color);

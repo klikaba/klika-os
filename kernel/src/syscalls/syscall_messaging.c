@@ -22,6 +22,15 @@ long syscall_messaging_get(isr_ctx_t *regs) {
 	return true;
 }
 
+long syscall_messaging_peek(isr_ctx_t *regs) {
+	message_t* msg = (message_t*)regs->rdi;
+	window_t* win = window_find(regs->rsi);
+	if (win != NULL) {
+		return window_pop_message(win, msg);
+	}
+	return true;
+}
+
 // syscall_messaging_create(message_t* msg, uint32_t handle)
 long syscall_messaging_create(isr_ctx_t *regs) {
 	message_t* msg = (message_t*)regs->rdi;

@@ -17,3 +17,7 @@ void window_send_message_simple(window_t* win, int message) {
 bool window_get_message(window_t* win, message_t* msg) {
 	return syscall(SYSCall_messaging_get, msg, win->handle);
 }
+
+bool window_peek_message(window_t* win, message_t* msg) {
+return syscall(SYSCall_messaging_peek, msg, win->handle);	
+}

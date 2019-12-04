@@ -28,5 +28,6 @@ typedef struct message_struct {
 void window_send_message(window_t* win, message_t* msg);
 void window_send_message_simple(window_t* win, int message);
 bool window_get_message(window_t* win, message_t* msg);
+bool window_peek_message(window_t* win, message_t* msg);
 
 #endif

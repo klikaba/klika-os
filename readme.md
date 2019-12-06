@@ -44,8 +44,9 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 
 ## Build
 
+You can build KLIKA-OS using Vagrant dev environment or on your local machine.
 
-### Platform's Cross Compiler
+### Build on your local machine
 
 Most effective way to build and run KLIKA-OS is to install GCC cross compiler for your platform. GCC tools must be named using `x86_64-elf` prefix like:
 
@@ -73,15 +74,24 @@ Dependencies:
 	- nasm (2.14.02)
 	- grub-mkrescue (2.05)
 
+Easiest way is to look into Vagrantfile and see what needs to be installed.
+
 To build and run with qemu:
 
 ```
 make all run
 ```
 
-### Using Vagrant
+### Build using Vagrant
 
-SOON.
+Vagrantfile already contains all dependencies needed to build KLIKA-OS. To run, you need qemu on your host machine.
+
+```
+vagrant up
+vagrant ssh
+cd /vagrant
+make all
+```
 
 ## Run
 

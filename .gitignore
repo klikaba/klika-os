@@ -8,6 +8,7 @@
 build
 kernel/bochslog.log
 kernel/bochs-serial.txt
+.vagrant
 .cproject
 .dep/
 .project

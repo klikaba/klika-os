@@ -14,7 +14,7 @@
 #include <isr.h>
 
 // Remove to have black wallpaper (fast compile)
-// #define WALLPAPER 
+#define WALLPAPER 
 
 #define WINDOW_BAR_HEIGHT  44
 

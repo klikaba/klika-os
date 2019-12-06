@@ -150,7 +150,7 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
   DEBUG("ELF: Header e_shentsize: %i\n",  header->e_shentsize);
   DEBUG("ELF: Header e_shnum: %i\n",  header->e_shnum);
   DEBUG("ELF: Header e_shstrndx: %i\n",  header->e_shstrndx);
-  assert(header->e_phnum == 1);
+  // assert(header->e_phnum == 1); 
 
   Elf64_Phdr *prog_header = (Elf64_Phdr*)(((char*)elf_data_buffer) + header->e_phoff);
   DEBUG("ELF: P Header p_type;: 0x%X\n", prog_header->p_type);

@@ -2,10 +2,10 @@ Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.provision "shell", inline: <<-SHELL
 		sudo locale-gen UTF-8
-		sudo apt-get update
 		sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test 
+		sudo apt-get update
 		sudo apt-get -y install gcc-8
-		sudo apt-get  -y install nasm
+		sudo apt-get -y install nasm
 		sudo apt-get -y install qemu
 		sudo apt-get -y install xorriso
 		wget ftp://ftp.gnu.org/gnu/mtools/mtools-4.0.23.tar.gz

@@ -1,6 +1,6 @@
-# Klika-OS
+# KlikaOS
 
-Klika-OS is a hobbyist and educational operating system writen in C (and some small parts are written in assembly).
+KlikaOS is a hobbyist and educational operating system writen in C (and some small parts are written in assembly).
 
 ## Features
 
@@ -44,11 +44,35 @@ Klika-OS is a hobbyist and educational operating system writen in C (and some sm
 
 ## Build
 
-You can build KLIKA-OS using Vagrant dev environment or on your local machine.
+You can build KLIKAOS using Vagrant Dev Environment or on your local machine.
+
+### Build using Vagrant
+
+Vagrantfile already contains all dependencies needed to build KLIKAOS. To use Vagrant as development environment 
+following dependencies must be installed on your host machine:
+
+* VirtualBox
+* Vagrant
+* QEMU (for MacOS use brew: `brew install qemu`)
+
+Run following:
+
+```
+vagrant up
+vagrant ssh
+cd /vagrant
+make all
+```
+
+This will create bootable ISO image and HD image in `images` folder. To run it, you will need qemu on your local machine. You can run it (FROM YOUR LOCAL MACHINE):
+
+```
+qemu-system-x86_64 -cdrom images/klikaos-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
+```
 
 ### Build on your local machine
 
-Most effective way to build and run KLIKA-OS is to install GCC cross compiler for your platform. GCC tools must be named using `x86_64-elf` prefix like:
+Most effective way to build and run KLIKAOS is to install GCC cross compiler for your platform. GCC tools must be named using `x86_64-elf` prefix like:
 
 ```
 x86_64-elf-gcc
@@ -82,16 +106,6 @@ To build and run with qemu:
 make all run
 ```
 
-### Build using Vagrant
-
-Vagrantfile already contains all dependencies needed to build KLIKA-OS. To run, you need qemu on your host machine.
-
-```
-vagrant up
-vagrant ssh
-cd /vagrant
-make all
-```
 
 ## Run
 
@@ -100,7 +114,7 @@ Repostiory already contains pre-built ISO and HD images. Fastest way to run it w
 ### Using qemu
 
 ```
-qemu-system-x86_64  -cdrom kernel/build/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
+qemu-system-x86_64 -cdrom images/klikaos-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
 ```
 
 ### Using VBox
@@ -111,9 +125,9 @@ Convert raw qemu image to .vdi image:
 qemu-img convert -O vdi images/disk.img images/disk.vdi
 ```
 
-Mount disk.vdi (master) and klika-os-x86_64.iso (slave). Start machine.
+Mount disk.vdi (master) and klikaos-x86_64.iso (slave). Start machine.
 
-## Building apps
+## Creating KLIKAOS apps
 
 Best way to create new app is just to copy `simple_win` from `apps` folder. Example for GUI app:
 
@@ -185,5 +199,5 @@ int main() {
 
 ## Images
 
-![Screenshot](https://github.com/klikaba/klika-os/blob/master/assets/screen_1.png?raw=true)
+![Screenshot](https://github.com/klikaba/klikaos/blob/master/assets/screen_1.png?raw=true)
 

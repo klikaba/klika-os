@@ -199,5 +199,5 @@ int main() {
 
 ## Images
 
-![Screenshot](https://github.com/klikaba/klikaos/blob/master/assets/screen_1.png?raw=true)
+![Screenshot](https://github.com/klikaba/klika-os/blob/master/assets/screen_1.png?raw=true)
 

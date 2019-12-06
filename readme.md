@@ -1,6 +1,6 @@
 # KlikaOS
 
-KlikaOS is a hobbyist and educational operating system writen in C (and some small parts are written in assembly).
+KlikaOS is a hobbyist and educational operating system written in C (and some small parts are written in assembly).
 
 ## Features
 
@@ -67,7 +67,7 @@ make all
 This will create bootable ISO image and HD image in `images` folder. To run it, you will need qemu on your local machine. You can run it (FROM YOUR LOCAL MACHINE):
 
 ```
-qemu-system-x86_64 -cdrom images/klikaos-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
+qemu-system-x86_64 -cdrom images/klika-os-x86_64.iso -m 128 -drive file=images/disk.img,format=raw,index=0,media=disk -boot order=d -serial stdio
 ```
 
 ### Build on your local machine

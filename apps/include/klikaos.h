@@ -1,5 +1,5 @@
-#ifndef __KLIKA_OS_H
-#define __KLIKA_OS_H
+#ifndef __KLIKAOS_H
+#define __KLIKAOS_H
 
 #include <syscalls.h>
 

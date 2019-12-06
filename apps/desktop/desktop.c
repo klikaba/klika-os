@@ -1,4 +1,4 @@
-#include <klika_os.h>
+#include <klikaos.h>
 #include <windows.h>
 #include <gfx.h>
 #include <bmp.h>

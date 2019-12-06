@@ -134,7 +134,7 @@ Best way to create new app is just to copy `simple_win` from `apps` folder. Exam
 
 ```c
 // See ./apps/simple_win
-#include <klika_os.h>
+#include <klikaos.h>
 #include <windows.h>
 #include <stdlib.h>
 

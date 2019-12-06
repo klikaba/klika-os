@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <windows/messaging.h>
 #include <windows/button.h>
-#include <klika_os.h>
+#include <klikaos.h>
 #include <syscalls.h>
 #include <stdbool.h>
 #include <malloc.h>

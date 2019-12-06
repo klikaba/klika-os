@@ -1,7 +1,7 @@
 #include <bmp.h>
 #include <stdio.h>
 #include <malloc.h>
-#include <klika_os.h>
+#include <klikaos.h>
 #include <stdlib.h>
 #include <gfx.h>
 

@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <syscalls.h>
-#include <klika_os.h>
+#include <klikaos.h>
 
 FILE* fopen(char* filename, char* mode) {
   FILE file;

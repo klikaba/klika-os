@@ -23,3 +23,9 @@ uint64_t syscall_process_from_file(isr_ctx_t *regs) {
 	return task != NULL ? task->id : 0;
 }
 
+
+// syscall_process_exit(int exit_code)
+uint64_t syscall_process_exit(isr_ctx_t *regs __UNUSED__) {
+	// int exit_code = regs->rdi;
+	return kill_process_id(task_list_current->id);
+}

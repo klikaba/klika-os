@@ -156,6 +156,7 @@ bool window_default_procedure(window_t *win, message_t *msg) {
 			return true;
 		case WINDOW_LIB_BUTTON_CLOSE:
 			DEBUG("CLOSE BUTTON PRESSED");
+			window_close(win, 0);
 			return true;
 		case WINDOW_LIB_BUTTON_MIN:
 			DEBUG("MIN BUTTON PRESSED");
@@ -186,4 +187,8 @@ void window_invalidate(window_t *win) {
 
 void window_present(window_t *win) {
 	syscall(SYSCall_windows_present, win->handle, WINDOW_EXT(win)->context);
+}
+
+void window_close(window_t *window __UNUSED__, int exit_code) {
+	syscall(SYSCall_process_exit, exit_code);
 }

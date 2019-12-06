@@ -16,9 +16,12 @@ long counter = 0;
 
 void increment_counter(int add) {
 	char buff[123];
+	mmu_frame_stats_t stats;
 
 	counter += add;
-	sprintf(buff, "Count: %i", counter);
+
+	memory_stats(&stats);
+	sprintf(buff, "Count: %i : u:%iMB f:%iMB", counter, stats.used_frames 0x2, stats.free_frames * 2);
 	label_set_text(label, buff);
 }
 

@@ -8,6 +8,9 @@ extern void* kernel_end;
 // 2MB Pages
 #define PAGE_SIZE 0x200000
 
+#define PAGE_PRESENT_CPL0 0x83
+#define PAGE_PRESENT_CPL3 0x87
+
 typedef union pml4e_struct {
   uint64_t all;
   struct {

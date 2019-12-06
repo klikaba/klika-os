@@ -80,6 +80,25 @@ void bmp_close(bmp_image_t *bmp_image) {
 	free(bmp_image->buffer);
 }
 
+static int find_window_index(window_t *window) {
+	for (int i=0; i<MAX_WINDOW_COUNT; i++) {
+		if (window_list[i] == window) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+static bool add_window(window_t *window) {
+	for(int i=0; i<MAX_WINDOW_COUNT; i++) {
+		if (window_list[i] == NULL) {
+			window_list[i] = window;
+			return true;
+		}
+	}
+	return false;
+}
+
 static int find_max_z() {
 	int last_z = 0;
 	for (int i=0; i<MAX_WINDOW_COUNT; i++) {
@@ -183,16 +202,21 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	new_win->context.buffer = (uint32_t*)malloc(width * height * (32 / 8));
 
 	// Add to list of windows : for now array of pointer to win
-	for(int i=0; i<MAX_WINDOW_COUNT; i++) {
-		if (window_list[i] == NULL) {
-			window_list[i] = new_win;
-			task_list_current->window = new_win;
-			break;
-		}
-	}
+	assert(add_window(new_win));
+	task_list_current->window = new_win;
+
 	window_sort_windows();
 	window_need_redraw();
 	return new_win;
+}
+
+void window_close(window_t *window) {
+	int win_idx = find_window_index(window);
+	free(window->context.buffer);
+	window_list[win_idx] = NULL;
+	free(window);
+	window_sort_windows();
+	window_need_redraw();
 }
 
 void window_draw(window_t *win, bool is_top __UNUSED__) {

@@ -41,7 +41,7 @@ static void init_paging_kernel() {
   DEBUG("MMU[paging]: Krnl space pages needed: %i\n", num_pages);
 
   for (uint64_t i=0; i<=num_pages; i++) {
-    pde[i].all = (i * PAGE_SIZE) | 0x83; // Presetn + Write + Large (2MB)
+    pde[i].all = (i * PAGE_SIZE) | PAGE_PRESENT_CPL0; // Presetn + Write + Large (2MB)
   }
 }
 

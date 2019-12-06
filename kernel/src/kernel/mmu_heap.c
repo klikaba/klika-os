@@ -35,7 +35,7 @@ void sbrk(uint32_t size __UNUSED__) {
   for (uint64_t i=0; i<512; i++) {
     if (pde[i].all == 0) {
       uint64_t frame_address = (uint64_t)alloc_frame();
-      pde[i].all = frame_address | 0x83;
+      pde[i].all = frame_address | PAGE_PRESENT_CPL0;
       // DEBUG("MMU[heap]: Sbrk new frame : %i 0x%X\n", i, frame_address);
       break;
     }

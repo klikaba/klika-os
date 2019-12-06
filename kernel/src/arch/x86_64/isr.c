@@ -152,6 +152,6 @@ static void page_fault_handler(isr_ctx_t *regs __attribute__((unused)) ) {
 
     DEBUG("!!!!!PAGW FAULT on 0x%X\n", faulting_address);
     kill_process(task_list_current);
-    debug_heap_dump();
+    // debug_heap_dump();
     do_first_task_jump();
 }

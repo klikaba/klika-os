@@ -63,6 +63,7 @@ task_t *create_kernel_process(void* entry_point);
 task_t *create_user_process(void* elf_raw_data);
 task_t *create_user_process_file(char *filename);
 void kill_process(task_t* task);
+bool kill_process_id(uint32_t id);
 
 task_t* next_task();
 task_t* current_task();

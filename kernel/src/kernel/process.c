@@ -1,5 +1,6 @@
 #include <process.h>
 #include <mmu_paging.h>
+#include <mmu_frames.h>
 #include <string.h>
 #include <kernel.h>
 #include <stdlib.h>
@@ -9,6 +10,7 @@
 #include <x86.h>
 #include <elf.h>
 #include <stdio.h>
+#include <window_manager.h>
 
 task_t *task_list_head = NULL;
 task_t *task_list_last = NULL;
@@ -16,15 +18,6 @@ task_t *task_list_current = NULL;
 
 bool task_list_is_empty() {
   return task_list_head == NULL;
-}
-
-int task_list_length() {
-  int length = 0;
-  task_t *current;
-  for(current = task_list_head; current != NULL; current = current->next){
-    length++;
-  }
-  return length;
 }
 
 task_t* task_list_insert(task_t* new_task) {
@@ -257,7 +250,7 @@ task_t* create_user_process(void* elf_raw_data) {
   task->id = __task_ids++;
   task->attribute = PROCESS_ATTR_USER_SPACE;
   task->state = PROCESS_STATE_READY;
-  task->pde[0].all = phys_addr | 0x87; // Present + Write + CPL3
+  task->pde[0].all = phys_addr |  PAGE_PRESENT_CPL3; // Present + Write + CPL3
 
   DEBUG("PROC: Task created : tm0: 0x%X (p:0x%X) rsp:0x%X\n", task_memory, phys_addr, task->rsp);
   task_list_insert(task);
@@ -285,6 +278,15 @@ task_t* create_user_process_file(char *filename) {
   return new_task;
 }
 
+static void free_allocated_frames(task_t *task) {
+  for (int i=0; i<512; i++) {
+    if (task->pde[i].all != 0) {
+      uint64_t frame_addr = task->pde[i].all ^ PAGE_PRESENT_CPL3;
+      DEBUG("PROC: Free frame 0x%X\n", frame_addr);
+      free_frame(frame_addr);
+    }
+  }
+}
 
 void kill_process(task_t* task) {
   if (task->id == 0) {
@@ -292,8 +294,28 @@ void kill_process(task_t* task) {
     return;
   }
   DEBUG("PROC: KILL-PROCESS with id:%i\n", task->id);
+  // Close window if any
+  if (task->window != NULL) {
+    window_close(task->window);
+  }
+  // Free Allocated frames
+  free_allocated_frames(task);
+  // Remove task from
   task_list_delete(task);
+  free(task);
+  // Schedule next call
   task_list_current = task_list_head;
+  do_first_task_jump();
+}
+
+bool kill_process_id(uint32_t id) {
+  for(task_t* task = task_list_head; task != NULL; task = task->next){
+    if (task->id == id) {
+      kill_process(task);
+      return true;
+    }
+  }
+  return false;
 }
 
 task_t* current_task() {

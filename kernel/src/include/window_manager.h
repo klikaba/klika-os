@@ -66,6 +66,7 @@ typedef struct {
 extern window_t* window_list[MAX_WINDOW_COUNT];
 
 window_t* window_create(int x, int y, int width, int height, char* title);
+void window_close(window_t *window);
 void window_present_context(window_t* win, context_t* context);
 
 void window_handle_mouse();

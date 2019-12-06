@@ -24,3 +24,7 @@ void _debug(const char* fmt, ...) {
   va_end(args);
   syscall(SYSCall_debug_puts, buf);
 }
+
+void memory_stats(mmu_frame_stats_t *stats_out) {
+  syscall(SYSCall_memory_stats, stats_out);
+}

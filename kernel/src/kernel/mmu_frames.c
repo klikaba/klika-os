@@ -59,6 +59,30 @@ uint64_t mmu_frame_find_first() {
   return 0;
 }
 
+uint64_t mmu_frame_count_used() {
+  uint64_t i, j, count_used = 0;
+  for (i = 0; i < INDEX_FROM_BIT(mmu_nframes); i++) {
+    if (mmu_frames[i] == 0xFFFFFFFF) {
+      count_used += 32;
+    }
+    else if (mmu_frames[i] != 0xFFFFFFFF) {
+      // at least one bit is free here.
+      for (j = 0; j < 32; j++) {
+        uint32_t toTest = 0x1 << j;
+        if (mmu_frames[i] & toTest) {
+          count_used++;
+        }
+      }
+    }
+  }
+  return count_used;
+}
+
+void mmu_frame_stats(mmu_frame_stats_t *stats_out) {
+  stats_out->used_frames = mmu_frame_count_used();
+  stats_out->free_frames = mmu_nframes - stats_out->used_frames;
+}
+
 void dump_frames() {
   DEBUG("Frames:\n");
   for (uint64_t i=0; i<INDEX_FROM_BIT(mmu_nframes); i++) {
@@ -78,6 +102,10 @@ void* alloc_frame() {
   return (void*)(frame * PAGE_SIZE);
 }
 
+void free_frame(uint64_t ptr) {
+  mmu_frame_clear(ptr);
+}
+
 void* alloc_frame_temp(uint64_t *phys_out) {
   uint64_t addr = (uint64_t)alloc_frame();
   DEBUG("MMU[frames]: alloc_frame_temp frame address 0x%X\n", addr);
@@ -87,7 +115,7 @@ void* alloc_frame_temp(uint64_t *phys_out) {
     for (uint64_t i=0; i<512; i++) {
       if (pde_krnluser[i].all == 0) {
         DEBUG("MMU[frames]: alloc new frame %i\n", i);
-        pde_krnluser[i].all = addr | 0x83;
+        pde_krnluser[i].all = addr | PAGE_PRESENT_CPL0;
 
         x86_set_cr3(TO_PHYS_U64(pml4e));      
         x86_tlb_flush_all();

@@ -84,6 +84,7 @@ struct window_struct {
 typedef struct window_struct window_t;
 
 window_t *window_create(int x, int y, int width, int height, char* title, int id);
+void window_close(window_t *window, int exit_code);
 bool window_default_procedure(window_t *win, struct message_struct *msg);
 void window_add_child(window_t *parent, window_t *child);
 

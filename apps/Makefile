@@ -1,5 +1,9 @@
 apps = simple_win demo1 demo2 desktop
 
+assets:
+	mkdir -p ../images/disk/assets 
+	cp ./lib/assets/*.* ../images/disk/assets
+
 $(apps):
 	$(MAKE) -C $@ $(TARGET)
 
@@ -12,4 +16,4 @@ clean:
 install: 
 	$(foreach app, $(apps), $(MAKE) -C $(app) $@;)	
 
-.PHONY: $(apps) all clean install
+.PHONY: $(apps) all clean install assets

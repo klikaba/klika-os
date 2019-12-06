@@ -1,7 +1,7 @@
 apps = apps kernel
 
 all: 
-	$(MAKE) -C apps clean all install
+	$(MAKE) -C apps clean all install assets
 	$(MAKE) -C kernel clean all install
 
 run: all

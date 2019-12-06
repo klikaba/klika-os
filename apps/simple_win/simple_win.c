@@ -21,7 +21,7 @@ void increment_counter(int add) {
 	counter += add;
 
 	memory_stats(&stats);
-	sprintf(buff, "Count: %i : u:%iMB f:%iMB", counter, stats.used_frames 0x2, stats.free_frames * 2);
+	sprintf(buff, "Count: %i : u:%iMB f:%iMB", counter, stats.used_frames * 2, stats.free_frames * 2);
 	label_set_text(label, buff);
 }
 

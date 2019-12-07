@@ -1,4 +1,5 @@
-apps = simple_win demo1 demo2 desktop
+SOURCES := $(wildcard */Makefile)
+apps := $(foreach source,$(SOURCES),$(dir $(source)))
 
 assets:
 	mkdir -p ../images/disk/assets 

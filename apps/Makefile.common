@@ -1,8 +1,8 @@
 $(info =-=-=-=-=-=-=-=-= $(name) : $(MAKECMDGOALS) =-=-=-=-=-=-=-=-=)
-
-cc = x86_64-elf-gcc
-ld = x86_64-elf-ld
-objdump = x86_64-elf-objdump
+platform_sufix ?= x86_64-elf-
+cc = $(platform_sufix)gcc
+ld = $(platform_sufix)ld
+objdump = $(platform_sufix)objdump
 nasm = nasm
 xxd = xxd
 arch ?= x86_64

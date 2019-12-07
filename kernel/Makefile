@@ -1,9 +1,10 @@
-cc = x86_64-elf-gcc
-ld = x86_64-elf-ld
-as = x86_64-elf-as
-nm = x86_64-elf-nm
-objdump = x86_64-elf-objdump
-objcopy = x86_64-elf-objcopy
+platform_sufix ?= x86_64-elf-
+cc = $(platform_sufix)gcc
+ld = $(platform_sufix)ld
+as = $(platform_sufix)as
+nm = $(platform_sufix)nm
+objdump = $(platform_sufix)objdump
+objcopy = $(platform_sufix)objcopy
 nasm = nasm
 qemu = qemu-system-x86_64
 bochs = bochs

@@ -1,4 +1,6 @@
-# KlikaOS
+# KlikaOS 
+
+![](https://github.com/klikaba/klika-os/workflows/C%20CI/badge.svg)
 
 KlikaOS is a hobbyist and educational operating system written in C (and some small parts are written in assembly).
 

@@ -8,5 +8,5 @@ jobs:
     steps:
     - uses: ilammy/setup-nasm@v1
     - uses: actions/checkout@v1
-    - name: make all
-      run: make all
+    - name: make platform_sufix="" all
+      run: make platform_sufix="" all

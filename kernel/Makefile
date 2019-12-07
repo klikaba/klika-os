@@ -32,7 +32,7 @@ hd_image = ../images/disk.img
 
 .PHONY: all clean run iso install
 
-all: $(kernel) $(iso)
+all: $(kernel)
 
 clean:
 	@rm -rfv build

@@ -1,59 +1,8 @@
 name = desktop
-$(info =-=-=-=-=-=-=-=-= $(name) : $(MAKECMDGOALS) =-=-=-=-=-=-=-=-=)
-
-cc = x86_64-elf-gcc
-ld = x86_64-elf-ld
-objdump = x86_64-elf-objdump
-nasm = nasm
-xxd = xxd
-arch ?= x86_64
-linker_script := ../lib/ldscript.ld
-c_include := '../include'
-
-cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
-		  -ffreestanding -mno-red-zone -mno-mmx -mno-sse -mno-sse2 \
-	      -I $(c_include) -nostartfiles -nodefaultlibs -fno-exceptions \
-	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-parentheses -Wno-implicit-fallthrough \
-	      -fdata-sections -ffunction-sections
-
-c_source_files := $(wildcard *.c) $(wildcard ../lib/*.c) $(wildcard ../lib/windows/*.c) 
-c_object_files := $(patsubst %.c, build/%.o, $(c_source_files))
-
-assembly_source_files := $(wildcard ../lib/*.asm)
-assembly_object_files := $(patsubst ../lib/%.asm, build/%.o, $(assembly_source_files))
-
-nasm_flags :=  -felf64 -w-number-overflow
-
-.PHONY: all clean run
-
-all: $(name)
 
 install:
-	mkdir -p ../../images/disk/apps/$(name)
-	cp $(name) ../../images/disk/apps/$(name)
-	cp appicon.bmp ../../images/disk/apps/$(name)/
-	mkdir -p ../../images/disk/assets 
-	cp ../lib/assets/*.* ../../images/disk/assets
+	make install-super
 
-clean:
-	@rm -rf build || true
-	@rm -rf lib || true
+.PHONY: install
 
-debug: nasm_flags += -g -F dwarf
-debug: cflags += -g
-debug: all
-
-$(name): $(assembly_object_files) $(c_object_files) $(linker_script)
-	$(ld) -nostdlib -n -T $(linker_script) -o $(name) $(c_object_files) $(assembly_object_files) --gc-sections
-	$(objdump) -D $(name) > build/$(name).dump.asm
-	$(objdump) -x $(name) >> build/$(name).headers.txt
-
-# compile assembly files
-build/%.o: ../lib/%.asm
-	@mkdir -p $(shell dirname $@)
-	$(nasm) $(nasm_flags) $< -o $@
-
-# compile c files
-build/%.o: %.c
-	@mkdir -p $(shell dirname $@)
-	$(cc) $(cflags) $< -o $@
+-include ../Makefile.common

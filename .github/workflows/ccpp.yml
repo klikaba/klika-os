@@ -4,10 +4,9 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
     steps:
+    - uses: ilammy/setup-nasm@v1
     - uses: actions/checkout@v1
     - name: make all
       run: make all

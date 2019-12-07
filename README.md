@@ -1,5 +1,5 @@
 # KlikaOS
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 KlikaOS is a hobbyist and educational operating system written in C (and some small parts are written in assembly).
 
@@ -213,6 +213,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/SamirHodzic"><img src="https://avatars0.githubusercontent.com/u/10077663?v=4" width="100px;" alt="SamirH"/><br /><sub><b>SamirH</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=SamirHodzic" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.ensarsarajcic.com"><img src="https://avatars2.githubusercontent.com/u/2764831?v=4" width="100px;" alt="Ensar Sarajčić"/><br /><sub><b>Ensar Sarajčić</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=esensar" title="Code">💻</a></td>
   </tr>
 </table>
 

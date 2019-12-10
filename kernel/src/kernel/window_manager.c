@@ -21,6 +21,7 @@
 #define WIN_SORT_VAL(win) (win == NULL ? 1000000000 : win->z) 
 
 window_t* window_list[MAX_WINDOW_COUNT];
+window_t* focused_window;
 video_info_t buffer_video_info;
 uint64_t __last_update_tick = 0;
 uint16_t __window_handle = 1000; // 1000 just magic number to start from (0 means no window)
@@ -180,20 +181,20 @@ void window_present_context(window_t* win  __UNUSED__, context_t* context) {
   window_need_redraw();
 }
 
-window_t* window_create(int x, int y, int width, int height, char* title) {
+window_t* window_create(int x, int y, int width, int height, uint32_t attributes) {
 	window_t* new_win = (window_t*)malloc(sizeof(window_t));
 	new_win->x = x;
 	new_win->y = y;
-	new_win->z = find_max_z() + 1;
+	new_win->z = attributes & WINDOW_ATTR_BOTTOM ? 0 : find_max_z() + 1;
 	new_win->width = width;
 	new_win->height = height;
+	new_win->attributes = attributes;
 	new_win->handle = __window_handle++;
 
 	// Message queue
 	new_win->message_queue_index = 0;
 	new_win->parent_task = task_list_current;
 	memset(new_win->message_queue, 0, sizeof(message_t)*MAX_MESSAGE_QUEUE_LENGTH);
-	strncpy(new_win->title, title, MAX_WINDOW_NAME_LENGTH-1);
 
 	// Context setup
 	new_win->context.width = width;
@@ -204,6 +205,7 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	// Add to list of windows : for now array of pointer to win
 	assert(add_window(new_win));
 	task_list_current->window = new_win;
+	focused_window = new_win;
 
 	window_sort_windows();
 	window_need_redraw();
@@ -216,6 +218,9 @@ void window_close(window_t *window) {
 	window_list[win_idx] = NULL;
 	free(window);
 	window_sort_windows();
+	if (window == focused_window) {
+		focused_window = window_list[__window_count - 1];
+	}
 	window_need_redraw();
 }
 
@@ -298,7 +303,7 @@ void window_handle_mouse() {
 				msg.message = MESSAGE_WINDOW_DRAG;
 				msg.x = window_to_drag->x;
 				msg.y = window_to_drag->y;
-				window_add_messageto_top(&msg);
+				window_add_message_to_focused(&msg);
 			}
 			__old_mouse_x = mouse_x;
 			__old_mouse_y = mouse_y;
@@ -307,10 +312,13 @@ void window_handle_mouse() {
 			// Find win under the mouse and bring it to top
 			int idx = window_find_xy(mouse_x, mouse_y);
 			if (idx != -1) {
-				window_bring_to_front(idx);
 				window_t* win = window_list[idx];
+				focused_window = win;
+				if (!(focused_window->attributes & WINDOW_ATTR_BOTTOM)) {
+				        window_bring_to_front(idx);
+				}
 				// Check for dragging
-				if (window_point_inside_bar(win, mouse_x, mouse_y)) {
+				if (window_point_inside_bar(win, mouse_x, mouse_y) && !(win->attributes & WINDOW_ATTR_NO_DRAG)) {
 					window_to_drag = win;
 					__old_mouse_x = mouse_x;
 					__old_mouse_y = mouse_y;
@@ -392,12 +400,11 @@ void window_add_message(window_t *win, message_t *msg) {
 	}
 }
 
-void window_add_messageto_top(message_t *msg) {
-	window_t* win = window_find_top();
-	if (win == NULL) {
+void window_add_message_to_focused(message_t *msg) {
+	if (focused_window == NULL) {
 		return;
 	}
-	window_add_message(win, msg);
+	window_add_message(focused_window, msg);
 }
 
 bool window_pop_message(window_t* win, message_t* msg_out) {

@@ -12,6 +12,7 @@
 
 #define WINDOW_ATTR_TRANSP 0x01
 #define WINDOW_ATTR_BOTTOM 0x02
+#define WINDOW_ATTR_NO_DRAG 0x04
 
 typedef struct {
 	uint32_t* buffer;
@@ -27,8 +28,7 @@ typedef struct window_struct {
 	int z;
 	int width;
 	int height;
-	char title[MAX_WINDOW_NAME_LENGTH];
-    uint32_t attributes;
+	uint32_t attributes;
 	int message_queue_index;
 	task_t* parent_task;
 	message_t message_queue[MAX_MESSAGE_QUEUE_LENGTH];
@@ -65,7 +65,7 @@ typedef struct {
 
 extern window_t* window_list[MAX_WINDOW_COUNT];
 
-window_t* window_create(int x, int y, int width, int height, char* title);
+window_t* window_create(int x, int y, int width, int height, uint32_t attributes);
 void window_close(window_t *window);
 void window_present_context(window_t* win, context_t* context);
 
@@ -73,7 +73,7 @@ void window_handle_mouse();
 void window_need_redraw();
 
 void window_add_message(window_t *win, message_t *msg);
-void window_add_messageto_top(message_t *msg);
+void window_add_message_to_focused(message_t *msg);
 bool window_pop_message(window_t* win, message_t* msg_out);
 
 window_t* window_find(uint32_t handle);

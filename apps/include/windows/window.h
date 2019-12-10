@@ -29,6 +29,11 @@
 #define WINDOW_FRAME_WIDTH 2
 #define WINDOW_BAR_HEIGHT  44
 
+#define WINDOW_ATTR_NONE 0x00
+#define WINDOW_ATTR_TRANSP 0x01
+#define WINDOW_ATTR_BOTTOM 0x02
+#define WINDOW_ATTR_NO_DRAG 0x04
+
 #define TEXT_FONT_WIDTH(str) (strlen(str)*8)
 #define TEXT_FONT_HEIGHT(str) (8)
 
@@ -83,7 +88,7 @@ struct window_struct {
 
 typedef struct window_struct window_t;
 
-window_t *window_create(int x, int y, int width, int height, char* title, int id);
+window_t *window_create(int x, int y, int width, int height, char* title, int id, uint32_t attributes);
 void window_close(window_t *window, int exit_code);
 bool window_default_procedure(window_t *win, struct message_struct *msg);
 void window_add_child(window_t *parent, window_t *child);

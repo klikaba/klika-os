@@ -32,7 +32,7 @@ context_t *window_context_create(int width, int height, int bpp) {
 	return context;
 }
 
-window_t *window_create(int x, int y, int width, int height, char* title, int id) {
+window_t *window_create(int x, int y, int width, int height, char* title, int id, uint32_t attributes) {
 	window_t *window = calloc(sizeof(window_t), 1);
 
 	// Init window structure
@@ -51,7 +51,7 @@ window_t *window_create(int x, int y, int width, int height, char* title, int id
 	window->ext = ext;
 
 	// Create window (systemcall)
-	window->handle = syscall(SYSCall_windows_create, x, y, width, height, title);
+	window->handle = syscall(SYSCall_windows_create, x, y, width, height, attributes);
 
 	// Set state to be created
 	window_change_state(window, WINDOW_STATE_CREATED);

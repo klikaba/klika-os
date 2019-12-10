@@ -131,7 +131,7 @@ finish_packet:
         message.message = MESSAGE_MOUSE_RELEASE;
       }
       window_handle_mouse();
-      window_add_messageto_top(&message);
+      window_add_message_to_focused(&message);
       old_message = message;
     }
 read_next:

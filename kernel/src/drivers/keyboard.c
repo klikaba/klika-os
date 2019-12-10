@@ -35,7 +35,7 @@ static void keyboard_callback(isr_ctx_t *ctx __attribute__((unused))) {
   msg.key = code;
 
   if (msg.message != old_msg.message || msg.key != old_msg.key) {
-  	window_add_messageto_top(&msg);
+  	window_add_message_to_focused(&msg);
   	old_msg = msg;
   }
 

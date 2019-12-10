@@ -21,6 +21,7 @@
 #define WIN_SORT_VAL(win) (win == NULL ? 1000000000 : win->z) 
 
 window_t* window_list[MAX_WINDOW_COUNT];
+window_t* focused_window;
 video_info_t buffer_video_info;
 uint64_t __last_update_tick = 0;
 uint16_t __window_handle = 1000; // 1000 just magic number to start from (0 means no window)
@@ -204,6 +205,7 @@ window_t* window_create(int x, int y, int width, int height, char* title) {
 	// Add to list of windows : for now array of pointer to win
 	assert(add_window(new_win));
 	task_list_current->window = new_win;
+	focused_window = new_win;
 
 	window_sort_windows();
 	window_need_redraw();
@@ -214,6 +216,9 @@ void window_close(window_t *window) {
 	int win_idx = find_window_index(window);
 	free(window->context.buffer);
 	window_list[win_idx] = NULL;
+	if (window == focused_window) {
+	  focused_window = NULL;
+	}
 	free(window);
 	window_sort_windows();
 	window_need_redraw();
@@ -298,7 +303,7 @@ void window_handle_mouse() {
 				msg.message = MESSAGE_WINDOW_DRAG;
 				msg.x = window_to_drag->x;
 				msg.y = window_to_drag->y;
-				window_add_messageto_top(&msg);
+				window_add_message_to_focused(&msg);
 			}
 			__old_mouse_x = mouse_x;
 			__old_mouse_y = mouse_y;
@@ -307,8 +312,9 @@ void window_handle_mouse() {
 			// Find win under the mouse and bring it to top
 			int idx = window_find_xy(mouse_x, mouse_y);
 			if (idx != -1) {
-				window_bring_to_front(idx);
 				window_t* win = window_list[idx];
+				focused_window = win;
+				window_bring_to_front(idx);
 				// Check for dragging
 				if (window_point_inside_bar(win, mouse_x, mouse_y)) {
 					window_to_drag = win;
@@ -392,12 +398,11 @@ void window_add_message(window_t *win, message_t *msg) {
 	}
 }
 
-void window_add_messageto_top(message_t *msg) {
-	window_t* win = window_find_top();
-	if (win == NULL) {
+void window_add_message_to_focused(message_t *msg) {
+	if (focused_window == NULL) {
 		return;
 	}
-	window_add_message(win, msg);
+	window_add_message(focused_window, msg);
 }
 
 bool window_pop_message(window_t* win, message_t* msg_out) {

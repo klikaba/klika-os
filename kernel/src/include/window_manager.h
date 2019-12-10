@@ -73,7 +73,7 @@ void window_handle_mouse();
 void window_need_redraw();
 
 void window_add_message(window_t *win, message_t *msg);
-void window_add_messageto_top(message_t *msg);
+void window_add_message_to_focused(message_t *msg);
 bool window_pop_message(window_t* win, message_t* msg_out);
 
 window_t* window_find(uint32_t handle);

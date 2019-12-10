@@ -219,7 +219,7 @@ void window_close(window_t *window) {
 	free(window);
 	window_sort_windows();
 	if (window == focused_window) {
-		focused_window = window_list[__window_count - 1];
+		focused_window = __window_count == 0 ? NULL : window_list[__window_count - 1];
 	}
 	window_need_redraw();
 }

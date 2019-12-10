@@ -27,7 +27,6 @@ typedef struct window_struct {
 	int z;
 	int width;
 	int height;
-	char title[MAX_WINDOW_NAME_LENGTH];
 	uint32_t attributes;
 	int message_queue_index;
 	task_t* parent_task;

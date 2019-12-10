@@ -217,10 +217,13 @@ void window_close(window_t *window) {
 	free(window->context.buffer);
 	window_list[win_idx] = NULL;
 	if (window == focused_window) {
-	  focused_window = NULL;
+		focused_window = NULL;
 	}
 	free(window);
 	window_sort_windows();
+	if (focused_window == NULL) {
+		focused_window = window_list[__window_count - 1];
+	}
 	window_need_redraw();
 }
 

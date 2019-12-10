@@ -13,8 +13,8 @@ uint64_t syscall_windows_create(isr_ctx_t *regs) {
 	int y = regs->rsi;
 	int width = regs->rdx;
 	int height = regs->rcx;
-	char* title = (char*)regs->r8;
-	window_t* win = window_create(x, y, width, height, title);
+	uint32_t attributes = (uint32_t) regs->r8;
+	window_t* win = window_create(x, y, width, height, attributes);
 	
 	return win->handle;
 }

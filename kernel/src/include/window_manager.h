@@ -28,7 +28,7 @@ typedef struct window_struct {
 	int width;
 	int height;
 	char title[MAX_WINDOW_NAME_LENGTH];
-    uint32_t attributes;
+	uint32_t attributes;
 	int message_queue_index;
 	task_t* parent_task;
 	message_t message_queue[MAX_MESSAGE_QUEUE_LENGTH];
@@ -65,7 +65,7 @@ typedef struct {
 
 extern window_t* window_list[MAX_WINDOW_COUNT];
 
-window_t* window_create(int x, int y, int width, int height, char* title);
+window_t* window_create(int x, int y, int width, int height, uint32_t attributes);
 void window_close(window_t *window);
 void window_present_context(window_t* win, context_t* context);
 

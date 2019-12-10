@@ -181,20 +181,20 @@ void window_present_context(window_t* win  __UNUSED__, context_t* context) {
   window_need_redraw();
 }
 
-window_t* window_create(int x, int y, int width, int height, char* title) {
+window_t* window_create(int x, int y, int width, int height, uint32_t attributes) {
 	window_t* new_win = (window_t*)malloc(sizeof(window_t));
 	new_win->x = x;
 	new_win->y = y;
-	new_win->z = find_max_z() + 1;
+	new_win->z = attributes & WINDOW_ATTR_BOTTOM ? 0 : find_max_z() + 1;
 	new_win->width = width;
 	new_win->height = height;
+	new_win->attributes = attributes;
 	new_win->handle = __window_handle++;
 
 	// Message queue
 	new_win->message_queue_index = 0;
 	new_win->parent_task = task_list_current;
 	memset(new_win->message_queue, 0, sizeof(message_t)*MAX_MESSAGE_QUEUE_LENGTH);
-	strncpy(new_win->title, title, MAX_WINDOW_NAME_LENGTH-1);
 
 	// Context setup
 	new_win->context.width = width;
@@ -314,7 +314,9 @@ void window_handle_mouse() {
 			if (idx != -1) {
 				window_t* win = window_list[idx];
 				focused_window = win;
-				window_bring_to_front(idx);
+				if (!(focused_window->attributes & WINDOW_ATTR_BOTTOM)) {
+				        window_bring_to_front(idx);
+				}
 				// Check for dragging
 				if (window_point_inside_bar(win, mouse_x, mouse_y)) {
 					window_to_drag = win;

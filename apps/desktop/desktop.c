@@ -20,7 +20,7 @@ void start_app(char *filename) {
 int main() {
 	bmp_from_file("/apps/desktop/appicon.bmp", &app_icon_bmp);
 	
-	window = window_create(120, 120, 300, 200, "Applications", MSG_USER_WIN, WINDOW_ATTR_BOTTOM);
+	window = window_create(120, 120, 300, 200, "Applications", MSG_USER_WIN, WINDOW_ATTR_BOTTOM | WINDOW_ATTR_NO_DRAG);
 	button_t *btn = button_create(window, 10, WINDOW_BAR_HEIGHT + 10, 64, 64 + 9, "Simple", MSG_USER_BTN_SIMPLE_WIN);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 

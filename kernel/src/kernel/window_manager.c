@@ -321,7 +321,7 @@ void window_handle_mouse() {
 				        window_bring_to_front(idx);
 				}
 				// Check for dragging
-				if (window_point_inside_bar(win, mouse_x, mouse_y)) {
+				if (window_point_inside_bar(win, mouse_x, mouse_y) && !(win->attributes & WINDOW_ATTR_NO_DRAG)) {
 					window_to_drag = win;
 					__old_mouse_x = mouse_x;
 					__old_mouse_y = mouse_y;

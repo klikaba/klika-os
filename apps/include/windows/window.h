@@ -32,6 +32,7 @@
 #define WINDOW_ATTR_NONE 0x00
 #define WINDOW_ATTR_TRANSP 0x01
 #define WINDOW_ATTR_BOTTOM 0x02
+#define WINDOW_ATTR_NO_DRAG 0x04
 
 #define TEXT_FONT_WIDTH(str) (strlen(str)*8)
 #define TEXT_FONT_HEIGHT(str) (8)

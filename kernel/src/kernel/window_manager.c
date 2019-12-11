@@ -13,9 +13,6 @@
 #include <gfx.h>
 #include <isr.h>
 
-// Remove to have black wallpaper (fast compile)
-#define WALLPAPER 
-
 #define WINDOW_BAR_HEIGHT  44
 
 #define WIN_SORT_VAL(win) (win == NULL ? 1000000000 : win->z) 
@@ -438,11 +435,4 @@ void init_kernel_window_manager() {
   DEBUG("WIN: Double Frame buffer info: %i x %i : %ibpp\n", buffer_video_info.width, buffer_video_info.height, buffer_video_info.bits);
   DEBUG("WIN: Double Frame buffer pitch: %i\n", buffer_video_info.pitch);
   DEBUG("WIN: Double Frame buffer type: %i\n", buffer_video_info.type);
-
-
-  #ifdef WALLPAPER
-  bmp_from_file("/assets/wallp.bmp", &wallpaper_bmp);
-  #else
-  wallpaper_bmp.data = NULL;
-  #endif
 }

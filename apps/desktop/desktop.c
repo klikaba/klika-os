@@ -12,6 +12,7 @@ window_t  *window;
 #define MSG_USER_BTN_DEMO2 (WINDOW_USER_MESSAGE + 4)
 
 bmp_image_t app_icon_bmp;
+bmp_image_t wallpaper;
 
 void start_app(char *filename) {
 	syscall(SYSCall_process_from_file, filename);
@@ -19,8 +20,12 @@ void start_app(char *filename) {
 
 int main() {
 	bmp_from_file("/apps/desktop/appicon.bmp", &app_icon_bmp);
+	bmp_from_file("/assets/wallp.bmp", &wallpaper);
 	
 	window = window_create(0, 0, 1024, 768, "Applications", MSG_USER_WIN, WINDOW_ATTR_BOTTOM | WINDOW_ATTR_NO_DRAG, WINDOW_FRAME_NONE);
+	bmp_blit(WINDOW_EXT(window)->context, &wallpaper, 2, 0);
+	window_present(window);
+
 	button_t *btn = button_create(window, 10, 10, 64, 64 + 9, "Simple", MSG_USER_BTN_SIMPLE_WIN);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 

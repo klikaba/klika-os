@@ -21,3 +21,19 @@ uint64_t syscall_file_read(isr_ctx_t *regs) {
 
 	return DFS_ReadFile(file_info, scratch_buffer, ptr, read_bytes, size);
 }
+
+// syscall_dir_open(char* dirname, *dirinfo_out)
+uint64_t syscall_dir_open(isr_ctx_t *regs) {
+	uint8_t *dirname = (uint8_t*)regs->rdi;
+	DIRINFO *dir_info_out = (DIRINFO*)regs->rsi;
+
+	return DFS_OpenDir(&dosfs_volume_info, dirname, dir_info_out);
+}
+
+// syscall_dir_read_next(*dirinfo, *dirent_out)
+uint64_t syscall_dir_read_next(isr_ctx_t *regs) {
+	DIRINFO *dir_info = (DIRINFO*)regs->rdi;
+	DIRENT *dirent_out = (DIRENT*)regs->rsi;
+
+	return DFS_GetNext(&dosfs_volume_info, dir_info, dirent_out);
+}

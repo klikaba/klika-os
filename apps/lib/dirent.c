@@ -8,7 +8,7 @@ DIR* opendir(char* dirname) {
   DIR dir;
 
 	if (syscall(SYSCall_dir_open, dirname, &dir.dir_info)) {
-		DEBUG("stdio.c: error opening dir %s\n", dirname);
+		DEBUG("dirent.c: error opening dir %s\n", dirname);
 		return NULL;
 	}
 
@@ -21,7 +21,7 @@ DIRENT* readdir(DIR* stream) {
 	DIRENT dirent;
 
 	if (syscall(SYSCall_dir_read_next, &stream->dir_info, &dirent)) {
-		DEBUG("stdio.c: error reading from dir %s\n", stream->ent.name);
+		DEBUG("dirent.c: error reading from dir %s\n", stream->ent.name);
 		return NULL;
 	}
 

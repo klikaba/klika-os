@@ -10,6 +10,7 @@ window_t  *window;
 #define MSG_USER_BTN_SIMPLE_WIN (WINDOW_USER_MESSAGE + 2)
 #define MSG_USER_BTN_DEMO1 (WINDOW_USER_MESSAGE + 3)
 #define MSG_USER_BTN_DEMO2 (WINDOW_USER_MESSAGE + 4)
+#define MSG_USER_BTN_FILETREE (WINDOW_USER_MESSAGE + 5)
 
 bmp_image_t app_icon_bmp;
 bmp_image_t wallpaper;
@@ -35,6 +36,9 @@ int main() {
 	btn = button_create(window, 170, 10, 64, 64 + 9, "Demo2", MSG_USER_BTN_DEMO2);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 
+	btn = button_create(window, 250, 10, 64, 64 + 9, "Explorer", MSG_USER_BTN_FILETREE);
+	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
+
 	while(window_get_message(window, &msg)) { 
 		switch(msg.message) {
 			case MSG_USER_BTN_SIMPLE_WIN:
@@ -45,6 +49,9 @@ int main() {
 				break;
 			case MSG_USER_BTN_DEMO2:
 				start_app("/apps/demo2/demo2");				
+				break;
+			case MSG_USER_BTN_FILETREE:
+				start_app("/apps/fexpl/fexpl");
 				break;
 		}
 		window_dispatch(window, &msg);

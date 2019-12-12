@@ -44,7 +44,6 @@ typedef struct _tagDIRENT {
 }  __attribute__ ((__packed__)) DIRENT, *PDIRENT;
 
 typedef struct {
-  DIRENT ent;
   DIRINFO dir_info;
 } DIR;
 

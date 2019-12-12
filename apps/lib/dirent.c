@@ -21,7 +21,7 @@ DIRENT* readdir(DIR* stream) {
 	DIRENT dirent;
 
 	if (syscall(SYSCall_dir_read_next, &stream->dir_info, &dirent)) {
-		DEBUG("dirent.c: error reading from dir %s\n", stream->ent.name);
+		DEBUG("dirent.c: error reading from dir\n");
 		return NULL;
 	}
 

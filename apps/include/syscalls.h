@@ -9,13 +9,14 @@
 #define SYSCall_messaging_get  		3
 #define SYSCall_messaging_create 	4
 #define SYSCall_windows_present  	5
-#define SYSCall_process_create    6
-#define SYSCall_file_open					7
-#define SYSCall_file_read					8
-#define SYSCall_process_from_file 9
-#define SYSCall_messaging_peek   10
-#define SYSCall_process_exit     11
-#define SYSCall_memory_stats     12
+#define SYSCall_process_create      6
+#define SYSCall_file_open			7
+#define SYSCall_file_read			8
+#define SYSCall_process_from_file   9
+#define SYSCall_messaging_peek      10
+#define SYSCall_process_exit        11
+#define SYSCall_memory_stats        12
+#define SYSCall_get_clock           13
 
 extern uint64_t syscall(uint64_t sys_no, ...);
 

@@ -19,6 +19,8 @@
 #define SYSCall_dir_open         13
 #define SYSCall_dir_read_next    14
 #define SYSCall_file_write       15
+#define SYSCall_process_clone    16
+#define SYSCall_process_get_id	 17
 
 extern uint64_t syscall(uint64_t sys_no, ...);
 

@@ -1,32 +1,7 @@
 #include <klikaos.h>
 #include <windows.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <gfx.h>
-
-typedef struct {
-	uint32_t id;
-	uint32_t stack_size;
-	uint8_t *stack;
-} thread_t;
-
-typedef void* (*thread_function_t)();
-
-thread_t* thread_create(thread_function_t thread_function, uint32_t stack_size) {
-	thread_t *thread = malloc(sizeof(thread_t));
-
-	thread->stack_size = stack_size;
-	thread->stack = malloc(stack_size);
-
-	thread->id = syscall(SYSCall_process_clone, thread_function, thread->stack - stack_size);
-
-	if (thread->id == 0) {
-		free(thread);
-		return NULL;
-	}
-	return thread;
-}
-
 
 message_t msg;
 window_t  *window;
@@ -39,16 +14,15 @@ long counter = 0;
 #define MSG_USER_BTN2 (WINDOW_USER_MESSAGE + 3)
 #define MSG_USER_LABEL (WINDOW_USER_MESSAGE + 4)
 
-void* increment_counter() {
+void increment_counter(int add) {
 	char buff[123];
+	mmu_frame_stats_t stats;
 
-	while(1) {
-		sprintf(buff, "Count: %i .", counter);
-		counter++;
-		label_set_text(label, buff);
-		window_invalidate(window);
-	}
-	return NULL;
+	counter += add;
+
+	memory_stats(&stats);
+	sprintf(buff, "Count: %i : u:%iMB f:%iMB", counter, stats.used_frames * 2, stats.free_frames * 2);
+	label_set_text(label, buff);
 }
 
 int main() {
@@ -58,9 +32,15 @@ int main() {
 	button_create(window, 120, layout_y, 100, 30, "Click me -", MSG_USER_BTN2);
 	label = label_create(window, 10, layout_y + 40, 100, 20, "", MSG_USER_LABEL);
 
-	thread_create(increment_counter, 1024);
-
 	while(window_get_message(window, &msg)) { 
+		switch(msg.message) {
+			case MSG_USER_BTN1:
+				increment_counter(1);
+				break;
+			case MSG_USER_BTN2:
+				increment_counter(-1);
+				break;
+		}
 		window_dispatch(window, &msg);
 	}
 	return 0;

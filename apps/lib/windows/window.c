@@ -32,7 +32,7 @@ context_t *window_context_create(int width, int height, int bpp) {
 	return context;
 }
 
-window_t *window_create(int x, int y, int width, int height, char* title, int id) {
+window_t *window_create(int x, int y, int width, int height, char* title, int id, uint32_t attributes, uint32_t frame_flags) {
 	window_t *window = calloc(sizeof(window_t), 1);
 
 	// Init window structure
@@ -48,24 +48,27 @@ window_t *window_create(int x, int y, int width, int height, char* title, int id
 	// Create Ext params
 	window_ext_t *ext = calloc(sizeof(window_ext_t), 1);
 	ext->context = window_context_create(width, height, 32);
+	ext->frame_flags = frame_flags;
 	window->ext = ext;
 
 	// Create window (systemcall)
-	window->handle = syscall(SYSCall_windows_create, x, y, width, height, title);
+	window->handle = syscall(SYSCall_windows_create, x, y, width, height, attributes);
 
 	// Set state to be created
 	window_change_state(window, WINDOW_STATE_CREATED);
 
 	// Create Close and Min buttons
-	WINDOW_EXT(window)->button_close = button_create(window, 10, 13, 20, 20, "", WINDOW_LIB_BUTTON_CLOSE);
-	bmp_image_t *bmp_close = malloc(sizeof(bmp_image_t));
-	bmp_from_file("/assets/btnclose.bmp", bmp_close);
-	button_set_image(WINDOW_EXT(window)->button_close, BUTTON_STATE_NORMAL, bmp_close);
+	if (!(frame_flags & WINDOW_FRAME_NONE)) {
+		WINDOW_EXT(window)->button_close = button_create(window, 10, 13, 20, 20, "", WINDOW_LIB_BUTTON_CLOSE);
+		bmp_image_t *bmp_close = malloc(sizeof(bmp_image_t));
+		bmp_from_file("/assets/btnclose.bmp", bmp_close);
+		button_set_image(WINDOW_EXT(window)->button_close, BUTTON_STATE_NORMAL, bmp_close);
 
-	WINDOW_EXT(window)->button_min = button_create(window, 30, 13, 20, 20, "", WINDOW_LIB_BUTTON_MIN);
-	bmp_image_t *bmp_min = malloc(sizeof(bmp_image_t));
-	bmp_from_file("/assets/btnmin.bmp", bmp_min);
-	button_set_image(WINDOW_EXT(window)->button_min, BUTTON_STATE_NORMAL, bmp_min);
+		WINDOW_EXT(window)->button_min = button_create(window, 30, 13, 20, 20, "", WINDOW_LIB_BUTTON_MIN);
+		bmp_image_t *bmp_min = malloc(sizeof(bmp_image_t));
+		bmp_from_file("/assets/btnmin.bmp", bmp_min);
+		button_set_image(WINDOW_EXT(window)->button_min, BUTTON_STATE_NORMAL, bmp_min);
+	}
 
 	return window;
 }
@@ -78,6 +81,7 @@ void on_window_predraw(window_t *win) {
 	// TODO syscall - syscall_windows_is_top(win->handle)
 	bool is_top = false;
 
+	if (WINDOW_EXT(win)->frame_flags & WINDOW_FRAME_NONE) return;
 	// Draw frame border
 	uint32_t top_frame_color = is_top ? WIN_ACTIVE_FRAME_COLOR : WIN_INACTIVE_FRAME_COLOR;
 	gfx_draw_shadowed_box(WINDOW_EXT(win)->context, x1, y1, x2, y2, top_frame_color, WIN_BACKGROUND_COLOR);

@@ -24,7 +24,7 @@ void draw_frame() {
 }
 
 int main() {
-	window = window_create(rand() % 700, rand() % 400, 300, 300, "Demo graphics", MSG_USER_WIN);
+	window = window_create(rand() % 700, rand() % 400, 300, 300, "Demo graphics", MSG_USER_WIN, WINDOW_ATTR_NONE, WINDOW_FRAME_TRANSPARENT);
 	context = WINDOW_EXT(window)->context;
 
 	while(1) {

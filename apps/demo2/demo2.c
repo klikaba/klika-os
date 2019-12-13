@@ -35,7 +35,7 @@ int main() {
 	bmp_from_file("/apps/demo2/0007.bmp", &bmps[7]);
 	bmp_from_file("/apps/demo2/0008.bmp", &bmps[8]);
 	
-	window = window_create(120, 120, 498+5, 372 + WINDOW_BAR_HEIGHT + 4, "Applications", MSG_USER_WIN);
+	window = window_create(120, 120, 498+5, 372 + WINDOW_BAR_HEIGHT + 4, "Applications", MSG_USER_WIN, WINDOW_ATTR_NONE, WINDOW_FRAME_DEFAULT);
 
 	while(1) {
 		window_peek_message(window, &msg);

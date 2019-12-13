@@ -341,7 +341,7 @@ static void free_allocated_frames(task_t *task) {
   }
 }
 
-void kill_process(task_t* task) {
+void kill_process_no_schedule(task_t* task) {
   if (task->id == 0) {
     HALT_AND_CATCH_FIRE("PROC: WARNING! - Cannot kill kernel idle task!");
     return;
@@ -356,6 +356,18 @@ void kill_process(task_t* task) {
   // Remove task from
   task_list_delete(task);
   free(task);
+}
+
+void kill_process(task_t* task) {
+
+  // First kill all children (if any)
+  for(task_t* child = task_list_head; child != NULL; child = child->next){
+    if (child->parent == task) {
+      kill_process_no_schedule(child);
+    }
+  }
+  // Kill task
+  kill_process_no_schedule(task);
   // Schedule next call
   task_list_current = task_list_head;
   do_first_task_jump();

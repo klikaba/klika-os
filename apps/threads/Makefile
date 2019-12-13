@@ -1,4 +1,4 @@
-name = simplew
+name = threads
 
 install:
 	make install-super

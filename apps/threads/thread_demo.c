@@ -11,11 +11,10 @@
 
 message_t msg;
 window_t *window;
-label_t  *label1, *label2, *label3;
+label_t  *label1, *label2;
 
-long counter1 = 0;
-long counter2 = 0;
-long counter3 = 0;
+uint64_t counter1 = 0;
+uint64_t counter2 = 0;
 
 void* thread1() {
 	while(1) {
@@ -31,17 +30,11 @@ void* thread2() {
 	return NULL;
 }
 
-void* thread3() {
-	while(1) {
-		counter3++;
-	}
-	return NULL;
-}
 
-void set_label_counter(label_t *label, int counter) {
+void set_label_counter(label_t *label, char *format, int counter) {
 	char buff[123];
 
-	sprintf(buff, "Count: %i", counter);
+	sprintf(buff, format, counter);
 	label_set_text(label, buff);	
 }
 
@@ -50,18 +43,15 @@ int main() {
 
 	label1 = label_create(window, 10, 50, 100, 20, "", MSG_USER_LABEL1);
 	label2 = label_create(window, 10, 70, 100, 20, "", MSG_USER_LABEL2);
-	label3 = label_create(window, 10, 90, 100, 20, "", MSG_USER_LABEL3);
 
 	thread_create(thread1, 1024);
 	thread_create(thread2, 1024);
-	thread_create(thread3, 1024);
 
 	while(window_get_message(window, &msg)) { 
 		switch(msg.message) {
 			case WINDOW_LIB_MESSAGE_DRAW:
-				set_label_counter(label1, counter1);
-				set_label_counter(label2, counter2);
-				set_label_counter(label3, counter3);
+				set_label_counter(label1, "Thread 1 : %i", counter1);
+				set_label_counter(label2, "Thread 2 : %i", counter2);
 				window_invalidate(window);
 				break;
 		}		

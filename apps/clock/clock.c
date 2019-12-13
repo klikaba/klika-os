@@ -31,7 +31,7 @@ void set_time_label()
 int main()
 {
     int layout_y = WINDOW_BAR_HEIGHT + 10;
-    window = window_create(100, 100, 500, 300, "Clock", MSG_USER_WIN);
+    window = window_create(0, 0, 500, 300, "Clock", MSG_USER_WIN, WINDOW_ATTR_BOTTOM | WINDOW_ATTR_NO_DRAG, WINDOW_FRAME_NONE);
     button_create(window, 10, layout_y, 100, 50, "Refresh time", MSG_USER_BTN);
     label = label_create(window, 10, layout_y + 40, 100, 20, "", MSG_USER_LABEL);
 

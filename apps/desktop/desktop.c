@@ -33,7 +33,7 @@ int main()
 	btn = button_create(window, 170, 10, 64, 64 + 9, "Demo2", MSG_USER_BTN_DEMO2);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 
-	btn = button_create(window, 240, WINDOW_BAR_HEIGHT + 10, 64, 64 + 9, "Clock", MSG_USER_BTN_CLOCK);
+	btn = button_create(window, 240, 10, 64, 64 + 9, "Clock", MSG_USER_BTN_CLOCK);
 	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
 
 	while (window_get_message(window, &msg))

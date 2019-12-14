@@ -52,4 +52,4 @@ typedef struct {
 int closedir(DIR* stream);
 DIR* opendir(char* dirname);
 DIRENT* readdir(DIR* stream);
-void file_name(DIRENT* dirent, char* name_out);
+char* file_name(DIRENT* dirent);

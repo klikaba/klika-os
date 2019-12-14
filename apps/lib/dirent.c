@@ -35,15 +35,17 @@ int closedir(DIR* stream) {
   return 0;
 }
 
-void file_name(DIRENT* dirent, char* name_out) {
+char* file_name(DIRENT* dirent) {
+  char* name = malloc(sizeof(char) * 13);
+  char* name_start = name;
   char* dirent_name = (char*) dirent->name;
   char* dirent_name_end = dirent_name + 8;
   char* dirent_end = dirent_name + 11;
   while (dirent_name < dirent_end) {
-    if (dirent_name == dirent_name_end && *dirent_name_end != ' ') *name_out++ = '.';
-    if (*dirent_name != ' ') *name_out++ = *dirent_name;
+    if (dirent_name == dirent_name_end && *dirent_name_end != ' ') *name++ = '.';
+    if (*dirent_name != ' ') *name++ = *dirent_name;
     dirent_name++;
   }
-  *name_out = '\0';
-  return;
+  *name = '\0';
+  return name_start;
 }

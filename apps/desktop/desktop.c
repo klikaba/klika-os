@@ -32,10 +32,11 @@ void load_directory_entries(char* dirname) {
 	{
 		while (ep = readdir (dp)) {
 			if (ep->name[0] != '.') {
-				char* app_name = malloc(sizeof(char) * 13);
-				file_name(ep, app_name);
+				char* app_name = file_name(ep);
 				if (strcmp(app_name, "DESKTOP") != 0)  {
 					apps[app_count++] = app_name;
+				} else {
+					free(app_name);
 				}
 			}
 		}
@@ -67,7 +68,7 @@ int main() {
 			char* app_name = apps[msg.message - MSG_USER_BTN_APP];
 			char full_app_name[64];
 			for(i = 0; i < 64; i++) full_app_name[i] = 0;
-			sprintf(full_app_name, "apps/%s/%s", app_name, app_name);
+			sprintf(full_app_name, "/apps/%s/%s", app_name, app_name);
 			start_app(full_app_name);
 		}
 		window_dispatch(window, &msg);

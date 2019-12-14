@@ -1,0 +1,129 @@
+#include <kv.h>
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+#include <syscalls.h>
+#include <klikaos.h>
+
+#define READ_MODE_KEY 0
+#define READ_MODE_VALUE 1
+#define READ_MODE_COMMENT 2
+#define READ_MODE_NEWLINE 3
+
+#define MAX_PAIRS 64
+
+void open_kv_file(char* filename, kv_file_t* kv_file_out) {
+	FILE *file = fopen(filename, "r");
+	if (file == NULL) {
+		return;
+	}
+	uint32_t size = fsize(file);
+
+	uint8_t *buffer = malloc(size + 512);
+
+	fread(buffer, size, 1, file);
+	DEBUG("Read stuff to buffer: %s", buffer);
+
+	// TODO why is this hack required? First character of buffer is increased by 7
+	*buffer -= 7;
+
+	int entry_count = 0;
+	int line_count = 0;
+	int char_count = 0;
+	uint32_t i;
+	int mode = READ_MODE_NEWLINE;
+	char** keys_holder = malloc(sizeof(char*) * MAX_PAIRS);
+	char** values_holder = malloc(sizeof(char*) * MAX_PAIRS);
+	char** keys = keys_holder;
+	char** values = values_holder;
+	char* key_holder = malloc(sizeof(char) * 64);
+	char* value_holder = malloc(sizeof(char) * 64);
+	char* key = key_holder;
+	char* value = value_holder;
+	for (i = 0; i < size; i++) {
+		DEBUG("Encountered character: %u", buffer[i]);
+		switch(buffer[i]) {
+			case '\n':
+				if (key != key_holder && value != value_holder) {
+					*key = '\0';
+					*value = '\0';
+					*keys++ = strdup(key_holder);
+					*values++ = strdup(value_holder);
+					key = key_holder;
+					value = value_holder;
+					entry_count++;
+					if (entry_count == MAX_PAIRS) {
+						// We reached max pairs, leave
+						DEBUG("kv.c: Max KV pairs reached, cancelling");
+						return;
+					}
+				} else if (key == key_holder) {
+					// Ignore, probably an empty line
+				} else if (mode != READ_MODE_NEWLINE && mode != READ_MODE_COMMENT) {
+					DEBUG("kv.c: Something went wrong while reading a KV file (no key)");
+					DEBUG("Stopped at line %d, character %d", line_count, char_count);
+					return;
+				}
+				mode = READ_MODE_NEWLINE;
+				line_count++;
+				char_count = 0;
+				break;
+			case '=':
+				if (mode == READ_MODE_KEY && key != key_holder) {
+					mode = READ_MODE_VALUE;
+				} else if (mode != READ_MODE_COMMENT) {
+					// ERROR!
+					DEBUG("kv.c: Key is missing, but '=' sign is reached. Exiting!");
+					DEBUG("Stopped at line %d, character %d", line_count, char_count);
+					return;
+				}
+				break;
+			case '#':
+				if (mode == READ_MODE_NEWLINE || (mode == READ_MODE_VALUE && value != value_holder)) {
+					DEBUG("STARTING COMMENT MODE!");
+					mode = READ_MODE_COMMENT;
+				} else if (mode != READ_MODE_COMMENT) {
+					// EXIT WITH ERROR
+					DEBUG("kv.c: Reached comment sign in middle of parsing! Exiting!");
+					DEBUG("Stopped at line %d, character %d", line_count, char_count);
+					return;
+				}
+				break;
+			default:
+				// Ignore spaces completely
+				if (!isspace(buffer[i])) {
+					if (mode == READ_MODE_NEWLINE) mode = READ_MODE_KEY;
+					if (mode == READ_MODE_KEY) {
+						*key++ = buffer[i];
+					} else if (mode == READ_MODE_VALUE) {
+						*value++ = buffer[i];
+					}
+				}
+				break;
+		}
+		char_count++;
+	}
+
+	// All went well
+	kv_file_out->entry_count = entry_count;
+	kv_file_out->keys = keys_holder;
+	kv_file_out->values = values_holder;
+
+	fclose(file);
+	free(buffer);
+	free(key_holder);
+	free(value_holder);
+}
+
+void close_kv_file(kv_file_t* file) {
+	if (file != NULL) {
+		int i;
+		for (i = 0; i < file->entry_count; i++) {
+			if (file->keys != NULL) free(file->keys[i]);
+			if (file->values != NULL) free(file->values[i]);
+		}
+		free(file->keys);
+		free(file->values);
+		free(file);
+	}
+}

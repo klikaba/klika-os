@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdio.h>
 
 #define ATTR_READ_ONLY	0x01
 #define ATTR_HIDDEN		0x02
@@ -51,3 +52,4 @@ typedef struct {
 int closedir(DIR* stream);
 DIR* opendir(char* dirname);
 DIRENT* readdir(DIR* stream);
+void file_name(DIRENT* dirent, char* name_out);

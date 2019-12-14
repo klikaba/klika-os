@@ -5,32 +5,45 @@
 #include <klikaos.h>
 
 DIR* opendir(char* dirname) {
-  DIR dir;
+  DIR* dir = malloc(sizeof(DIR));
+  dir->dir_info.scratch = malloc(sizeof(uint8_t) * SECTOR_SIZE);
 
-	if (syscall(SYSCall_dir_open, dirname, &dir.dir_info)) {
-		DEBUG("dirent.c: error opening dir %s\n", dirname);
-		return NULL;
-	}
+  if (syscall(SYSCall_dir_open, dirname, &dir->dir_info)) {
+	  DEBUG("dirent.c: error opening dir %s\n", dirname);
+	  closedir(dir);
+	  return NULL;
+  }
 
-  DIR *ret_dir = malloc(sizeof(DIR));
-  *ret_dir = dir;
-  return ret_dir;
+  return dir;
 }
 
 DIRENT* readdir(DIR* stream) {
-	DIRENT dirent;
+  // Based on standard dirent.h returned DIRENT should not be managed by user
+  static DIRENT dirent;
 
-	if (syscall(SYSCall_dir_read_next, &stream->dir_info, &dirent)) {
-		DEBUG("dirent.c: error reading from dir\n");
-		return NULL;
-	}
+  if (syscall(SYSCall_dir_read_next, &stream->dir_info, &dirent)) {
+	  DEBUG("dirent.c: error reading from dir\n");
+	  return NULL;
+  }
 
-  DIRENT *ret_dirent = malloc(sizeof(DIRENT));
-  *ret_dirent = dirent;
-  return ret_dirent;
+  return &dirent;
 }
 
 int closedir(DIR* stream) {
-	free(stream);
-	return 0;
+  if (stream != NULL) free(stream->dir_info.scratch);
+  free(stream);
+  return 0;
+}
+
+void file_name(DIRENT* dirent, char* name_out) {
+  char* dirent_name = (char*) dirent->name;
+  char* dirent_name_end = dirent_name + 8;
+  char* dirent_end = dirent_name + 11;
+  while (dirent_name < dirent_end) {
+    if (dirent_name == dirent_name_end && *dirent_name_end != ' ') *name_out++ = '.';
+    if (*dirent_name != ' ') *name_out++ = *dirent_name;
+    dirent_name++;
+  }
+  *name_out = '\0';
+  return;
 }

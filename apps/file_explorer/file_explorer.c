@@ -12,6 +12,7 @@ message_t msg;
 window_t  *window;
 window_t  *label;
 
+// TODO recursively check all directories
 void load_directory_entries(char* dirname, uint8_t depth) {
 	int layout_y = WINDOW_BAR_HEIGHT + 10;
 	DIR *dp;
@@ -28,7 +29,7 @@ void load_directory_entries(char* dirname, uint8_t depth) {
 			}
 		}
 
-		(void) closedir (dp);
+		closedir (dp);
 	}
 	else
 		DEBUG("Couldn't open the directory (%s)\n", dirname);

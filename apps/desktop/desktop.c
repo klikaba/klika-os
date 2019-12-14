@@ -2,21 +2,48 @@
 #include <windows.h>
 #include <gfx.h>
 #include <bmp.h>
+#include <dirent.h>
+#include <malloc.h>
+#include <stdlib.h>
 
 message_t msg;
 window_t  *window;
 
 #define MSG_USER_WIN (WINDOW_USER_MESSAGE + 1)
-#define MSG_USER_BTN_SIMPLE_WIN (WINDOW_USER_MESSAGE + 2)
-#define MSG_USER_BTN_DEMO1 (WINDOW_USER_MESSAGE + 3)
-#define MSG_USER_BTN_DEMO2 (WINDOW_USER_MESSAGE + 4)
-#define MSG_USER_BTN_FILETREE (WINDOW_USER_MESSAGE + 5)
+
+#define MSG_USER_BTN_APP (WINDOW_USER_MESSAGE + 10)
 
 bmp_image_t app_icon_bmp;
 bmp_image_t wallpaper;
 
+char* apps[20];
+int app_count = 0;
+
 void start_app(char *filename) {
 	syscall(SYSCall_process_from_file, filename);
+}
+
+void load_directory_entries(char* dirname) {
+	DIR *dp;
+	DIRENT *ep;     
+	dp = opendir(dirname);
+
+	if (dp != NULL)
+	{
+		while (ep = readdir (dp)) {
+			if (ep->name[0] != '.') {
+				char* app_name = malloc(sizeof(char) * 13);
+				file_name(ep, app_name);
+				if (strcmp(app_name, "DESKTOP") != 0)  {
+					apps[app_count++] = app_name;
+				}
+			}
+		}
+
+		closedir (dp);
+	}
+	else
+		DEBUG("Couldn't open the directory (%s)\n", dirname);
 }
 
 int main() {
@@ -27,32 +54,21 @@ int main() {
 	bmp_blit(WINDOW_EXT(window)->context, &wallpaper, 2, 0);
 	window_present(window);
 
-	button_t *btn = button_create(window, 10, 10, 64, 64 + 9, "Simple", MSG_USER_BTN_SIMPLE_WIN);
-	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
+	load_directory_entries("/apps");
 
-	btn = button_create(window, 90, 10, 64, 64 + 9, "Demo1", MSG_USER_BTN_DEMO1);
-	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
-
-	btn = button_create(window, 170, 10, 64, 64 + 9, "Demo2", MSG_USER_BTN_DEMO2);
-	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
-
-	btn = button_create(window, 250, 10, 64, 64 + 9, "Explorer", MSG_USER_BTN_FILETREE);
-	button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
+	int i;
+	for (i = 0; i < app_count; i++) {
+		button_t *btn = button_create(window, 10 + i * 80, 10, 64, 64 + 9, apps[i], MSG_USER_BTN_APP + i);
+		button_set_image(btn, BUTTON_STATE_NORMAL, &app_icon_bmp);
+	}
 
 	while(window_get_message(window, &msg)) { 
-		switch(msg.message) {
-			case MSG_USER_BTN_SIMPLE_WIN:
-				start_app("/apps/simplew/simplew");				
-				break;
-			case MSG_USER_BTN_DEMO1:
-				start_app("/apps/demo1/demo1");				
-				break;
-			case MSG_USER_BTN_DEMO2:
-				start_app("/apps/demo2/demo2");				
-				break;
-			case MSG_USER_BTN_FILETREE:
-				start_app("/apps/fexpl/fexpl");
-				break;
+		if (msg.message >= MSG_USER_BTN_APP && msg.message < MSG_USER_BTN_APP + app_count) {
+			char* app_name = apps[msg.message - MSG_USER_BTN_APP];
+			char full_app_name[64];
+			for(i = 0; i < 64; i++) full_app_name[i] = 0;
+			sprintf(full_app_name, "apps/%s/%s", app_name, app_name);
+			start_app(full_app_name);
 		}
 		window_dispatch(window, &msg);
 	}

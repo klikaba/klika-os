@@ -30,7 +30,8 @@ all: $(name)
 instal%:
 	mkdir -p ../../images/disk/apps/$(name)
 	cp $(name) ../../images/disk/apps/$(name)
-	if [ -d assets ]; then cp assets/*.bmp ../../images/disk/apps/$(name); cp assets/*.kv ../../images/disk/apps/$(name); fi
+	cp *.kv ../../images/disk/apps/$(name)
+	if [ -d assets ]; then cp assets/*.bmp ../../images/disk/apps/$(name); fi
 
 clean:
 	@rm -rf build || true

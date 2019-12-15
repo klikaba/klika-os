@@ -61,6 +61,11 @@ typedef struct tm
 extern time_t time(time_t *timer);
 
 /**
+ * Gets the number of clock ticks since the process started.
+ * */
+extern clock_t clock(void);
+
+/**
  * Convert tm to a time_t time value. 
  * Checks the members of the tm structure passed as parameter ptm adjusting the values if the ones provided are not in the possible range 
  * or they are incomplete or mistaken and then translates that structure to a time_t value that is returned. 

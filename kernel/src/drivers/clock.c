@@ -1,5 +1,6 @@
 #include <clock.h>
 #include <x86.h>
+#include <isr.h>
 
 #define CMOS_ADDRESS_PORT 0x70
 #define CMOS_DATA_PORT 0x71
@@ -14,16 +15,17 @@
 #define CMOS_REGISTER_CENTURY 0x32
 #define CMOS_REGISTER_STATUS_A 0x0A
 #define CMOS_REGISTER_STATUS_B 0x0B
+#define CMOS_REGISTER_STATUS_C 0x0C
 
-void _out_byte(int port, int value)
+void NMI_enable()
 {
-    outp(port, value);
-};
+    outp(CMOS_ADDRESS_PORT, inp(CMOS_ADDRESS_PORT) & 0x7F);
+}
 
-int _in_byte(int port)
+void NMI_disable()
 {
-    return inp(port);
-};
+    outp(CMOS_ADDRESS_PORT, inp(CMOS_ADDRESS_PORT) & 0x80);
+}
 
 // Utility methods
 int datetime_equals(CmosData *a, CmosData *b)
@@ -100,20 +102,20 @@ uint8_t _read_cmos_register(uint8_t registerAddress)
     // progress) is clear if we are reading one of the clock data registers...
     if (registerAddress < CMOS_REGISTER_STATUS_A)
     {
-        _out_byte(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_A);
-        while ((_in_byte(CMOS_DATA_PORT) & 0x80) && --maxTries)
+        outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_A);
+        while ((inp(CMOS_DATA_PORT) & 0x80) && --maxTries)
             ;
     }
 
     // then read the value.
-    _out_byte(CMOS_ADDRESS_PORT, registerAddress);
-    return _in_byte(CMOS_DATA_PORT);
+    outp(CMOS_ADDRESS_PORT, registerAddress);
+    return inp(CMOS_DATA_PORT);
 }
 
 void _write_cmos_register(uint8_t registerAddress, uint8_t data)
 {
-    _out_byte(CMOS_ADDRESS_PORT, registerAddress);
-    _out_byte(CMOS_DATA_PORT, data);
+    outp(CMOS_ADDRESS_PORT, registerAddress);
+    outp(CMOS_DATA_PORT, data);
 }
 
 void _set_24_hour_mode()
@@ -135,9 +137,6 @@ void _read_cmos_clock(CmosData *dt)
     dt->hour = _read_cmos_register(CMOS_REGISTER_HOURS);
     dt->minute = _read_cmos_register(CMOS_REGISTER_MINUTES);
     dt->second = _read_cmos_register(CMOS_REGISTER_SECONDS);
-
-    DEBUG("_read_cmos_clock: %i; %i; %i; %i; %i; %i;",
-          dt->year, dt->month, dt->day, dt->hour, dt->minute, dt->second);
 }
 
 void _write_cmos_clock(CmosData *dt)
@@ -226,11 +225,34 @@ void set_hw_datetime(uint32_t timestamp)
     _write_cmos_clock(&dt);
 }
 
+static void rtc_tick_callback(isr_ctx_t *ctx __UNUSED__)
+{
+    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_C);
+    uint8_t value = inp(CMOS_DATA_PORT);
+
+    DEBUG("RTC tick callback: %i", value);
+
+    pic_acknowledge(PIC_IRQ8);
+}
+
 // Init of clock module
 void init_kernel_clock()
 {
-    if (get_hw_datetime() == 0)
-    {
-        set_hw_datetime(1570000000);
-    }
+    NMI_disable();
+
+    // Register interrupt handler
+    register_interrupt_handler(ISR_IRQ8, rtc_tick_callback);
+    irq_enable(PIC_IRQ8);
+
+    // Enabling IRQ8 with frequency of 1024Hz
+    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B | 0x80);
+    uint8_t prev = inp(CMOS_DATA_PORT);
+    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B | 0x80);
+    outp(CMOS_ADDRESS_PORT, prev | 0x40);
+
+    // Read status register C
+    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_C);
+    inp(CMOS_DATA_PORT);
+
+    NMI_enable();
 };

@@ -7,6 +7,8 @@
 #define RTC_EPOCH_JULIAN_DAY 2440588
 #define RTC_SECONDS_DAY 86400
 
+#define RTC_DEFAULT_TIMEZONE 1 // GMT + 1
+
 // Struct to hold CMOS data
 typedef struct
 {
@@ -41,7 +43,11 @@ int datetime_equals(CmosData *a, CmosData *b);
 uint32_t datetime_to_timestamp(DateTime *dt);
 void timestamp_to_datetime(uint32_t timestamp, DateTime *dt);
 
+// Toggle NMIs from RTC/CMOS
+void NMI_enable();
+void NMI_disable();
+
 // struct DateTime clock_get_time();
-void init_kernel_clock();
+extern void init_kernel_clock();
 
 #endif

@@ -13,7 +13,7 @@ uint64_t heap_end;
 
 mblock_t *find_heap_block(uint32_t size) {
   HEAP_WALKER(mb) {
-    if (mb->free && mb->size > size) { // not >= ... little hack to not match last block in a byte 
+    if (mb->free && mb->size > size + sizeof(mblock_t)) { // not >= ... little hack to not match last block in a byte 
       return mb;
     }
   }

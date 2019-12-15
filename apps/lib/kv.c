@@ -22,10 +22,6 @@ void open_kv_file(char* filename, kv_file_t* kv_file_out) {
 	uint8_t *buffer = malloc(size + 512);
 
 	fread(buffer, size, 1, file);
-	DEBUG("Read stuff to buffer: %s", buffer);
-
-	// TODO why is this hack required? First character of buffer is increased by 7
-	*buffer -= 7;
 
 	int entry_count = 0;
 	int line_count = 0;
@@ -41,7 +37,6 @@ void open_kv_file(char* filename, kv_file_t* kv_file_out) {
 	char* key = key_holder;
 	char* value = value_holder;
 	for (i = 0; i < size; i++) {
-		DEBUG("Encountered character: %u", buffer[i]);
 		switch(buffer[i]) {
 			case '\n':
 				if (key != key_holder && value != value_holder) {
@@ -80,7 +75,6 @@ void open_kv_file(char* filename, kv_file_t* kv_file_out) {
 				break;
 			case '#':
 				if (mode == READ_MODE_NEWLINE || (mode == READ_MODE_VALUE && value != value_holder)) {
-					DEBUG("STARTING COMMENT MODE!");
 					mode = READ_MODE_COMMENT;
 				} else if (mode != READ_MODE_COMMENT) {
 					// EXIT WITH ERROR
@@ -90,14 +84,14 @@ void open_kv_file(char* filename, kv_file_t* kv_file_out) {
 				}
 				break;
 			default:
-				// Ignore spaces completely
-				if (!isspace(buffer[i])) {
+				// Ignore spaces completely, unless its in value part
+				if (mode == READ_MODE_VALUE) {
+						*value++ = buffer[i];
+				} else if (!isspace(buffer[i])) {
 					if (mode == READ_MODE_NEWLINE) mode = READ_MODE_KEY;
 					if (mode == READ_MODE_KEY) {
 						*key++ = buffer[i];
-					} else if (mode == READ_MODE_VALUE) {
-						*value++ = buffer[i];
-					}
+					} 
 				}
 				break;
 		}

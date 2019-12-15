@@ -29,7 +29,7 @@ int main() {
 	bmp_from_file("/assets/wallp.bmp", &wallpaper);
 	
 	window = window_create(0, 0, 1024, 768, "Applications", MSG_USER_WIN, WINDOW_ATTR_BOTTOM | WINDOW_ATTR_NO_DRAG, WINDOW_FRAME_NONE);
-	bmp_blit(WINDOW_EXT(window)->context, &wallpaper, 2, 0);
+	bmp_blit(WINDOW_EXT(window)->context, &wallpaper, 0, 0);
 	window_present(window);
 
 	populate_app_info();
@@ -37,7 +37,7 @@ int main() {
 	int app_index, i;
 	for (i = 0; i < app_count; i++) {
 		if (apps[i]->visible) {
-			button_t *btn = button_create(window, 40 + (app_index % COLUMN_COUNT) * 80, 10 + (app_index / COLUMN_COUNT) * 89, 64, 64 + 9, apps[i]->display_name, MSG_USER_BTN_APP + i);
+			button_t *btn = button_create(window, 20 + (app_index % COLUMN_COUNT) * 84, 10 + (app_index / COLUMN_COUNT) * 89, 64, 64 + 9, apps[i]->display_name, MSG_USER_BTN_APP + i);
 			if (!strcmp("/apps/desktop/appicon.bmp", apps[i]->icon_path)) {
 				button_set_image(btn, BUTTON_STATE_NORMAL, &default_app_icon);
 			} else {
@@ -50,8 +50,9 @@ int main() {
 	}
 
 	while(window_get_message(window, &msg)) { 
-		if (msg.message >= MSG_USER_BTN_APP && msg.message < MSG_USER_BTN_APP + app_count) {
-			start_app(apps[msg.message - MSG_USER_BTN_APP]->executable_path);
+		int app_index = msg.message - MSG_USER_BTN_APP;
+		if (app_index >= 0 && app_index < app_count) {
+			start_app(apps[app_index]->executable_path);
 		}
 		window_dispatch(window, &msg);
 	}

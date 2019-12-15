@@ -13,9 +13,9 @@ typedef struct {
 	char* icon_path;
 } app_info_t;
 
-char* app_names[20];
+char* app_names[64];
 int app_name_count = 0;
-app_info_t* apps[20];
+app_info_t* apps[64];
 int app_count = 0;
 
 void load_apps_from_directory(char* dirname) {
@@ -103,12 +103,14 @@ void load_kv_for_app(int app_index) {
 	app_info_t* app_info = prep_app_info(app_index);
 
 	kv_file_t* kv_file = malloc(sizeof(kv_file_t));
-	char* kv_path = malloc(sizeof(char) * 64);
+	char kv_path[64];
+	int i;
+	// TODO sprintf does not add null terminator properly (if target buffer already has some value)
+	for (i = 0; i < 64; i++) kv_path[i] = 0;
 	sprintf(kv_path, "/apps/%s/info.kv", app_names[app_index]);
 	open_kv_file(kv_path, kv_file);
 
 	bool icon_set_up = false;
-	int i;
 	for (i = 0; i < kv_file->entry_count; i++) {
 		if (!strcmp(kv_file->keys[i], "icon")) {
 			icon_set_up = true;

@@ -30,6 +30,7 @@ all: $(name)
 instal%:
 	mkdir -p ../../images/disk/apps/$(name)
 	cp $(name) ../../images/disk/apps/$(name)
+	cp *.kv ../../images/disk/apps/$(name)
 	if [ -d assets ]; then cp assets/*.bmp ../../images/disk/apps/$(name); fi
 
 clean:

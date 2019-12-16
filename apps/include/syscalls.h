@@ -16,6 +16,8 @@
 #define SYSCall_messaging_peek   10
 #define SYSCall_process_exit     11
 #define SYSCall_memory_stats     12
+#define SYSCall_dir_open         13
+#define SYSCall_dir_read_next    14
 
 extern uint64_t syscall(uint64_t sys_no, ...);
 

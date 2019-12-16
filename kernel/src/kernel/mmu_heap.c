@@ -54,11 +54,15 @@ void sbrk(uint32_t size __UNUSED__) {
 }
 
 mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
+  mb->free = false;
+	// No splitting since new block can't fit
+	if (mb->size < size + sizeof(mblock_t)) {
+		return mb;
+	}
   uint32_t old_size = mb->size;
   mblock_t *old_next = mb->next;
   uint8_t *ptr = (uint8_t*)mb;
 
-  mb->free = false;
   mb->size = size;
 
   mblock_t *next_mb = (mblock_t*)(ptr + sizeof(mblock_t) + mb->size);

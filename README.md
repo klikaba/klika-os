@@ -63,7 +63,7 @@ Run following:
 vagrant up
 vagrant ssh
 cd /vagrant
-make all
+make all run
 ```
 
 This will create bootable ISO image and HD image in `images` folder. To run it, you will need qemu on your local machine. You can run it (FROM YOUR LOCAL MACHINE):

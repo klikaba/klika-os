@@ -12,6 +12,10 @@
 
 #define MAX_PAIRS 64
 
+char buf_getc(uint8_t* ptr, int index, int size) {
+	return index >= size ? -1 : ptr[index];
+}
+
 void open_kv_file(char* filename, kv_file_t* kv_file_out) {
 	FILE *file = fopen(filename, "r");
 	if (file == NULL) {
@@ -36,9 +40,10 @@ void open_kv_file(char* filename, kv_file_t* kv_file_out) {
 	char* value_holder = malloc(sizeof(char) * 64);
 	char* key = key_holder;
 	char* value = value_holder;
-	for (i = 0; i < size; i++) {
-		switch(buffer[i]) {
+	for (i = 0; i <= size; i++) {
+		switch(buf_getc(buffer, i, size)) {
 			case '\n':
+			case -1:
 				if (key != key_holder && value != value_holder) {
 					*key = '\0';
 					*value = '\0';

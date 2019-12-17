@@ -117,9 +117,7 @@ retry2:
   return;
 }
 
-uint8_t ata_read_one(uint8_t *buf, uint32_t lba) {
-//  DEBUG("ATA: reading LBA : %i\n", lba);
-  //lba &= 0x00FFFFFF; // ignore topmost byte
+uint8_t ata_write_one(uint8_t *buf, uint32_t lba) {
   /* We only support 28bit LBA so far */
   uint16_t io = 0;
   switch(ata_drive) {
@@ -140,40 +138,76 @@ uint8_t ata_read_one(uint8_t *buf, uint32_t lba) {
       ata_drive = ATA_SLAVE;
       break;
     default:
-//      DEBUG("ATA: FATAL: unknown drive!\n");
       return 0;
   }
-//  // DEBUG("ATA: io=0x%x %s\n", io, ata_drive == ATA_MASTER ? "Master" : "Slave");
+
   uint8_t cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
-  // uint8_t slavebit = (drive == ATA_MASTER?0x00:0x01);
-//  // DEBUG("ATA: LBA = 0x%x\n", lba);
-//  // DEBUG("ATA: LBA>>24 & 0x0f = %d\n", (lba >> 24)&0x0f);
-//  // DEBUG("ATA: (uint8_t)lba = %d\n", (uint8_t)lba);
-//  // DEBUG("ATA: (uint8_t)(lba >> 8) = %d\n", (uint8_t)(lba >> 8));
-//  // DEBUG("ATA: (uint8_t)(lba >> 16) = %d\n", (uint8_t)(lba >> 16));
-  //outp(io + ATA_REG_HDDEVSEL, cmd | ((lba >> 24)&0x0f));
   outp(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t)((lba >> 24 & 0x0F))));
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (cmd | (lba >> 24)&0x0f), io + ATA_REG_HDDEVSEL);
-  //for(int k = 0; k < 10000; k++) ;
   outp(io + 1, 0x00);
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", 0x00, io + 1);
-  //for(int k = 0; k < 10000; k++) ;
-  outp(io + ATA_REG_SECCOUNT0, 1);
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t) numsects, io + ATA_REG_SECCOUNT0);
-  //for(int k = 0; k < 10000; k++) ;
-  outp(io + ATA_REG_LBA0, (uint8_t)((lba)));
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba)), io + ATA_REG_LBA0);
-  //for(int k = 0; k < 10000; k++) ;
-  outp(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba) >> 8), io + ATA_REG_LBA1);
-  //for(int k = 0; k < 10000; k++) ;
-  outp(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", (uint8_t)((lba) >> 16), io + ATA_REG_LBA2);
-  //for(int k = 0; k < 10000; k++) ;
-  outp(io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
-//  // DEBUG("ATA: issued 0x%x to 0x%x\n", ATA_CMD_READ_PIO, io + ATA_REG_COMMAND);
 
+  // Single sector write
+  outp(io + ATA_REG_SECCOUNT0, 1); 
+
+  // Select LBA
+  outp(io + ATA_REG_LBA0, (uint8_t)((lba)));
+  outp(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+  outp(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+
+  // Select write command
+  outp(io + ATA_REG_COMMAND, ATA_CMD_WRITE_PIO);
+
+  // Wait until ready
+  ide_poll(io);
+
+  for(int i = 0; i < 256; i++) {
+    outpw(io + ATA_REG_DATA, *(uint16_t *)(buf + i * 2));
+  }
+  ide_400ns_delay(io);
+  return 1;
+}
+
+uint8_t ata_read_one(uint8_t *buf, uint32_t lba) {
+  /* We only support 28bit LBA so far */
+  uint16_t io = 0;
+  switch(ata_drive) {
+    case (ATA_PRIMARY << 1 | ATA_MASTER):
+      io = ATA_PRIMARY_IO;
+      ata_drive = ATA_MASTER;
+      break;
+    case (ATA_PRIMARY << 1 | ATA_SLAVE):
+      io = ATA_PRIMARY_IO;
+      ata_drive = ATA_SLAVE;
+      break;
+    case (ATA_SECONDARY << 1 | ATA_MASTER):
+      io = ATA_SECONDARY_IO;
+      ata_drive = ATA_MASTER;
+      break;
+    case (ATA_SECONDARY << 1 | ATA_SLAVE):
+      io = ATA_SECONDARY_IO;
+      ata_drive = ATA_SLAVE;
+      break;
+    default:
+      return 0;
+  }
+
+  uint8_t cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
+
+  outp(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t)((lba >> 24 & 0x0F))));
+  outp(io + 1, 0x00);
+
+  // Single sector read
+  outp(io + ATA_REG_SECCOUNT0, 1);
+
+  // Select LBA
+  outp(io + ATA_REG_LBA0, (uint8_t)((lba)));
+  outp(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+  outp(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+
+  // Select read command
+  outp(io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
+
+  // Wait until ready
   ide_poll(io);
 
   for(int i = 0; i < 256; i++) {

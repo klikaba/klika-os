@@ -18,6 +18,7 @@
 #define SYSCall_memory_stats     12
 #define SYSCall_dir_open         13
 #define SYSCall_dir_read_next    14
+#define SYSCall_file_write       15
 
 extern uint64_t syscall(uint64_t sys_no, ...);
 

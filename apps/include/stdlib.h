@@ -12,6 +12,7 @@ int _printf(const char *fmt, va_list args, fnptr_t fn, void *ptr);
 void sprintf(char* buf, const char* fmt, ...);
 
 int abs(int n);
+int sign(int n);
 long int labs(long int n);
 long long int llabs(long long int n);
 

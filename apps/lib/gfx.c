@@ -128,85 +128,42 @@ void gfx_draw_shadowed_box(context_t *context, int x1, int y1, int x2, int y2, u
 }
 
 void gfx_line(context_t *context, int x1, int y1, int x2, int y2, int c) {
- int x,y,dx,dy,dx1,dy1,px,py,xe,ye,i;
- dx=x2-x1;
- dy=y2-y1;
- dx1=abs(dx);
- dy1=abs(dy);
- px=2*dy1-dx1;
- py=2*dx1-dy1;
- if(dy1<=dx1)
- {
-  if(dx>=0)
-  {
-   x=x1;
-   y=y1;
-   xe=x2;
-  }
-  else
-  {
-   x=x2;
-   y=y2;
-   xe=x1;
-  }
-  gfx_putpixel(context,x,y,c);
-  for(i=0;x<xe;i++)
-  {
-   x=x+1;
-   if(px<0)
-   {
-    px=px+2*dy1;
-   }
-   else
-   {
-    if((dx<0 && dy<0) || (dx>0 && dy>0))
-    {
-     y=y+1;
+  int dx = x2 - x1;
+  int dy = y2 - y1;
+  int dx_abs = abs(dx);
+  int dy_abs = abs(dy);
+  int sdx = sign(dx);
+  int sdy = sign(dy);
+  int x = 0;
+  int y = 0;
+  int px = x1;
+  int py = y1;
+
+  gfx_putpixel(context, px, py, c);
+
+  if (dx_abs >= dy_abs) {
+    for (int i = 0; i < dx_abs; i++) {
+      y += dy_abs;
+
+      if (y >= dx_abs) {
+        y -= dx_abs;
+        py += sdy;
+      }
+
+      px += sdx;
+      gfx_putpixel(context, px, py, c);
     }
-    else
-    {
-     y=y-1;
+  } else {
+    for (int i = 0; i < dy_abs; i++) {
+      x += dx_abs;
+
+      if (x >= dy_abs) {
+        x -= dy_abs;
+        px += sdx;
+      }
+
+      py += sdy;
+      gfx_putpixel(context, px, py, c);
     }
-    px=px+2*(dy1-dx1);
-   }
-   gfx_putpixel(context,x,y,c);
   }
- }
- else
- {
-  if(dy>=0)
-  {
-   x=x1;
-   y=y1;
-   ye=y2;
-  }
-  else
-  {
-   x=x2;
-   y=y2;
-   ye=y1;
-  }
-  gfx_putpixel(context,x,y,c);
-  for(i=0;y<ye;i++)
-  {
-   y=y+1;
-   if(py<=0)
-   {
-    py=py+2*dx1;
-   }
-   else
-   {
-    if((dx<0 && dy<0) || (dx>0 && dy>0))
-    {
-     x=x+1;
-    }
-    else
-    {
-     x=x-1;
-    }
-    py=py+2*(dx1-dy1);
-   }
-   gfx_putpixel(context,x,y,c);
-  }
- }
 }

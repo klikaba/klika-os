@@ -244,6 +244,10 @@ int abs(int n) {
   return n < 0 ? -n : n;
 }
 
+int sign(int x) {
+  return (x < 0) ? -1 : ((x > 0) ? 1 : 0);
+}
+
 long int labs(long int n) {
   return n < 0 ? -n : n;
 }

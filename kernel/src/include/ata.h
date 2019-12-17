@@ -105,5 +105,6 @@ bool ide_identify(uint8_t bus, uint8_t drive);
 void ide_400ns_delay(uint16_t io);
 void ide_poll(uint16_t io);
 uint8_t ata_read_one(uint8_t *buf, uint32_t lba);
+uint8_t ata_write_one(uint8_t *buf, uint32_t lba);
 void ata_probe();
 void init_kernel_ata();

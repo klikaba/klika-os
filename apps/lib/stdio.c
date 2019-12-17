@@ -12,11 +12,15 @@ FILE* fopen(char* filename, char* mode) {
       DEBUG("stdio.c: error opening file %s\n", filename);
       return NULL;
     }
-  }
-  else {
-    DEBUG("stdio.c: Unsupported mode. only \"r\" supported!\n");
+  } else if (!strcmp(mode, "w")){
+    if (syscall(SYSCall_file_open, filename, FILE_MODE_WRITE, file.scratch_sector, &file.file_info)) {
+      DEBUG("stdio.c: error opening file %s\n", filename);
+      return NULL;
+    }
+  } else {
+    DEBUG("stdio.c: Unsupported mode. only \"r\" and \"w\" supported!\n");
     return NULL;
-  }
+	}
 
   // TODO: Can this be more cleaner?? 
   FILE *ret_file = malloc(sizeof(FILE));
@@ -29,7 +33,15 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 
   syscall(SYSCall_file_read, &stream->file_info, stream->scratch_sector, ptr, &read_count, size * nmemb);
 
-  return read_count;
+  return read_count / size;
+}
+
+size_t fwrite(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+	uint32_t written_count;
+
+	syscall(SYSCall_file_write, &stream->file_info, stream->scratch_sector, ptr, &written_count, size * nmemb);
+
+	return written_count / size;
 }
 
 int fclose(FILE *stream) {

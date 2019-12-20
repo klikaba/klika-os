@@ -174,7 +174,7 @@ window_t* window_find(uint32_t handle) {
 
 void window_present_context(window_t* win  __UNUSED__, context_t* context) {
 	assert(context->bpp == 32);
-	memcpy(win->context.buffer, context->buffer, context->width * context->height * 4);
+	fast_memcpy(win->context.buffer, context->buffer, context->width * context->height * 4);
   window_need_redraw();
 }
 
@@ -368,12 +368,12 @@ void window_manager_redraw() {
 		return;
 	}
 	window_sort_windows();
-	if (wallpaper_bmp.data != NULL) {
-		fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)wallpaper_bmp.data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
-	}
-	else {
-		memset((void*)buffer_video_info.addr, 0xC1, VIDEO_INFO_MEM_SIZE(buffer_video_info));
-	}
+	// if (wallpaper_bmp.data != NULL) {
+	// 	fast_memcpy((void*)buffer_video_info.addr, (unsigned char*)wallpaper_bmp.data, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	// }
+	// else {
+	// 	memset((void*)buffer_video_info.addr, 0xC1, VIDEO_INFO_MEM_SIZE(buffer_video_info));
+	// }
 	window_handle_mouse();
   window_draw_all();
   window_draw_mouse();

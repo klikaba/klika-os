@@ -11,6 +11,16 @@ mblock_t *root_mblock;
 uint64_t heap_start;
 uint64_t heap_end;
 
+uint32_t align_to(uint32_t addr, uint32_t align) {
+  uint32_t align_mask = align - 1;
+  if (addr & align_mask) {
+    return (addr | align_mask) + 1;
+  }
+  else {
+    return addr;
+  }
+}
+
 mblock_t *find_heap_block(uint32_t size) {
   HEAP_WALKER(mb) {
     if (mb->free && mb->size > size) { // not >= ... little hack to not match last block in a byte 
@@ -65,6 +75,8 @@ mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
 }
 
 void *malloc(uint32_t size) {
+  // Align next block to 64bits
+  size = align_to(size, 8);
   mblock_t *mb = find_heap_block(size);
   if (mb == NULL) {
     sbrk(size);

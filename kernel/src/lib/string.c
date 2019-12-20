@@ -113,34 +113,6 @@ char* strncpy(char* dest, const char* src, size_t num) {
 	return ptr;
 }
 
-typedef struct { unsigned char dummy [32]; } DT;
-
-void fast_memcpy(unsigned char* dst, unsigned char* src, size_t s) {
-	unsigned char* sa = src+s;
-	DT *d1 = (DT*)dst - 1;
-	DT *s1 = (DT*)src - 1;
-	size_t si = s / sizeof(DT);
-
-	si = (si + 7) / 8;
-	switch(si % 8) 
-	{
-	 case 0: do { *++d1 = *++s1;
-	 case 7:      *++d1 = *++s1;
-	 case 6:      *++d1 = *++s1;
-	 case 5:      *++d1 = *++s1;
-	 case 4:      *++d1 = *++s1;
-	 case 3:      *++d1 = *++s1;
-	 case 2:      *++d1 = *++s1;
-	 case 1:      *++d1 = *++s1;
-           } while(--si > 0);
-	}
-	dst = (unsigned char*)d1;
-	src = (unsigned char*)s1;
-	while(src < sa) {
-	  *++dst = *++src;
-	}
-}
-
 int strcmp(const char* s1, const char* s2) {
   while(*s1 && (*s1 == *s2)) {
     s1++;

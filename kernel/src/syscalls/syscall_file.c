@@ -16,7 +16,7 @@ uint64_t syscall_file_read(isr_ctx_t *regs) {
 	FILEINFO *file_info = (FILEINFO*)regs->rdi;
 	uint8_t *scratch_buffer = (uint8_t *)regs->rsi;
 	uint8_t *ptr = (uint8_t *)regs->rdx;
-	uint32_t *read_bytes = (uint32_t*)regs->rdx;
+	uint32_t *read_bytes = (uint32_t*)regs->rcx;
 	uint64_t size = regs->r8;
 
 	return DFS_ReadFile(file_info, scratch_buffer, ptr, read_bytes, size);
@@ -27,7 +27,7 @@ uint64_t syscall_file_write(isr_ctx_t *regs) {
 	FILEINFO *file_info = (FILEINFO*)regs->rdi;
 	uint8_t *scratch_buffer = (uint8_t *)regs->rsi;
 	uint8_t *ptr = (uint8_t *)regs->rdx;
-	uint32_t *written_bytes = (uint32_t*)regs->rdx;
+	uint32_t *written_bytes = (uint32_t*)regs->rcx;
 	uint64_t size = regs->r8;
 
 	return DFS_WriteFile(file_info, scratch_buffer, ptr, written_bytes, size);

@@ -39,7 +39,7 @@ void set_label_counter(label_t *label, char *format, int counter) {
 }
 
 int main() {
-	window = window_create(100, 100, 300, 300, "Simple Window", MSG_USER_WIN, WINDOW_ATTR_NONE, WINDOW_FRAME_DEFAULT);
+	window = window_create(100, 100, 300, 300, "Threads", MSG_USER_WIN, WINDOW_ATTR_NONE, WINDOW_FRAME_DEFAULT);
 
 	label1 = label_create(window, 10, 50, 100, 20, "", MSG_USER_LABEL1);
 	label2 = label_create(window, 10, 70, 100, 20, "", MSG_USER_LABEL2);

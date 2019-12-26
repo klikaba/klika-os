@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <types.h>
+#include <ctype.h>
 
 
 // inline function to swap two numbers
@@ -135,12 +136,4 @@ int strcmp(const char* s1, const char* s2) {
     s2++;
   }
   return *(const unsigned char*)s1 - *(const unsigned char*)s2;
-}
-
-int isspace(char c) {
-  return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
-}
-
-int isprint(char c) {
-  return ((c >= ' ' && c <= '~') ? 1 : 0);
 }

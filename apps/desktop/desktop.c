@@ -49,7 +49,7 @@ int main() {
 		}
 	}
 
-	while(window_get_message(window, &msg)) { 
+	while(window_get_message(window, &msg)) {
 		int app_index = msg.message - MSG_USER_BTN_APP;
 		if (app_index >= 0 && app_index < app_count) {
 			start_app(apps[app_index]->executable_path);

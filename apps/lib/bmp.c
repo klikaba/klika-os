@@ -46,3 +46,30 @@ void bmp_blit(context_t* context, bmp_image_t *bmp, int x, int y) {
 		}		
 	}
 }
+
+void bmp_blit_clipped(context_t *context, bmp_image_t *bmp, int x, int y, int clip_x, int clip_y, int clip_w, int clip_h) {
+	int bmp_width = bmp->header->width_px;
+	int bmp_height = bmp->header->height_px;
+
+	// If negative : stored TOP -> BOTTOM
+	if (bmp_height < 0) {
+		uint32_t *src = bmp->data + (clip_y * bmp_width + clip_x);
+		for (int i=0; i<clip_h; i++) {
+			for (int j=0; j<clip_w; j++) {
+				CONTEXT_32[FIRST_PIXEL(x+j, y+i)] = *src++;
+			}
+			src += (bmp_width - clip_w);
+		}
+	}
+	else {
+		// If positive : stored BOTTOM -> TOP ... make inverted blit (height - i)
+		uint32_t *src = bmp->data + ((bmp_height - clip_y - clip_h) * bmp_width + clip_x);
+
+		for (int i=0; i<clip_h; i++) {
+			for (int j=0; j<clip_w; j++) {
+				CONTEXT_32[FIRST_PIXEL(x+j, y+(clip_h-1-i))] = *src++;
+			}
+			src += (bmp_width - clip_w);
+		}
+	}
+}

@@ -8,14 +8,15 @@ xxd = xxd
 arch ?= x86_64
 linker_script := ../lib/ldscript.ld
 c_include := '../include'
+c_usr_app_include := './include'
 
 cflags := -fno-pic  -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 		  -ffreestanding -mno-red-zone -mno-mmx -mno-sse -mno-sse2 \
-	      -I $(c_include) -nostartfiles -nodefaultlibs -fno-exceptions \
+	      -I $(c_include) -I $(c_usr_app_include) -nostartfiles -nodefaultlibs -fno-exceptions \
 	      -Wall -Wextra -Werror -c -mcmodel=large -Wno-parentheses -Wno-implicit-fallthrough \
 	      -fdata-sections -ffunction-sections
 
-c_source_files := $(wildcard *.c) $(wildcard ../lib/*.c) $(wildcard ../lib/windows/*.c) 
+c_source_files := $(wildcard *.c) $(wildcard src/*.c) $(wildcard ../lib/*.c) $(wildcard ../lib/windows/*.c) 
 c_object_files := $(patsubst %.c, build/%.o, $(c_source_files))
 
 assembly_source_files := $(wildcard ../lib/*.asm)

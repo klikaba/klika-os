@@ -31,3 +31,4 @@ typedef struct {
 void bmp_from_file(char *filename, bmp_image_t *bmp_out);
 void bmp_close(bmp_image_t *bmp_image);
 void bmp_blit(context_t* context, bmp_image_t *bmp, int x, int y);
+void bmp_blit_clipped(context_t *context, bmp_image_t *bmp, int x, int y, int clip_x, int clip_y, int clip_w, int clip_h);

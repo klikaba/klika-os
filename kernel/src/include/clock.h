@@ -49,5 +49,6 @@ void NMI_disable();
 
 // struct DateTime clock_get_time();
 extern void init_kernel_clock();
+extern uint64_t get_rtc_ticks();
 
 #endif

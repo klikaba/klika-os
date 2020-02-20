@@ -8,6 +8,8 @@
 #define MSG_USER_WIN (WINDOW_USER_MESSAGE + 1)
 #define MSG_USER_LABEL (WINDOW_USER_MESSAGE + 2)
 
+clock_t sleep_period = 3000;
+
 message_t msg;
 window_t *window;
 window_t *label;
@@ -15,10 +17,11 @@ window_t *label;
 void draw_clock()
 {
     // Get system time and set label
-    unsigned long timestamp = time(NULL);
+    unsigned long timestamp;
     struct tm datetime;
     char buffer[100];
 
+    timestamp = time(NULL);
     mkdatetime(timestamp, &datetime);
     strftime(buffer, 100, &datetime);
     label_set_text(label, buffer);
@@ -39,6 +42,7 @@ int main()
         {
         case WINDOW_LIB_MESSAGE_DRAW:
             draw_clock();
+            sleep(sleep_period);
             break;
         }
 

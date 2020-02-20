@@ -18,6 +18,9 @@
 #define CMOS_REGISTER_STATUS_B 0x0B
 #define CMOS_REGISTER_STATUS_C 0x0C
 
+// Stores number of clock ticks
+volatile uint64_t __clock_ticks = 0;
+
 void NMI_enable()
 {
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B);
@@ -230,13 +233,19 @@ void set_hw_datetime(uint32_t timestamp)
 
 static void rtc_tick_callback(isr_ctx_t *ctx __UNUSED__)
 {
-    DEBUG("Something");
+    // DEBUG("rtc_tick_callback");
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_C);
-    uint8_t value = inp(CMOS_DATA_PORT);
+    __UNUSED__ uint8_t value = inp(CMOS_DATA_PORT);
 
-    DEBUG("RTC tick callback: %i", value);
+    // Increase timer
+    __clock_ticks++;
 
     pic_acknowledge(PIC_IRQ8);
+}
+
+uint64_t get_rtc_ticks()
+{
+    return __clock_ticks;
 }
 
 // Init of clock module
@@ -247,7 +256,7 @@ void init_kernel_clock()
     // Enabling IRQ8 with frequency of 1024Hz
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B | 0x80);
     uint8_t prev = inp(CMOS_DATA_PORT);
-    
+
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B | 0x80);
     outp(CMOS_ADDRESS_PORT, prev | 0x40);
 

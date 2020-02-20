@@ -9,6 +9,7 @@
 #define RTC_SECONDS_DAY 86400
 
 unsigned long _get_rtc_timestamp();
+unsigned long _get_rtc_clock_ticks();
 
 // Public interface
 time_t time(time_t *timer)
@@ -21,6 +22,20 @@ time_t time(time_t *timer)
     }
 
     return timestamp;
+}
+
+clock_t clock(void)
+{
+    clock_t clock_ticks = _get_rtc_clock_ticks();
+    return clock_ticks;
+}
+
+void sleep(clock_t clock_ticks)
+{
+    clock_t initial_clock = clock();
+
+    while (clock() - initial_clock < clock_ticks)
+        ;
 }
 
 time_t mktime(struct tm *tm)
@@ -98,4 +113,9 @@ time_t difftime(time_t time1, time_t time2)
 unsigned long _get_rtc_timestamp()
 {
     return syscall(SYSCall_get_clock);
+}
+
+unsigned long _get_rtc_clock_ticks()
+{
+    return syscall(SYSCall_get_clock_ticks);
 }

@@ -20,12 +20,14 @@
 
 void NMI_enable()
 {
-    outp(CMOS_ADDRESS_PORT, inp(CMOS_ADDRESS_PORT) & 0x7F);
+    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B);
+    outp(CMOS_DATA_PORT, inp(CMOS_DATA_PORT) | 0x40);
 }
 
 void NMI_disable()
 {
-    outp(CMOS_ADDRESS_PORT, inp(CMOS_ADDRESS_PORT) & 0x80);
+    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B);
+    outp(CMOS_DATA_PORT, inp(CMOS_DATA_PORT) & 0xBF);
 }
 
 // Utility methods
@@ -228,6 +230,7 @@ void set_hw_datetime(uint32_t timestamp)
 
 static void rtc_tick_callback(isr_ctx_t *ctx __UNUSED__)
 {
+    DEBUG("Something");
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_C);
     uint8_t value = inp(CMOS_DATA_PORT);
 
@@ -241,29 +244,16 @@ void init_kernel_clock()
 {
     NMI_disable();
 
-    // Save and disable all interrupts
-    uint8_t masterIRQ = inp(PIC_MASTER_DATA);
-    uint8_t slaveIRQ = inp(PIC_SLAVE_DATA);
-    outp(PIC_MASTER_DATA, 0xff);
-    outp(PIC_SLAVE_DATA, 0xff);
-
     // Enabling IRQ8 with frequency of 1024Hz
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B | 0x80);
     uint8_t prev = inp(CMOS_DATA_PORT);
+    
     outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_B | 0x80);
     outp(CMOS_ADDRESS_PORT, prev | 0x40);
-
-    // Enable previously disabled interrupts
-    outp(PIC_MASTER_DATA, masterIRQ);
-    outp(PIC_SLAVE_DATA, slaveIRQ);
 
     // Register interrupt handler
     register_interrupt_handler(ISR_IRQ8, rtc_tick_callback);
     irq_enable(PIC_IRQ8);
-
-    // Read status register C
-    outp(CMOS_ADDRESS_PORT, CMOS_REGISTER_STATUS_C);
-    inp(CMOS_DATA_PORT);
 
     NMI_enable();
 };

@@ -9,6 +9,10 @@ int rand() {
   return (unsigned int)(next / 65536) % 32768;
 }
 
+int rand_range(int lower, int upper) {
+  return (rand() % (upper - lower + 1)) + lower;
+}
+
 void srand(unsigned int seed) {
   next = seed;
 }

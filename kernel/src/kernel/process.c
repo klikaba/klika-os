@@ -62,6 +62,15 @@ void task_list_delete(task_t* task) {
   }
 }
 
+task_t* task_find_by_id(uint32_t id) {
+  for(task_t* task = task_list_head; task != NULL; task = task->next){
+    if (task->id == id) {
+      return task;
+    }
+  }
+  return NULL;
+}
+
 void task_list_dump() {
   DEBUG("Task lsit dump:\n");
   for(task_t* current = task_list_head; current != NULL; current = current->next){
@@ -69,8 +78,12 @@ void task_list_dump() {
   }
 }
 
-task_t* create_task_struct() {
-  task_t* new_task = (task_t*)malloc(sizeof(task_t));
+task_t* create_task_struct(bool create_pde) {
+  task_t* new_task = malloc(sizeof(task_t));
+  new_task->kstack = malloc(KERNEL_STACK_SIZE);
+  if (create_pde) {
+    new_task->pde = malloc(sizeof(pde_t) * 512);
+  }
   return new_task;
 }
 
@@ -173,7 +186,7 @@ uint64_t load_elf(void* elf_data_buffer, void* process_buffer) {
 static uint32_t __task_ids = 0;
 
 task_t* create_kernel_process(void* entry_point) {
-  task_t* task = create_task_struct();
+  task_t* task = create_task_struct(true);
 
   uint64_t* rsp = (uint64_t*)(task->kstack + KERNEL_STACK_SIZE);
   rsp--;
@@ -213,7 +226,7 @@ task_t* create_kernel_process(void* entry_point) {
 }
 
 task_t* create_user_process(void* elf_raw_data) {
-  task_t* task = create_task_struct();
+  task_t* task = create_task_struct(true);
 
   // Allocate memory for task (2MB max)
   uint64_t phys_addr;
@@ -258,6 +271,46 @@ task_t* create_user_process(void* elf_raw_data) {
   return task;
 }
 
+task_t *create_user_process_clone(task_t *parent, uint64_t entry_point, uint64_t user_stack) {
+  task_t *task = create_task_struct(false);
+  uint64_t *rsp = (uint64_t*)(task->kstack + KERNEL_STACK_SIZE);
+  rsp--;
+  *rsp-- = GDT_USER_DATA | 3;  // SS
+  *rsp-- = user_stack;       // RSP
+  *rsp-- = 0x286;              // RFLAGS
+  *rsp-- = GDT_USER_CODE | 3;  // CS
+  *rsp-- = entry_point;        // RIP
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp-- = 0;
+  *rsp = 0;
+
+  task->rsp = (uint64_t)rsp; //- switch will do it
+  task->id = __task_ids++;
+  task->attribute = PROCESS_ATTR_USER_SPACE | PROCESS_ATTR_CHILD;
+  task->state = PROCESS_STATE_READY;
+  // have same pagging mapping as parent (same memory space)
+  task->pde = parent->pde;
+  task->parent = parent;
+
+  DEBUG("PROC: Child Task created : parent id: %i, rsp:0x%X\n", parent->id, task->rsp);
+  task_list_insert(task);
+
+  return task;
+}
+
+
 task_t* create_user_process_file(char *filename) {
   DEBUG("PROC: Creating user process from file %s\n", filename);
   FILE *file = fopen(filename, "r");
@@ -288,7 +341,7 @@ static void free_allocated_frames(task_t *task) {
   }
 }
 
-void kill_process(task_t* task) {
+void kill_process_no_schedule(task_t* task) {
   if (task->id == 0) {
     HALT_AND_CATCH_FIRE("PROC: WARNING! - Cannot kill kernel idle task!");
     return;
@@ -303,17 +356,28 @@ void kill_process(task_t* task) {
   // Remove task from
   task_list_delete(task);
   free(task);
+}
+
+void kill_process(task_t* task) {
+
+  // First kill all children (if any)
+  for(task_t* child = task_list_head; child != NULL; child = child->next){
+    if (child->parent == task) {
+      kill_process_no_schedule(child);
+    }
+  }
+  // Kill task
+  kill_process_no_schedule(task);
   // Schedule next call
   task_list_current = task_list_head;
   do_first_task_jump();
 }
 
 bool kill_process_id(uint32_t id) {
-  for(task_t* task = task_list_head; task != NULL; task = task->next){
-    if (task->id == id) {
-      kill_process(task);
-      return true;
-    }
+  task_t* task = task_find_by_id(id);
+  if (task != NULL) {
+    kill_process(task);
+    return true;
   }
   return false;
 }

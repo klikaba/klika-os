@@ -11,15 +11,20 @@ uint32_t DFS_ReadSector(uint8_t unit __UNUSED__, uint8_t *buffer, uint32_t secto
     if (ata_read_one(buffer, sector) == 0) {
       return 1; // error
     }
-    buffer += 512;
+    buffer += SECTOR_SIZE;
   }
   return 0; // success
 }
 
 // Implementation needed for 'dosfs'
-uint32_t DFS_WriteSector(uint8_t unit __UNUSED__, uint8_t *buffer __UNUSED__, uint32_t sector __UNUSED__, uint32_t count __UNUSED__) {
-  HALT_AND_CATCH_FIRE("UNIMPLEMENTED FAT32 WRITE!!!!\n");
-  return 1;
+uint32_t DFS_WriteSector(uint8_t unit __UNUSED__, uint8_t *buffer, uint32_t sector, uint32_t count) {
+  for (uint32_t i=0; i<count; i++) {
+    if (ata_write_one(buffer, sector) == 0) {
+      return 1; // error
+    }
+    buffer += SECTOR_SIZE;
+  }
+  return 0; // success
 }
 
 void init_kernel_fat() {

@@ -54,11 +54,15 @@ void sbrk(uint32_t size __UNUSED__) {
 }
 
 mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
+  mb->free = false;
+	// No splitting since new block can't fit
+	if (mb->size < size + sizeof(mblock_t)) {
+		return mb;
+	}
   uint32_t old_size = mb->size;
   mblock_t *old_next = mb->next;
   uint8_t *ptr = (uint8_t*)mb;
 
-  mb->free = false;
   mb->size = size;
 
   mblock_t *next_mb = (mblock_t*)(ptr + sizeof(mblock_t) + mb->size);
@@ -74,8 +78,23 @@ mblock_t *split_heap_block(mblock_t *mb, uint32_t size) {
   return mb;
 }
 
+uint32_t align_to(uint32_t addr, uint32_t align) {
+  uint32_t align_mask = align - 1;
+  if (addr & align_mask) {
+    return (addr | align_mask) + 1;
+  }
+  else {
+    return addr;
+  }
+}
+
 void *malloc(uint32_t size) {
-  // DEBUG("MMU[heap]: malloc %i\n", size);
+  // Align size to 64bit
+  // size & 0b111
+  uint32_t old_size = size;
+  size = align_to(size, 8);
+
+  DEBUG("MMU[heap]: malloc(%i) alligned malloc(%i)\n", old_size, size);
   mblock_t *mb = find_heap_block(size);
   if (mb == NULL) {
     // DEBUG("MMU[heap]: No more empty blocks ... sbrk-ing ...\n");

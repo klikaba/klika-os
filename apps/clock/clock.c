@@ -8,7 +8,8 @@
 #define MSG_USER_WIN (WINDOW_USER_MESSAGE + 1)
 #define MSG_USER_LABEL (WINDOW_USER_MESSAGE + 2)
 
-clock_t sleep_period = 3000;
+bool is_first_run = true;
+clock_t sleep_period = 2000;
 
 message_t msg;
 window_t *window;
@@ -30,6 +31,18 @@ void draw_clock()
     window_invalidate(window);
 }
 
+void pause_clock()
+{
+    if (is_first_run)
+    {
+        is_first_run = false;
+    }
+    else
+    {
+        sleep(sleep_period);
+    }
+}
+
 int main()
 {
     int layout_y = WINDOW_BAR_HEIGHT + 10;
@@ -42,7 +55,7 @@ int main()
         {
         case WINDOW_LIB_MESSAGE_DRAW:
             draw_clock();
-            sleep(sleep_period);
+            pause_clock();
             break;
         }
 

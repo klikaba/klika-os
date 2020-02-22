@@ -21,6 +21,8 @@
 #define SYSCall_file_write         15
 #define SYSCall_process_clone	   16
 #define SYSCall_process_get_id     17
+#define SYSCall_get_clock          18
+#define SYSCall_get_clock_ticks    19
 
 extern uint64_t syscall(uint64_t sys_no, ...);
 

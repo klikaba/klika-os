@@ -10,6 +10,7 @@
 #include <isr.h>
 #include <timer.h>
 #include <keyboard.h>
+#include <clock.h>
 #include <timer.h>
 #include <process.h>
 #include <serial.h>
@@ -68,6 +69,7 @@ void kmain(unsigned long magic __UNUSED__, multiboot_info_t* mbi_phys) {
   init_kernel_isr();
   init_kernel_timer();
   init_kernel_keyboard();
+  init_kernel_clock();
   init_kernel_mouse();
   init_kernel_ata();
   init_kernel_fat();

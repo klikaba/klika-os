@@ -213,8 +213,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/SamirHodzic"><img src="https://avatars0.githubusercontent.com/u/10077663?v=4" width="100px;" alt="SamirH"/><br /><sub><b>SamirH</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=SamirHodzic" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.ensarsarajcic.com"><img src="https://avatars2.githubusercontent.com/u/2764831?v=4" width="100px;" alt="Ensar Sarajčić"/><br /><sub><b>Ensar Sarajčić</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=esensar" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/SamirHodzic"><img src="https://avatars0.githubusercontent.com/u/10077663?v=4" width="100px;" alt=""/><br /><sub><b>SamirH</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=SamirHodzic" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.ensarsarajcic.com"><img src="https://avatars2.githubusercontent.com/u/2764831?v=4" width="100px;" alt=""/><br /><sub><b>Ensar Sarajčić</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=esensar" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ahamza1"><img src="https://avatars0.githubusercontent.com/u/17404743?v=4" width="100px;" alt=""/><br /><sub><b>Almir Hamza</b></sub></a><br /><a href="https://github.com/klikaba/klika-os/commits?author=ahamza1" title="Code">💻</a></td>
   </tr>
 </table>
 
